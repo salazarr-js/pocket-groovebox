@@ -15,7 +15,9 @@ Early planning. NodeMCU ESP8266 on hand for browser-based prototyping. Target fo
 - nanoKEY2
 
 ### Projects
-- https://youtu.be/TJ4WLL2fQbY
+- Oskitone
+  - https://github.com/oskitone/scout
+  - https://youtu.be/TJ4WLL2fQbY
 
 ## Docs
 
