@@ -8,10 +8,14 @@ Early planning. NodeMCU ESP8266 on hand for browser-based prototyping. Target fo
 
 ## Inspiration
 
+### Products
 - OP-1
 - PO-33
 - Stylophone Beat
 - nanoKEY2
+
+### Projects
+- https://youtu.be/TJ4WLL2fQbY
 
 ## Docs
 
