@@ -18,6 +18,7 @@ Early planning. NodeMCU ESP8266 on hand for browser-based prototyping. Target fo
 - Oskitone
   - https://github.com/oskitone/scout
   - https://youtu.be/TJ4WLL2fQbY
+- https://github.com/wprudencio/esp32-synth
 
 ## Docs
 
