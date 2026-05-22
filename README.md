@@ -1,6 +1,6 @@
 # Pocket Groovebox
 
-🎹 An open Pocket Groovebox, just for fun.
+🎹 An open source Pocket Groovebox, just for fun.
 
 ## Status
 
