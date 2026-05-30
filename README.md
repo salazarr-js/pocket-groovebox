@@ -24,3 +24,6 @@ Early planning. NodeMCU ESP8266 on hand for browser-based prototyping. Target fo
 
 - [docs/chatgpt.md](docs/chatgpt.md) — full project summary (ChatGPT input)
 - [docs/claude.md](docs/claude.md) — full project summary (Claude input)
+
+### Tools
+- https://wokwi.com/
