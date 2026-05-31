@@ -2,6 +2,9 @@
 
 🎹 A modern DIY pocket groovebox. Just for fun.
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/8feba0f5-99bf-40f7-8a49-3b96758bdf67" />
+
+
 ## Status
 
 Early prototyping. Most hardware is on hand; currently testing individual modules on the ESP32-S3.
