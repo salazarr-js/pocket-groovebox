@@ -1,11 +1,8 @@
 # Pocket Groovebox — Plan
 
-The working build plan: concrete, checkable steps grouped by phase. For the vision see
-[brief.md](brief.md); for component choices see [hardware.md](hardware.md).
+The working build plan: concrete, checkable steps grouped by phase. For the vision see [brief.md](brief.md#vision); for component choices see [hardware.md](hardware.md#component-selection).
 
-Check items off as you go. Each done step — with notes, wiring, and photos — is raw
-material for a future build tutorial (see [Toward a tutorial](#toward-a-tutorial)), so
-write each step as something another person could follow.
+Check items off as you go. Each done step — with notes, wiring, and photos — is raw material for a future build tutorial (see [Toward a tutorial](#toward-a-tutorial)), so write each step as something another person could follow.
 
 > Built on the **ESP32-S3** for both prototyping and V1 (no separate prototype board).
 
@@ -15,14 +12,13 @@ Nail the scope before building anything.
 
 - [ ] Confirm the V1 feature set (synth, loop station, step sequencer)
 - [ ] Confirm what's out of scope (advanced effects, massive sampling, DAW features)
-- [ ] Finalize the component list (see [hardware.md](hardware.md))
+- [ ] Finalize the component list (see [hardware.md](hardware.md#component-selection))
 - [ ] Confirm the control-layout direction (handheld, Steam Deck–style)
 - [ ] Restate the brief's success signals as the bar for "done"
 
 ## Phase 1 — Hardware 🚧 (paused — incomplete, needs work)
 
-Gather, identify, and document every module; plan the wiring. **Provisional** — hardware
-selection isn't final; revisit after the board tests in Phase 2.
+Gather, identify, and document every module; plan the wiring. **Provisional** — hardware selection isn't final; revisit after the board tests in Phase 2.
 
 - [ ] Inventory all parts on hand against hardware.md
 - [ ] Toolbox ready (iron, solder, multimeter — see hardware.md Tools)
@@ -35,24 +31,38 @@ selection isn't final; revisit after the board tests in Phase 2.
 
 Get the dev environment running and verify each peripheral on its own.
 
-- [ ] Install the toolchain (Arduino IDE / PlatformIO / ESP-IDF — pick one)
-- [ ] Flash a blink/serial sketch to the ESP32-S3; confirm upload works
-- [ ] OLED (SSD1306): show text over I2C
+- [x] Install the toolchain — see [development.md](development.md) (Arduino IDE now; PlatformIO later)
+- [x] Flash a blink/serial sketch to the ESP32-S3; confirm upload works
+
+**Next — three quick tests to get comfortable with the hardware:**
+
+- [ ] **Audio · sound** — play a test tone over I2S (PCM5102) — [`src/03-PCM5102A-test`](../src/03-PCM5102A-test/03-PCM5102A-test.ino)
+- [ ] **Audio · notes** — send a letter over the Serial Monitor / Plotter and play the matching note (build on the serial-input pattern from `src/02-led-serial`)
+- [ ] **Display · play** — drive the ST7789 over SPI; draw text, shapes, and live values to get a feel for it
+
+**Remaining peripheral checks:**
+
 - [ ] Rotary encoder (EC11): read rotation + button
-- [ ] Audio amp (MAX98357A): play a test tone over I2S
 - [ ] Keyboard: read all 13 keys
 - [ ] Power: run from the 18650 cell through the regulator
 - [ ] Update each module doc with wiring + gotchas as it passes
 
+## Checkpoint — Re-evaluate before serious development
+
+After the tests above, pause and reassess before committing to deeper work.
+
+- [ ] Re-evaluate the hardware selection against what the tests revealed — confirm or swap modules (see [hardware.md](hardware.md#component-selection))
+- [ ] Revisit this plan and the scope; reshape the phases for "serious" development
+- [ ] Decide the toolchain move (Arduino IDE → PlatformIO) now that firmware is growing — see [development.md](development.md#future-platformio)
+
 ## Phase 3 — Core prototype (breadboard / protoboard)
 
-Combine modules into a playable instrument on breadboard, then perfboard/protoboard;
-validate interaction and workflow before committing to an enclosure or PCB.
+Combine modules into a playable instrument on breadboard, then perfboard/protoboard; validate interaction and workflow before committing to an enclosure or PCB.
 
 - [ ] Keyboard → audible synth note (key press makes sound)
 - [ ] Basic synth voice (waveform + envelope)
 - [ ] Encoders control volume and one parameter
-- [ ] OLED shows live state (note, BPM, preset)
+- [ ] Display (ST7789) shows live state (note, BPM, preset)
 - [ ] Step sequencer: program and play back a pattern
 - [ ] Simple loop station: record and replay a phrase
 - [ ] Play through the speaker and the headphone output
@@ -60,10 +70,9 @@ validate interaction and workflow before committing to an enclosure or PCB.
 
 ## Phase 4 — Standalone V1
 
-Turn the breadboard into a self-contained, battery-powered device that runs without a
-computer.
+Turn the breadboard into a self-contained, battery-powered device that runs without a computer.
 
-- [ ] Design the PCB in KiCad (MCU + charger + amp + OLED + encoders + key matrix)
+- [ ] Design the PCB in KiCad (MCU + charger + amp + display + encoders + key matrix)
 - [ ] Order the PCB from a fab service (e.g. PCBway or a local provider)
 - [ ] Assemble and test the populated board
 - [ ] Design the enclosure (3D-printed / laser-cut or CNC acrylic)
@@ -76,7 +85,4 @@ Out of scope for V1: advanced effects, massive sampling, complex DAW features.
 
 ## Toward a tutorial
 
-A "build your own" guide is a later goal, not a current task. The plan is structured to
-feed it: keep notes, wiring tables, and front/back + pinout photos in each module doc as
-you work through Phases 1–3. When V1 works, those docs assemble into a step-by-step build
-guide — bill of materials, tools, wiring, firmware flashing, assembly.
+A "build your own" guide is a later goal, not a current task. The plan is structured to feed it: keep notes, wiring tables, and front/back + pinout photos in each module doc as you work through Phases 1–3. When V1 works, those docs assemble into a step-by-step build guide — bill of materials, tools, wiring, firmware flashing, assembly.
