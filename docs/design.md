@@ -96,4 +96,4 @@ component. White or very light gray background.
 
 | nano banana (Gemini) | ChatGPT |
 | --- | --- |
-| <!-- paste image here on GitHub --> | <!-- paste image here on GitHub --> |
+| <img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/c3f02101-935d-4de7-9e7c-ab20ab969679" /> | <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/6607f9b0-c007-4474-970a-abf185e8feaf" /> |
