@@ -1,29 +1,35 @@
 # Pocket Groovebox
 
-🎹 An open source Pocket Groovebox, just for fun.
+🎹 A modern DIY pocket groovebox. Just for fun.
 
 ## Status
 
-Early planning. NodeMCU ESP8266 on hand for browser-based prototyping. Target for v1: ESP32-S3 standalone with I2S audio, OLED, one-octave mini keyboard, speaker and battery.
+Early prototyping. Most hardware is on hand; currently testing individual modules on the ESP32-S3.
 
-## Inspiration
+## Docs
 
-### Products
-- OP-1
-- PO-33
-- Stylophone Beat
-- nanoKEY2
+- [docs/brief.md](docs/brief.md) — project brief (the why and what: vision, inspirations, principles)
+- [docs/hardware.md](docs/hardware.md) — hardware decisions (platform, components, power)
+- [docs/plan.md](docs/plan.md) — build plan (checklist of steps by phase)
+- [docs/glossary.md](docs/glossary.md) — definitions of acronyms and terms (MIDI, DAW, I2S, …)
 
-### Projects
+## References
+
+Inspirations behind the design are in the [brief](docs/brief.md). Prior-art projects
+worth learning from:
+
 - Oskitone
   - https://github.com/oskitone/scout
   - https://youtu.be/TJ4WLL2fQbY
 - https://github.com/wprudencio/esp32-synth
 
-## Docs
+## Tools
 
-- [docs/chatgpt.md](docs/chatgpt.md) — full project summary (ChatGPT input)
-- [docs/claude.md](docs/claude.md) — full project summary (Claude input)
-
-### Tools
+- https://fritzing.org/
 - https://wokwi.com/
+- https://github.com/ezrover/ESP32-AI-Agent-Skill
+- https://github.com/adamlipecz/esp32-firmware-engineer-skill
+
+## License
+
+MIT — see [LICENSE](LICENSE).
