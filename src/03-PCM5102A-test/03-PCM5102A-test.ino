@@ -5,15 +5,16 @@
 // Arduino "I2S.h". The generic library doesn't target the ESP32-S3; ESP_I2S is the
 // core's own driver and lets us pick the pins. See docs/modules/pcm5102.md.
 //
-// Pins (see docs/wiring.md): BCK=5, LRCK/WS=6, DIN=7. PCM5102 needs no MCLK — its SCK
-// pad is tied to GND so the chip uses its internal PLL.
+// Pins (see docs/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
+// (BCK·DIN·LCK), so the wires run straight across. PCM5102 needs no MCLK — its SCK pad is
+// tied to GND so the chip uses its internal PLL.
 
 #include <ESP_I2S.h>
 #include <math.h>
 
 constexpr int PIN_BCLK = 5;   // BCK  — bit clock
-constexpr int PIN_LRCK = 6;   // LRCK / WS — word select
-constexpr int PIN_DOUT = 7;   // DIN  — serial data to the DAC
+constexpr int PIN_DOUT = 6;   // DIN  — serial data to the DAC
+constexpr int PIN_LRCK = 7;   // LRCK / WS — word select
 
 constexpr uint32_t SAMPLE_RATE = 44100;
 constexpr float    TONE_HZ     = 440.0f;  // A4

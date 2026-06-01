@@ -36,9 +36,11 @@ Get the dev environment running and verify each peripheral on its own.
 
 **Next — three quick tests to get comfortable with the hardware:**
 
-- [ ] **Audio · sound** — play a test tone over I2S (PCM5102) — [`src/03-PCM5102A-test`](../src/03-PCM5102A-test/03-PCM5102A-test.ino)
-- [ ] **Audio · notes** — send a letter over the Serial Monitor / Plotter and play the matching note (build on the serial-input pattern from `src/02-led-serial`)
-- [ ] **Display · play** — drive the ST7789 over SPI; draw text, shapes, and live values to get a feel for it
+- [x] **Audio · sound** — play a test tone over I2S (PCM5102) — [`src/03-PCM5102A-test`](../src/03-PCM5102A-test/03-PCM5102A-test.ino) ✅ verified: 440 Hz tone on headphones
+- [ ] **Audio · notes** — send a letter over the Serial Monitor / Plotter and play the matching note — [`src/04-audio-notes`](../src/04-audio-notes/04-audio-notes.ino) (one octave mapped to `a w s e d f t g y h u j k`)
+  - [ ] _Experiment:_ BLE UART variation — same notes, but the letter arrives from a phone over Bluetooth LE — [`src/04-audio-notes-ble`](../src/04-audio-notes-ble/04-audio-notes-ble.ino) (S3 is BLE-only; iOS has no USB serial — see [development.md](development.md#input-desktop-serial-or-ble-uart))
+- [x] **Display · play** — drive the ST7789 over SPI; draw text, shapes, and live values to get a feel for it — [`src/06-display-hello`](../src/06-display-hello/06-display-hello.ino) (Arduino_GFX) ✅ verified
+  - [x] _Experiment:_ chord player — serial keys play single/maj/min on the DAC + show the chord on the ST7789 (landscape) — [`src/07-chord-player`](../src/07-chord-player/07-chord-player.ino) ✅ verified (with the serial hold/release limitation)
 
 **Remaining peripheral checks:**
 

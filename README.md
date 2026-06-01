@@ -34,6 +34,16 @@ Inspirations behind the design are in the [brief](docs/brief.md#inspirations).
 - https://fritzing.org/
 - https://wokwi.com/
 
+**Live serial input (char-by-char, no Enter).** The Arduino Serial Monitor is line-buffered
+and can't send arrow keys. To send each keystroke instantly (e.g. to play notes), use a raw
+terminal — find the port with `ls /dev/cu.*`, then:
+
+```
+screen /dev/cu.usbmodemXXXX 115200      # quit: Ctrl-A then K
+```
+
+Arrow keys work here too. Close it before flashing — only one program can hold the port.
+
 ### Skills
 - https://github.com/ezrover/ESP32-AI-Agent-Skill
 - https://github.com/adamlipecz/esp32-firmware-engineer-skill
