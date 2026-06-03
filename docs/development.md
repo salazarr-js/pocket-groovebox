@@ -35,7 +35,7 @@ are in [modules/esp32-s3-devkit.md → Flashing this board](hardware/modules/esp
 
 ## Sketches
 
-Test sketches live under [`../src/`](../src/):
+Test sketches live under [`../firmware/`](../firmware/):
 
 - `01-hello-esp` — board bring-up: serial chip info + RGB LED cycle
 - `02-led-serial` — set the RGB LED color from the Serial Monitor (send `r`/`g`/`b`/`y`/`c`/`m`/`w`/`o`)
@@ -45,6 +45,9 @@ Test sketches live under [`../src/`](../src/):
 - `05-audio-pitch-wave` — pitch glides up and down continuously (sine LFO → siren/glissando); plays on its own
 - `06-display-hello` — first light for the ST7789: color test + a little UI (title, divider, live counter)
 - `07-chord-player` — hold a serial key to sound a note (continuous, non-blocking); arrows pick a single/major/minor layer; ST7789 shows the chord (landscape UI). Display is always landscape from here on. Needs a raw terminal for live keys (see README → Tools).
+- `08-amp-speaker-test` — sweep amplitude through the PAM8403 → small speaker to find a clean (non-distorting) level
+- `09-audio-notes-gate` — polyphonic note-on/off with real key-down/up gate (+a/-a protocol); momentary maj/min chord layers; Web Serial keyboard bridge
+- `10-audio-looper` — ⬅ next test: step sequencer / phrase looper: 4 layers × 16 steps, record notes per step, layers stack and loop. Controls: `\` play/stop, `[`/`]` layer nav, `Enter` record toggle. Use [`looper-bridge.html`](../app/looper-bridge.html) for full transport control.
 
 ## Input: desktop serial or BLE UART
 

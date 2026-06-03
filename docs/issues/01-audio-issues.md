@@ -1,6 +1,6 @@
 # 01 — Audio output issues & backlog
 
-Captured while bringing up the playable keyboard sketch ([`src/09-audio-notes-gate`](../../src/09-audio-notes-gate/09-audio-notes-gate.ino)). The sketch is kept **simple on purpose** — note on/off, polyphony, momentary maj/min chords, volume. No tone-shaping (filters/limiter) lives in it. The items below are real but each belongs to a *separate* fix (a future DSP sketch, or hardware), not this one.
+Captured while bringing up the playable keyboard sketch ([`firmware/09-audio-notes-gate`](../../firmware/09-audio-notes-gate/09-audio-notes-gate.ino)). The sketch is kept **simple on purpose** — note on/off, polyphony, momentary maj/min chords, volume. No tone-shaping (filters/limiter) lives in it. The items below are real but each belongs to a *separate* fix (a future DSP sketch, or hardware), not this one.
 
 ## Known issues
 
@@ -35,7 +35,7 @@ Captured while bringing up the playable keyboard sketch ([`src/09-audio-notes-ga
 
 ## Feature-split proposal (keep sketches focused)
 
-`src/09-audio-notes-gate` is getting broad. Candidate split so each concern is solved in isolation:
+`firmware/09-audio-notes-gate` is getting broad. Candidate split so each concern is solved in isolation:
 
 | Feature | Keep in 09? | Or move to… |
 | --- | --- | --- |

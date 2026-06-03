@@ -95,7 +95,7 @@ It adds two new concerns:
 - **Voice allocation** — map each key-press to a free voice; when all are busy, **steal** one
   (usually the oldest or quietest). Decide the max voice count up front.
 
-> Today `src/09-audio-notes-gate` is a simple form of this: one "voice" slot per key, summed,
+> Today `firmware/09-audio-notes-gate` is a simple form of this: one "voice" slot per key, summed,
 > with a hard clamp instead of a real mixer/limiter.
 
 ## 6. Cost on the ESP32-S3
@@ -111,7 +111,7 @@ is worth it once there are several voices.
 
 Monophonic first (hear each change in isolation), then go polyphonic:
 
-1. **Oscillator** — add square/triangle/saw next to sine; switch by serial. → `src/10-synth-voice`
+1. **Oscillator** — add square/triangle/saw next to sine; switch by serial. → `firmware/10-synth-voice`
 2. **ADSR** — replace the A/R gate with full ADSR (4 params, tweakable by serial).
 3. **Filter** — resonant low-pass + (optional) its own envelope to the cutoff.
 4. **Polyphony** — replicate the voice, add a mixer + voice allocation; measure voice count.

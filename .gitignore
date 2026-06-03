@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Arduino build cache
+firmware/**/build/
+firmware/**/.arduino15/
+
+# Node / Vite (app/)
+node_modules/
+dist/
+.env
+.env.local
+
+# Editors
+.idea/
+*.suo
+*.user
+
+# Claude
+settings.local.json

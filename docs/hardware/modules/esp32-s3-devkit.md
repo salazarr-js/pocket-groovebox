@@ -64,7 +64,7 @@ libraries are in [../development.md](../../development.md).
 
 ## Onboard RGB LED
 
-- **WS2812**-type addressable LED on **GPIO38**. Used only for board bring-up testing (`src/01-hello-esp`, `src/02-led-serial`) — the instrument itself has no LED feature.
+- **WS2812**-type addressable LED on **GPIO38**. Used only for board bring-up testing (`firmware/01-hello-esp`, `firmware/02-led-serial`) — the instrument itself has no LED feature.
 - **Color order is RGB on this board.** The built-in `rgbLedWrite()` (no library) transmits GRB, so red/green come out swapped — pass them swapped to compensate. (WS2812B is normally GRB; this unit's swap confirms it's RGB.)
 
 ## Notes & gotchas

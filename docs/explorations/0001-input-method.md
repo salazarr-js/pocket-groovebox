@@ -5,8 +5,8 @@
 ## Context
 We don't have physical input wired yet. The plan ([hardware.md](../hardware/README.md)) calls for a
 **13-key mechanical keyboard + 2× EC11 encoders**, but nothing is built — notes are currently
-played from the laptop keyboard over the Web Serial bridge ([tools/keyboard-bridge.html](../../tools/keyboard-bridge.html)
-→ [src/09-audio-notes-gate](../../src/09-audio-notes-gate/09-audio-notes-gate.ino)). Before
+played from the laptop keyboard over the Web Serial bridge ([app/keyboard-bridge.html](../../app/keyboard-bridge.html)
+→ [firmware/09-audio-notes-gate](../../firmware/09-audio-notes-gate/09-audio-notes-gate.ino)). Before
 committing to hardware, weigh the input options. Trigger for this: saw the **Elta Music Solar 42**,
 a touch-sensitive instrument.
 
