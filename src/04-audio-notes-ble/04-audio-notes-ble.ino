@@ -14,7 +14,7 @@
 // To play: open a BLE terminal app, connect to "Groovebox Notes", and write a
 // letter to the RX characteristic. Keys: a w s e d f t g y h u j k
 //
-// Pins (docs/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
+// Pins (docs/hardware/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
 // (BCK·DIN·LCK), so the wires run straight across. SCK tied to GND (internal PLL).
 
 #include <ESP_I2S.h>

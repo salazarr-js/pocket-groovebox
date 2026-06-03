@@ -7,9 +7,9 @@
 //   white:  a s d f g h j k   ->  C  D  E  F  G  A  B  C
 //   black:  w e   t y u       ->  C# D#   F# G# A#
 //
-// Pins (docs/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
+// Pins (docs/hardware/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
 // (BCK·DIN·LCK), so the wires run straight across. PCM5102 needs no MCLK — its SCK pad is
-// tied to GND so the chip uses its internal PLL. See docs/modules/pcm5102.md.
+// tied to GND so the chip uses its internal PLL. See docs/hardware/modules/pcm5102.md.
 
 #include <ESP_I2S.h>
 #include <math.h>

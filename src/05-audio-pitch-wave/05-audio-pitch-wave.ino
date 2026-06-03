@@ -8,8 +8,8 @@
 //
 // Builds on 03-PCM5102A-test: same I2S sine, but the frequency now changes every sample.
 //
-// Pins (docs/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header.
-// SCK tied to GND (internal PLL). See docs/modules/pcm5102.md.
+// Pins (docs/hardware/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header.
+// SCK tied to GND (internal PLL). See docs/hardware/modules/pcm5102.md.
 
 #include <ESP_I2S.h>
 #include <math.h>

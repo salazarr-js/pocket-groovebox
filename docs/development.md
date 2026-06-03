@@ -1,7 +1,7 @@
 # Pocket Groovebox — Development Setup
 
 How to set up the toolchain and build/flash firmware. Board-specific flash settings live
-in the board's module doc ([modules/esp32-s3-devkit.md](modules/esp32-s3-devkit.md#flashing-this-board)).
+in the board's module doc ([modules/esp32-s3-devkit.md](hardware/modules/esp32-s3-devkit.md#flashing-this-board)).
 
 > Currently using the **Arduino IDE** for quick module tests. When the firmware grows
 > (synth engine, sequencer), the plan is to move to **PlatformIO** for proper project
@@ -25,13 +25,13 @@ Then Tools → Board → Boards Manager → install **"esp32 by Espressif System
 - **ESP_I2S** — for PCM5102 audio. No install needed: it ships with the esp32 core. Use
   it (`#include <ESP_I2S.h>`) instead of the generic Arduino `I2S.h` that most PCM5102
   examples show — that one doesn't target the ESP32-S3. It lets us assign the I2S pins.
-  See [modules/pcm5102.md](modules/pcm5102.md).
+  See [modules/pcm5102.md](hardware/modules/pcm5102.md).
 - **GFX Library for Arduino** (`Arduino_GFX`, by moononournation) — for the ST7789 display.
   Install via Library Manager. Chosen over TFT_eSPI because pins are set in code (no
-  `User_Setup.h` to edit) and it handles the 170×320 offset. See [modules/st7789.md](modules/st7789.md).
+  `User_Setup.h` to edit) and it handles the 170×320 offset. See [modules/st7789.md](hardware/modules/st7789.md).
 
 **3. Board settings.** Board-specific Tools-menu values and the upload/download-mode trick
-are in [modules/esp32-s3-devkit.md → Flashing this board](modules/esp32-s3-devkit.md#flashing-this-board).
+are in [modules/esp32-s3-devkit.md → Flashing this board](hardware/modules/esp32-s3-devkit.md#flashing-this-board).
 
 ## Sketches
 

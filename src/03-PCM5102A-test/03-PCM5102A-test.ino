@@ -3,9 +3,9 @@
 //
 // Library: ESP_I2S — bundled with the Arduino-ESP32 core (3.x), NOT the generic
 // Arduino "I2S.h". The generic library doesn't target the ESP32-S3; ESP_I2S is the
-// core's own driver and lets us pick the pins. See docs/modules/pcm5102.md.
+// core's own driver and lets us pick the pins. See docs/hardware/modules/pcm5102.md.
 //
-// Pins (see docs/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
+// Pins (see docs/hardware/wiring.md): BCK=5, DIN=6, LRCK/WS=7 — same order as the PCM5102 header
 // (BCK·DIN·LCK), so the wires run straight across. PCM5102 needs no MCLK — its SCK pad is
 // tied to GND so the chip uses its internal PLL.
 

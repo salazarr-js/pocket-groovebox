@@ -5,9 +5,9 @@
 //
 // Library: "GFX Library for Arduino" (Arduino_GFX, by moononournation) — install via
 // Library Manager. Chosen over TFT_eSPI because pins are set here in code, no config
-// file to edit. Handles the 170x320 column offset for the ST7789. See docs/modules/st7789.md.
+// file to edit. Handles the 170x320 column offset for the ST7789. See docs/hardware/modules/st7789.md.
 //
-// Pins (docs/wiring.md), GPIO 9-14 assigned in the screen's own header order
+// Pins (docs/hardware/wiring.md), GPIO 9-14 assigned in the screen's own header order
 // (SCL·SDA·RES·DC·CS·BLK) so the wires run straight across:
 //   SCL=9, SDA=10, RES=11, DC=12, CS=13, BLK=14.  VCC=3V3, GND=GND. Write-only SPI (no MISO).
 

@@ -3,7 +3,7 @@
 Visual exploration of what the device could look and feel like. These are **concept
 renders, not specs** — they explore form factor, layout, and personality. The product
 direction lives in [brief.md](brief.md#product-concept); component reality lives in
-[hardware.md](hardware.md).
+[hardware.md](hardware/README.md).
 
 ## Concepts
 

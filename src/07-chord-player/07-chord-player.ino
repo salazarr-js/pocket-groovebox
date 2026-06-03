@@ -17,7 +17,7 @@
 // approximated here — true behavior comes later from the physical GPIO keyboard. Tune
 // RELEASE_MS and your OS key-repeat speed for the best feel.
 //
-// Pins (docs/wiring.md): DAC I2S BCK=5 DIN=6 LCK=7 (SCK->GND). Display SPI SCL=9 SDA=10
+// Pins (docs/hardware/wiring.md): DAC I2S BCK=5 DIN=6 LCK=7 (SCK->GND). Display SPI SCL=9 SDA=10
 // RES=11 DC=12 CS=13 BLK=14. VCC/VIN=3V3, GND=GND.
 
 #include <ESP_I2S.h>

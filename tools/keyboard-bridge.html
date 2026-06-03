@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<!--
+  Pocket Groovebox — keyboard bridge (Web Serial)
+
+  Turns the laptop keyboard's real keydown/keyup into the protocol src/09-audio-notes-gate wants:
+      keydown 'a' → "+a"   keyup 'a' → "-a"
+      ArrowUp hold → ">" (major)   ArrowDown hold → "<" (minor)   release → "="
+      "-" key → volume down, "=" key → volume up  (sends "V0".."V9")
+
+  Layers are momentary + monophonic: hold ↑/↓ to morph the held note into a clean major/minor
+  triad (chord tones light teal); releasing collapses back to the base note. ~2.5 octaves over
+  two QWERTY rows (tracker layout). Chrome/Edge only. Flash the sketch and CLOSE any serial
+  monitor first (one port owner), then Connect.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pocket Groovebox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { font-family:'Space Grotesk', system-ui, sans-serif; background:#1b1d26; color:#e6e6ea;
+         margin:0; padding:18px 22px; -webkit-user-select:none; user-select:none;
+         display:flex; flex-direction:column; min-height:100vh; }
+  button, input, select { font-family:inherit; }   /* controls don't inherit font by default */
+  header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  h1 { font-family:'Jersey 15', monospace; font-weight:400; font-size:52px; margin:0;
+       line-height:1.1; color:#ffce5f; text-shadow:2px 4px 0 #b3520f; text-transform:uppercase; }
+  h1 small { display:block; font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:16px;
+             letter-spacing:4px; text-transform:uppercase; color:#8b90a4; margin-top:8px; text-shadow:none; }
+  .right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+
+  button { font-size:14px; padding:9px 18px; border:0; border-radius:9px; cursor:pointer;
+           font-weight:600; transition:background .15s; }
+  #connect.idle { background:#ff8c42; color:#1b1d26; }
+  #connect.ok   { background:#214a36; color:#5fd07a; cursor:default; }
+  #connect.err  { background:#4a2222; color:#ff6b6b; }
+
+  .vol { display:flex; align-items:center; gap:8px; color:#9aa0b4; font-size:13px; }
+  .vol input { width:120px; accent-color:#ff8c42; }
+  .vol button { padding:2px 11px; font-size:17px; background:#2a2d3a; color:#e6e6ea; }
+
+  /* current sounding note, big and centered above the piano */
+  #note { text-align:center; font-family:'Jersey 15', monospace; font-weight:400; font-size:96px;
+          color:#3ec9b0; margin:6px 0 2px; line-height:1; transition:color .12s;
+          text-shadow:3px 3px 0 rgba(0,0,0,.3); }
+  #note.single { color:#ff8c42; }
+  #note.off { color:#3a3d4d; }
+  #note.anim { animation:notePop .2s cubic-bezier(.2,.9,.3,1.3); }
+  @keyframes notePop { 0% { transform:scale(1.35); opacity:.35; } 60% { transform:scale(.97); } 100% { transform:scale(1); opacity:1; } }
+
+  /* piano — scaled to fill width, aspect ratio preserved */
+  #boardWrap { flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  #board { transform-origin:center center; }
+  .strip { position:relative; height:128px; margin:7px 0; }
+  .key { position:absolute; top:0; border-radius:0 0 7px 7px; display:flex; flex-direction:column;
+         align-items:center; justify-content:space-between; padding:8px 0 7px; font-weight:700;
+         transition:background .04s, box-shadow .04s; overflow:hidden; }
+  .white { width:46px; height:122px; background:#f4f4f6; color:#41434f;
+           border:1px solid #c9cad2; box-shadow:0 2px 0 #c9cad2; }
+  .black { width:30px; height:80px; background:#23252f; color:#cfd2e0; z-index:2;
+           border:1px solid #0c0d12; box-shadow:0 3px 0 #0c0d12; }
+  .key .k    { font-size:15px; opacity:.85; }
+  .key .n    { font-size:11px; font-weight:600; opacity:.6; }
+  .black .k  { font-size:13px; } .black .n { font-size:10px; }
+  .chord { background:#3ec9b0 !important; border-color:#2ba88f !important;
+           box-shadow:0 1px 0 #2ba88f !important; color:#0c1f1b !important; }
+  .down  { background:#ff8c42 !important; border-color:#e07a30 !important;
+           box-shadow:0 1px 0 #e07a30 !important; color:#1b1d26 !important; }
+
+  /* footer: log left, arrow legend bottom-right */
+  footer { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; }
+  #log { flex:1; font-family:ui-monospace, monospace; font-size:11px; color:#6f7488; height:64px;
+         overflow:auto; background:#15161d; border-radius:8px; padding:8px 10px; white-space:pre-wrap; }
+  .pad { display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px);
+         gap:6px; flex:none; }
+  .pad .cap { display:flex; align-items:center; justify-content:center; border-radius:9px;
+              background:#23252f; color:#aeb3c6; font-size:26px; }
+  .pad .cap.lbl { background:transparent; font-size:15px; color:#9aa0b4; font-weight:700; }
+  .pad .cap.active { background:#ff8c42; color:#1b1d26; box-shadow:0 0 0 2px #ff8c4255; }
+  #arrUp   { grid-column:2; grid-row:1; } #arrDown { grid-column:2; grid-row:3; }
+  #arrL    { grid-column:1; grid-row:2; opacity:.3; } #arrR { grid-column:3; grid-row:2; opacity:.3; }
+  #lblMaj  { grid-column:3; grid-row:1; } #lblMin { grid-column:3; grid-row:3; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Pocket Groovebox<small>keyboard bridge</small></h1>
+    <div class="right">
+      <button id="connect" class="idle">Connect</button>
+      <span class="vol"><button id="volDown">−</button><input id="vol" type="range" min="0" max="9" value="7"><button id="volUp">+</button></span>
+    </div>
+  </header>
+
+  <div id="note" class="off">—</div>
+
+  <div id="boardWrap">
+    <div id="board">
+      <div class="strip" id="stripUpper"></div>
+      <div class="strip" id="stripLower"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div id="log"></div>
+    <div class="pad">
+      <div class="cap" id="arrUp">↑</div>
+      <div class="cap lbl" id="lblMaj">maj</div>
+      <div class="cap" id="arrL">←</div>
+      <div class="cap" id="arrR">→</div>
+      <div class="cap" id="arrDown">↓</div>
+      <div class="cap lbl" id="lblMin">min</div>
+    </div>
+  </footer>
+
+<script>
+// Each key → semitone offset from C3. ⚠ MIRRORS the firmware KEYMAP in
+// src/09-audio-notes-gate/09-audio-notes-gate.ino — change both together. Upper row is one octave up.
+const LOWER = [
+  ['z',0],['s',1],['x',2],['d',3],['c',4],['v',5],['g',6],['b',7],['h',8],['n',9],['j',10],['m',11],
+  [',',12],['l',13],['.',14],[';',15],['/',16],
+];
+const UPPER = [
+  ['q',12],['2',13],['w',14],['3',15],['e',16],['r',17],['5',18],['t',19],['6',20],['y',21],['7',22],['u',23],
+  ['i',24],['9',25],['o',26],['0',27],['p',28],
+];
+const KEYSET = new Set([...LOWER, ...UPPER].map(m => m[0]));
+const NOTE = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+const W = 46, GAP = 4, UNIT = W + GAP, BW = 30;
+const WHITE_MAP   = {0:0, 2:1, 4:2, 5:3, 7:4, 9:5, 11:6};
+const BLACK_AFTER = {1:0, 3:1, 6:3, 8:4, 10:5};
+const isWhite = s => (s % 12) in WHITE_MAP;
+function noteName(s) { return NOTE[s % 12]; }
+function noteLabel(s) { return noteName(s) + (3 + Math.floor(s / 12)); }
+function xFor(s) {
+  const oct = Math.floor(s / 12), deg = s % 12;
+  if (deg in WHITE_MAP) return (oct * 7 + WHITE_MAP[deg]) * UNIT;
+  return (oct * 7 + BLACK_AFTER[deg]) * UNIT + W + GAP / 2 - BW / 2;
+}
+
+const keyEls = {}, keySemi = {};
+function renderStrip(list, el) {
+  for (const [k, s] of list) {
+    const d = document.createElement('div');
+    d.className = 'key ' + (isWhite(s) ? 'white' : 'black');
+    d.style.left = xFor(s) + 'px';
+    d.innerHTML = `<span class="k">${k}</span><span class="n">${noteLabel(s)}</span>`;
+    el.appendChild(d);
+    keyEls[k] = d; keySemi[k] = s;
+  }
+}
+renderStrip(UPPER, document.getElementById('stripUpper'));
+renderStrip(LOWER, document.getElementById('stripLower'));
+const board = document.getElementById('board'), boardWrap = document.getElementById('boardWrap');
+const maxX = Math.max(...[...LOWER, ...UPPER].map(([, s]) => xFor(s) + W));
+board.style.width = maxX + 'px';
+
+// scale the piano to fill the available width, keeping aspect ratio
+const designW = maxX, designH = board.offsetHeight;
+function fitBoard() {
+  const s = Math.min(2.6, (boardWrap.clientWidth - 8) / designW, (boardWrap.clientHeight - 8) / designH);
+  board.style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', fitBoard); fitBoard();
+
+const $log = document.getElementById('log'), $connect = document.getElementById('connect');
+const $note = document.getElementById('note');
+function log(m) { $log.textContent += m + '\n'; $log.scrollTop = $log.scrollHeight; }
+function setConn(txt, cls) { $connect.textContent = txt; $connect.className = cls; }
+
+let port = null, writer = null;
+const down = new Set(), sounding = new Set();
+let chordOwner = null, layer = 'single';
+
+async function connect() {
+  if (!('serial' in navigator)) { setConn('use Chrome/Edge', 'err'); return; }
+  setConn('connecting…', 'idle');
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 115200 });
+    writer = port.writable.getWriter();
+    setConn('● connected', 'ok'); $connect.disabled = true; $connect.blur();
+    send('V' + $vol.value);
+    log('connected at 115200');
+  } catch (e) { setConn('failed — retry', 'err'); }
+}
+async function send(str) {
+  if (!writer) return;
+  try { await writer.write(new TextEncoder().encode(str)); }
+  catch (e) { setConn('write failed', 'err'); }
+}
+
+// highlight the pressed key (orange) + the other triad tones that sound (teal)
+function highlightChord(owner) {
+  const root = keySemi[owner], third = layer === 'major' ? 4 : 3;
+  const tones = new Set([root, root + third, root + 7]);
+  for (const key in keyEls)
+    keyEls[key].classList.toggle('chord', key !== owner && tones.has(keySemi[key]));
+  keyEls[owner].classList.add('down');
+}
+function clearChord() { for (const key in keyEls) keyEls[key].classList.remove('chord'); }
+
+function updateNote() {
+  const prev = $note.textContent;
+  if (chordOwner && sounding.has(chordOwner)) {
+    const txt = noteName(keySemi[chordOwner]) + (layer === 'major' ? 'maj' : layer === 'minor' ? 'min' : '');
+    $note.textContent = txt;
+    $note.classList.toggle('single', layer === 'single');
+    $note.classList.remove('off');
+    if (txt !== prev) { $note.classList.remove('anim'); void $note.offsetWidth; $note.classList.add('anim'); }
+  } else {
+    $note.textContent = '—';
+    $note.classList.add('off'); $note.classList.remove('single');
+  }
+}
+function updateArrows() {
+  document.getElementById('arrUp').classList.toggle('active', layer === 'major');
+  document.getElementById('arrDown').classList.toggle('active', layer === 'minor');
+}
+
+// arrows are momentary; track them in press order so the last held wins (smooth maj↔min)
+const arrowFor = { ArrowUp: 'major', ArrowDown: 'minor' };
+const LAYER_CMD = { major: '>', minor: '<', single: '=' };   // serial char the firmware expects per layer
+let arrowStack = [];
+function applyArrows() {
+  const nl = arrowStack.length ? arrowStack[arrowStack.length - 1] : 'single';
+  if (nl === layer) return;
+  layer = nl;
+  send(LAYER_CMD[layer]);
+  log(LAYER_CMD[layer] + ' ' + layer);
+  clearChord();
+  if (layer !== 'single' && chordOwner && sounding.has(chordOwner)) highlightChord(chordOwner);
+  updateArrows(); updateNote();
+}
+
+function onKeyDown(e) {
+  if (e.key === '-') { e.preventDefault(); if (!e.repeat) setVol(+$vol.value - 1); return; }
+  if (e.key === '=') { e.preventDefault(); if (!e.repeat) setVol(+$vol.value + 1); return; }
+  const la = arrowFor[e.key];
+  if (la) { e.preventDefault(); if (!e.repeat && !arrowStack.includes(la)) { arrowStack.push(la); applyArrows(); } return; }
+
+  const k = e.key.toLowerCase();
+  if (!KEYSET.has(k)) return;
+  e.preventDefault();
+  if (e.repeat || down.has(k)) return;
+  down.add(k);
+  if (layer !== 'single' && chordOwner && sounding.has(chordOwner)) return;  // mono chord: ignore extra
+
+  sounding.add(k); chordOwner = k;
+  send('+' + k); log('+' + k + (layer !== 'single' ? ' (' + layer + ')' : ''));
+  if (layer !== 'single') highlightChord(k); else keyEls[k].classList.add('down');
+  updateNote();
+}
+
+function onKeyUp(e) {
+  const la = arrowFor[e.key];
+  if (la) { e.preventDefault(); arrowStack = arrowStack.filter(a => a !== la); applyArrows(); return; }
+
+  const k = e.key.toLowerCase();
+  if (!KEYSET.has(k)) return;
+  e.preventDefault();
+  if (!down.has(k)) return;
+  down.delete(k);
+  if (!sounding.has(k)) return;
+  sounding.delete(k);
+  send('-' + k); log('-' + k);
+  keyEls[k].classList.remove('down');
+  if (k === chordOwner) { chordOwner = null; clearChord(); }
+  updateNote();
+}
+
+// volume
+const $vol = document.getElementById('vol');
+function setVol(v) { v = Math.max(0, Math.min(9, v)); $vol.value = v; send('V' + v); log('vol ' + v); $vol.blur(); }
+$vol.addEventListener('input', () => setVol(+$vol.value));
+document.getElementById('volDown').addEventListener('click', () => setVol(+$vol.value - 1));
+document.getElementById('volUp').addEventListener('click', () => setVol(+$vol.value + 1));
+
+$connect.addEventListener('click', connect);
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
+window.addEventListener('blur', () => {
+  for (const k of [...down]) onKeyUp({ key: k, preventDefault(){} });
+  arrowStack = []; applyArrows();
+});
+</script>
+</body>
+</html>

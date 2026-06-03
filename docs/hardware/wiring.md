@@ -12,8 +12,8 @@ flowchart LR
     MCU -->|"I2S — BCK 5 / DIN 6 / LRCK 7"| DAC["PCM5102 DAC"]
     MCU -->|"SPI — SCL 9 / SDA 10 / RES 11 / DC 12 / CS 13 / BLK 14"| TFT["ST7789 1.9in 170x320"]
     DAC -->|"line out"| HP["Headphone jack"]
-    DAC -->|"line out"| AMP["PAM8403"]
-    AMP --> SPK["Speaker"]
+    DAC -->|"LROUT/ROUT"| AMP["PAM8403"]
+    AMP -->|"BTL"| SPK["Speaker"]
 ```
 
 ## Connections
@@ -31,6 +31,19 @@ flowchart LR
 DAC and display both live on the **left header** — the only side with enough usable GPIOs (the right header has just 3: 1/2/21). BCK·DIN·LCK = GPIO **5·6·7**, same order as the module's header so the wires run straight across; SCK ties to GND. 3V3 and GND are both on the left header, so no power wire has to cross.
 
 Module config: tie **SCK → GND** (internal PLL); set the FLT / DEMP / FMT / XSMT jumpers per the breakout (⚠️ our board's H/L labels are inverted — see [modules/pcm5102.md](modules/pcm5102.md#config-jumpers-solder-pads-back-of-board)).
+
+### PAM8403 — speaker amp
+
+| From | PAM8403 (QA03) |
+| --- | --- |
+| PCM5102 LROUT | L (audio in) |
+| PCM5102 ROUT | R (audio in) |
+| PCM5102 AGND | GND (audio in) |
+| 5V / VBUS | 5V (+) |
+| GND | GND (−) |
+| Speaker (4 Ω 3 W, [modules/speaker.md](modules/speaker.md)) | across **L+ / L−** (BTL) |
+
+The amp's input is the **analog line out** of the PCM5102 (LROUT/ROUT), not the I2S signal. **Don't skip `AGND → amp GND`** — the signal ground is as important as the supply ground; without it the amp floats and screams noise at full volume regardless of the digital level (see [modules/pam8403.md](modules/pam8403.md#notes--gotchas)). Output is **BTL** — the speaker floats between L+ and L−; **never tie any `OUT` pad to GND** (it shorts the bridge and can kill the chip), and never connect headphones to the amp (those come off the DAC). Powered from the devkit **5 V / VBUS** pin so the amp, DAC AGND, and ESP32 share one ground. Fixed gain (no pot) — set level via the sketch's `AMPLITUDE`. Pinout and gotchas: [modules/pam8403.md](modules/pam8403.md).
 
 ### ST7789 — 1.9" 170×320 SPI display
 

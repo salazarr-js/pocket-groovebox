@@ -54,7 +54,7 @@ The ESP32-S3 chip has 45 GPIOs; ~9 go to the module's embedded flash, so **36 re
 ## Flashing this board
 
 Board-specific Arduino IDE Tools settings (verified working). Toolchain install and
-libraries are in [../development.md](../development.md).
+libraries are in [../development.md](../../development.md).
 
 - Board: **ESP32S3 Dev Module**
 - USB CDC On Boot: **Enabled**

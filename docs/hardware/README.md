@@ -2,7 +2,7 @@
 
 > 🚧 **Draft — not final.** These component and architecture choices are provisional and still need validation through bench tests. Expect changes (especially the audio path). Treat nothing here as locked until verified on the board.
 
-Hardware decisions for the device. For the *why* and *what*, see [brief.md](brief.md); for build steps, see [plan.md](plan.md). Term definitions are in [glossary.md](glossary.md).
+Hardware decisions for the device. For the *why* and *what*, see [brief.md](../brief.md); for build steps, see [plan.md](../plan.md). Term definitions are in [glossary.md](../glossary.md).
 
 > **DIY constraint.** These choices follow the brief's "Open, DIY hardware" principle: every part is an accessible, off-the-shelf maker module (breakout boards, common dev boards, standard cells) that anyone can source and rebuild — no custom silicon, no specialized fabrication. Enclosure and mechanical parts lean on home-friendly techniques (3D printing, laser-cut/CNC acrylic, repurposed toy instruments, robotics kits). When weighing a component, prefer the one that keeps the build reproducible.
 
@@ -54,7 +54,7 @@ Note: both the PAM8403 and the MAX98357A are BTL (bridge-tied) speaker amps and 
 | Storage | Internal flash | Built-in synth/sounds; microSD added later if needed |
 | PCB | KiCad | ESP32-S3 + USB-C + charger + display + amp + encoders + key matrix |
 
-Most of these parts are already on hand. Each module gets its own doc (pinout, photos, wiring, source) under [`modules/`](modules/) — copy [`modules/module-template.md`](modules/module-template.md) per part as you bench-test it.
+Most of these parts are already on hand. Each module gets its own doc (pinout, photos, wiring, source) under [`modules/`](modules/) — copy [`modules/module-template.md`](modules/module-template.md) per part as you bench-test it. Pin-by-pin connections between modules are in [wiring.md](wiring.md).
 
 ## Power architecture
 

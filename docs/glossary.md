@@ -4,8 +4,10 @@ Short definitions for the acronyms and terms used across the project docs.
 
 ## Music & instrument concepts
 
+> Notes, intervals, scales, chords and timing are explained in depth in [music-theory.md](theory/music-theory.md).
+
 - **Groovebox** — a self-contained instrument that combines sound generation, sequencing, and pattern-based performance in one box.
-- **Synth (synthesizer)** — generates sound electronically from waveforms rather than recordings.
+- **Synth (synthesizer)** — generates sound electronically from waveforms rather than recordings. Full model + build path: [synthesis.md](theory/synthesis.md).
 - **Sampler** — plays back and manipulates recorded audio snippets (samples).
 - **Loop station** — records a phrase and repeats it, letting you layer parts live.
 - **Sequencer / step sequencer** — programs notes/drum hits into steps that play back in a loop.
