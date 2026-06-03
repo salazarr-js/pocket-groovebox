@@ -47,7 +47,7 @@ Test sketches live under [`../firmware/`](../firmware/):
 - `07-chord-player` — hold a serial key to sound a note (continuous, non-blocking); arrows pick a single/major/minor layer; ST7789 shows the chord (landscape UI). Display is always landscape from here on. Needs a raw terminal for live keys (see README → Tools).
 - `08-amp-speaker-test` — sweep amplitude through the PAM8403 → small speaker to find a clean (non-distorting) level
 - `09-audio-notes-gate` — polyphonic note-on/off with real key-down/up gate (+a/-a protocol); momentary maj/min chord layers; Web Serial keyboard bridge
-- `10-audio-looper` — ⬅ next test: step sequencer / phrase looper: 4 layers × 16 steps, record notes per step, layers stack and loop. Controls: `\` play/stop, `[`/`]` layer nav, `Enter` record toggle. Use [`looper-bridge.html`](../app/looper-bridge.html) for full transport control.
+- `10-audio-looper` — step sequencer / phrase looper (⬅ next to flash and test): 4 layers × up to 32 steps (4/8/12/16/32 selectable), live recording and step-entry editing, per-layer volume, free improvisation over a running loop. Use [`looper-bridge.html`](../app/looper-bridge.html) for full transport control. Keyboard shortcuts: `Space` play/stop, `Enter` record, `←→` step, `↑↓` layer, `A{l}{0-9}` layer volume.
 
 ## Input: desktop serial or BLE UART
 

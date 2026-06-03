@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<!--
+  Pocket Groovebox — looper bridge (Web Serial)
+
+  Two modes:
+    LIVE  — play + record: notes pressed are captured into the current step in real time.
+    ENTRY — stopped: ←→ move step, ↑↓ move layer, piano keys toggle notes in the selected step.
+
+  Keyboard shortcuts:
+    Space       play / stop
+    Enter       record toggle
+    ← →         prev / next step  (entry mode)
+    ↑ ↓         prev / next layer
+    - / =       master volume down / up
+
+  Protocol matches firmware/10-audio-looper/10-audio-looper.ino.
+  Chrome/Edge only. Close any Serial Monitor before connecting.
+
+  TODO (future): step copy/paste — Ctrl+C on entry step copies the bitmask,
+  Ctrl+V pastes into another step. Needs local clipboard of uint64_t bitmasks.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pocket Groovebox — looper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#1b1d26; --bg2:#23252f; --bg3:#2a2d3a;
+    --text:#e6e6ea; --muted:#8b90a4;
+    --l0:#ff8c42; --l1:#3ec9b0; --l2:#9b7fe8; --l3:#ffce5f;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--text);
+       margin:0;padding:14px 18px;-webkit-user-select:none;user-select:none;
+       display:flex;flex-direction:column;gap:12px;min-height:100vh;}
+  button,input{font-family:inherit;}
+
+  /* header */
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  h1{font-family:'Jersey 15',monospace;font-weight:400;font-size:40px;margin:0;
+     line-height:1.1;color:#ffce5f;text-shadow:2px 3px 0 #b3520f;text-transform:uppercase;}
+  h1 small{display:block;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;
+           letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-top:5px;text-shadow:none;}
+  #connect{font-size:13px;padding:8px 16px;border:0;border-radius:8px;cursor:pointer;font-weight:600;}
+  #connect.idle{background:#ff8c42;color:var(--bg);}
+  #connect.ok{background:#214a36;color:#5fd07a;cursor:default;}
+  #connect.err{background:#4a2222;color:#ff6b6b;}
+
+  /* transport */
+  .transport{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .btn{font-size:13px;padding:7px 14px;border:0;border-radius:8px;cursor:pointer;
+       font-weight:700;background:var(--bg3);color:var(--text);transition:background .1s;}
+  .btn:active{filter:brightness(1.3);}
+  #btnPlay.playing{background:#214a36;color:#5fd07a;}
+  #btnRec.recording{background:#4a2222;color:#ff6b6b;}
+
+  .layer-btns{display:flex;gap:4px;}
+  .layer-btn{width:32px;height:32px;padding:0;border-radius:7px;font-size:12px;font-weight:700;
+             border:2px solid transparent;background:var(--bg3);color:var(--muted);cursor:pointer;}
+  .layer-btn.active{color:var(--bg);}
+  .layer-btn[data-l="0"].active{background:var(--l0);}
+  .layer-btn[data-l="1"].active{background:var(--l1);}
+  .layer-btn[data-l="2"].active{background:var(--l2);}
+  .layer-btn[data-l="3"].active{background:var(--l3);}
+
+  .vdivider{width:1px;height:24px;background:var(--bg3);flex:none;}
+
+  .bpm-wrap{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:12px;}
+  .bpm-wrap input{width:54px;padding:5px 7px;border:0;border-radius:7px;
+                  background:var(--bg3);color:var(--text);font-size:13px;font-weight:700;text-align:center;}
+
+  .steps-wrap{display:flex;align-items:center;gap:4px;color:var(--muted);font-size:12px;}
+  .step-opt{padding:5px 9px;border:0;border-radius:7px;cursor:pointer;font-size:12px;
+            font-weight:700;background:var(--bg3);color:var(--muted);}
+  .step-opt.active{background:#3a3d50;color:var(--text);}
+
+  .vol{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;}
+  .vol input{width:90px;accent-color:#ff8c42;}
+  .vol button{font-size:16px;padding:2px 9px;border:0;border-radius:7px;
+              background:var(--bg3);color:var(--text);cursor:pointer;}
+
+  /* grid */
+  .grid-wrap{overflow-x:auto;}
+  .grid{display:flex;flex-direction:column;gap:4px;min-width:max-content;}
+  .grid-row{display:flex;align-items:center;}
+
+  /* layer label + vol slider column */
+  .row-meta{display:flex;align-items:center;gap:5px;flex:none;padding-right:6px;}
+  .row-label{font-size:11px;font-weight:700;color:var(--muted);width:20px;text-align:right;flex:none;}
+  .row-label.muted{opacity:0.3;}
+  .layer-vol{width:58px;height:4px;cursor:pointer;border-radius:2px;flex:none;}
+
+  /* cells */
+  .cell{width:38px;height:38px;border-radius:6px;cursor:pointer;flex:none;
+        background:var(--bg2);border:2px solid transparent;
+        transition:background .08s,border-color .08s,box-shadow .08s;}
+
+  /* gaps every 4: small=4, medium=8, large=16 */
+  .cell        {margin-right:3px;}
+  .cell.gap-sm {margin-right:9px;}
+  .cell.gap-md {margin-right:16px;}
+  .cell.gap-lg {margin-right:24px;}
+
+  .cell.inactive{opacity:.15;pointer-events:none;}
+
+  .cell.has[data-l="0"]{background:rgba(255,140,66,.32);}
+  .cell.has[data-l="1"]{background:rgba(62,201,176,.32);}
+  .cell.has[data-l="2"]{background:rgba(155,127,232,.32);}
+  .cell.has[data-l="3"]{background:rgba(255,206,95,.32);}
+
+  .cell.cur[data-l="0"]{background:var(--l0);box-shadow:0 0 0 3px rgba(255,140,66,.4);}
+  .cell.cur[data-l="1"]{background:var(--l1);box-shadow:0 0 0 3px rgba(62,201,176,.4);}
+  .cell.cur[data-l="2"]{background:var(--l2);box-shadow:0 0 0 3px rgba(155,127,232,.4);}
+  .cell.cur[data-l="3"]{background:var(--l3);box-shadow:0 0 0 3px rgba(255,206,95,.4);}
+
+  .cell.entry{border-color:rgba(255,255,255,.7);}
+
+  /* tick row */
+  .tick-row{display:flex;align-items:center;}
+  .tick{width:38px;font-size:9px;color:var(--muted);text-align:center;flex:none;margin-right:3px;}
+  .tick.gap-sm{margin-right:9px;} .tick.gap-md{margin-right:16px;} .tick.gap-lg{margin-right:24px;}
+  .tick.beat{color:#6f7488;}
+
+  /* clear-row button */
+  .row-clear{margin-left:8px;width:24px;height:24px;padding:0;border-radius:6px;font-size:13px;
+             font-weight:700;border:0;cursor:pointer;background:var(--bg3);color:var(--muted);flex:none;}
+  .row-clear:hover{background:#3a2020;color:#ff6b6b;}
+
+  /* entry bar */
+  .entry-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .entry-bar .step-info{font-size:12px;color:var(--muted);min-width:64px;text-align:center;}
+  #btnClearStep{color:#ff8c42;} #btnClearAll{color:#ff6b6b;opacity:.6;}
+
+  /* piano */
+  #boardWrap{flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;}
+  #board{transform-origin:center top;}
+  .strip{position:relative;height:110px;margin:5px 0;}
+  .key{position:absolute;top:0;border-radius:0 0 6px 6px;display:flex;flex-direction:column;
+       align-items:center;justify-content:space-between;padding:6px 0 5px;font-weight:700;
+       transition:background .04s,box-shadow .04s;overflow:hidden;}
+  .white{width:40px;height:104px;background:#f4f4f6;color:#41434f;
+         border:1px solid #c9cad2;box-shadow:0 2px 0 #c9cad2;}
+  .black{width:26px;height:66px;background:#23252f;color:#cfd2e0;z-index:2;
+         border:1px solid #0c0d12;box-shadow:0 3px 0 #0c0d12;}
+  .key .k{font-size:12px;opacity:.85;} .key .n{font-size:10px;opacity:.6;}
+  .black .k{font-size:11px;}
+  .seq{background:#3ec9b0 !important;border-color:#2ba88f !important;
+       box-shadow:0 1px 0 #2ba88f !important;color:#0c1f1b !important;}
+  .down{background:#ff8c42 !important;border-color:#e07a30 !important;
+        box-shadow:0 1px 0 #e07a30 !important;color:#1b1d26 !important;}
+
+  footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  #log{flex:1;font-family:ui-monospace,monospace;font-size:11px;color:#6f7488;height:48px;
+       overflow:auto;background:#15161d;border-radius:8px;padding:6px 10px;
+       white-space:pre-wrap;min-width:180px;}
+  .hint{font-size:11px;color:#4f5268;text-align:right;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pocket Groovebox<small>looper bridge</small></h1>
+  <button id="connect" class="idle">Connect</button>
+</header>
+
+<div class="transport">
+  <button class="btn" id="btnPlay">▶ Play</button>
+  <button class="btn" id="btnRec">⏺ Record</button>
+  <div class="vdivider"></div>
+  <div class="layer-btns" id="layerBtns">
+    <button class="btn layer-btn active" data-l="0">L1</button>
+    <button class="btn layer-btn"        data-l="1">L2</button>
+    <button class="btn layer-btn"        data-l="2">L3</button>
+    <button class="btn layer-btn"        data-l="3">L4</button>
+  </div>
+  <div class="vdivider"></div>
+  <div class="bpm-wrap">BPM <input id="bpmInput" type="number" min="20" max="300" value="120"></div>
+  <div class="steps-wrap">
+    Steps
+    <button class="step-opt" data-n="4">4</button>
+    <button class="step-opt" data-n="8">8</button>
+    <button class="step-opt" data-n="12">12</button>
+    <button class="step-opt active" data-n="16">16</button>
+    <button class="step-opt" data-n="32">32</button>
+  </div>
+  <div class="vdivider"></div>
+  <div class="vol">
+    <button id="volDown">−</button>
+    <input id="vol" type="range" min="0" max="9" value="7">
+    <button id="volUp">+</button>
+  </div>
+</div>
+
+<div class="grid-wrap">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="entry-bar" id="entryBar">
+  <button class="btn" id="btnPrevStep">← Step</button>
+  <span class="step-info" id="stepInfo">step 1</span>
+  <button class="btn" id="btnNextStep">Step →</button>
+  <button class="btn" id="btnClearStep">✕ Clear step</button>
+  <button class="btn" id="btnClearAll">✕ Clear all</button>
+</div>
+
+<div id="boardWrap">
+  <div id="board">
+    <div class="strip" id="stripUpper"></div>
+    <div class="strip" id="stripLower"></div>
+  </div>
+</div>
+
+<footer>
+  <div id="log"></div>
+  <div class="hint">
+    Space play/stop &nbsp;·&nbsp; Enter record<br>
+    ← → step &nbsp;·&nbsp; ↑ ↓ layer &nbsp;·&nbsp; piano keys toggle notes
+  </div>
+</footer>
+
+<script>
+// ── key map (mirrors firmware KEYMAP — index = bit position) ─────────────
+const KEYMAP=[
+  ['z',0],['s',1],['x',2],['d',3],['c',4],['v',5],['g',6],['b',7],
+  ['h',8],['n',9],['j',10],['m',11],[',',12],['l',13],['.',14],[';',15],['/',16],
+  ['q',12],['2',13],['w',14],['3',15],['e',16],['r',17],['5',18],['t',19],
+  ['6',20],['y',21],['7',22],['u',23],['i',24],['9',25],['o',26],['0',27],['p',28],
+];
+const NUM_KEYS=KEYMAP.length;
+const KEY_TO_IDX=Object.fromEntries(KEYMAP.map(([c],i)=>[c,i]));
+
+const LOWER=[['z',0],['s',1],['x',2],['d',3],['c',4],['v',5],['g',6],['b',7],
+             ['h',8],['n',9],['j',10],['m',11],[',',12],['l',13],['.',14],[';',15],['/',16]];
+const UPPER=[['q',12],['2',13],['w',14],['3',15],['e',16],['r',17],['5',18],['t',19],
+             ['6',20],['y',21],['7',22],['u',23],['i',24],['9',25],['o',26],['0',27],['p',28]];
+const KEYSET=new Set([...LOWER,...UPPER].map(m=>m[0]));
+const NOTE=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const W=40,GAP=4,UNIT=W+GAP,BW=26;
+const WHITE_MAP={0:0,2:1,4:2,5:3,7:4,9:5,11:6};
+const BLACK_AFTER={1:0,3:1,6:3,8:4,10:5};
+const isWhite=s=>(s%12) in WHITE_MAP;
+function noteLabel(s){return NOTE[s%12]+(3+Math.floor(s/12));}
+function xFor(s){
+  const oct=Math.floor(s/12),deg=s%12;
+  if(deg in WHITE_MAP) return (oct*7+WHITE_MAP[deg])*UNIT;
+  return (oct*7+BLACK_AFTER[deg])*UNIT+W+GAP/2-BW/2;
+}
+
+// ── sequencer state ───────────────────────────────────────────────────────
+const NUM_LAYERS=4,NUM_STEPS=32;
+let pattern=Array.from({length:NUM_LAYERS},()=>new Array(NUM_STEPS).fill(0n));
+let layerVol=[9,9,9,9];   // 0–9 per layer
+let curLayer=0,curStep=0,entStep=0,numSteps=16;
+let playing=false,recording=false;
+
+// ── gap helper (consistent separators every 4, bigger at 8, largest at 16) ──
+function gapClass(s){
+  if((s+1)%16===0) return 'gap-lg';   // after step 16, 32
+  if((s+1)%8 ===0) return 'gap-md';   // after step 8, 24
+  if((s+1)%4 ===0) return 'gap-sm';   // after step 4, 12, 20, 28
+  return '';
+}
+
+// ── layer colours ─────────────────────────────────────────────────────────
+const LAYER_COLORS=['#ff8c42','#3ec9b0','#9b7fe8','#ffce5f'];
+
+// ── grid ──────────────────────────────────────────────────────────────────
+const cellEls=[];
+const layerVolEls=[];
+const rowLabelEls=[];
+
+function buildGrid(){
+  const grid=document.getElementById('grid');
+  for(let l=0;l<NUM_LAYERS;l++){
+    const row=document.createElement('div'); row.className='grid-row';
+
+    // meta column: label + volume slider
+    const meta=document.createElement('div'); meta.className='row-meta';
+    const lbl=document.createElement('span'); lbl.className='row-label';
+    lbl.textContent='L'+(l+1); meta.appendChild(lbl);
+    rowLabelEls[l]=lbl;
+
+    const slider=document.createElement('input');
+    slider.type='range'; slider.min=0; slider.max=9; slider.value=9;
+    slider.className='layer-vol';
+    slider.style.accentColor=LAYER_COLORS[l];
+    slider.dataset.l=l;
+    slider.addEventListener('input',()=>{
+      const v=+slider.value;
+      layerVol[l]=v;
+      rowLabelEls[l].classList.toggle('muted',v===0);
+      send('A'+l+v);
+    });
+    meta.appendChild(slider);
+    layerVolEls[l]=slider;
+    row.appendChild(meta);
+
+    // step cells
+    cellEls[l]=[];
+    for(let s=0;s<NUM_STEPS;s++){
+      const c=document.createElement('div');
+      const gc=gapClass(s);
+      c.className='cell'+(gc?' '+gc:'');
+      c.dataset.l=l; c.dataset.s=s;
+      c.addEventListener('click',()=>onCellClick(l,s));
+      row.appendChild(c);
+      cellEls[l][s]=c;
+    }
+
+    // clear-row button
+    const clr=document.createElement('button');
+    clr.className='row-clear'; clr.textContent='✕'; clr.title='Clear layer '+(l+1);
+    clr.addEventListener('click',()=>clearLayer(l));
+    row.appendChild(clr);
+    grid.appendChild(row);
+  }
+
+  // tick row — invisible row-meta spacer keeps ticks aligned with cells
+  const ticks=document.createElement('div'); ticks.className='tick-row';
+  const tickSpacer=document.createElement('div');
+  tickSpacer.className='row-meta'; tickSpacer.style.visibility='hidden';
+  tickSpacer.style.pointerEvents='none';
+  ticks.appendChild(tickSpacer);
+  for(let s=0;s<NUM_STEPS;s++){
+    const gc=gapClass(s);
+    const t=document.createElement('div');
+    t.className='tick'+(gc?' '+gc:'')+(s%4===0?' beat':'');
+    t.textContent=s+1; ticks.appendChild(t);
+  }
+  grid.appendChild(ticks);
+}
+buildGrid();
+
+function updateGrid(){
+  for(let l=0;l<NUM_LAYERS;l++){
+    for(let s=0;s<NUM_STEPS;s++){
+      const c=cellEls[l][s];
+      const inactive=s>=numSteps;
+      const isCur=playing&&s===curStep;
+      const has=!inactive&&!isCur&&pattern[l][s]!==0n;
+      const isEnt=!playing&&l===curLayer&&s===entStep;
+      c.classList.toggle('inactive',inactive);
+      c.classList.toggle('has',has);
+      c.classList.toggle('cur',isCur&&!inactive);
+      c.classList.toggle('entry',isEnt&&!inactive);
+    }
+  }
+  document.getElementById('stepInfo').textContent='step '+(entStep+1)+' / '+numSteps;
+}
+
+function onCellClick(layer,step){
+  if(step>=numSteps) return;
+  const diff=(layer-curLayer+NUM_LAYERS)%NUM_LAYERS;
+  for(let i=0;i<diff;i++) send(']');
+  if(!playing) send('N'+step.toString(16));
+}
+
+function clearLayer(l){
+  for(let s=0;s<NUM_STEPS;s++) pattern[l][s]=0n;
+  send('Y'+l);
+  updateGrid(); highlightStepKeys();
+  log('cleared layer '+(l+1));
+}
+
+// ── piano ─────────────────────────────────────────────────────────────────
+const keyEls={},keySemi={};
+function renderStrip(list,el){
+  for(const [k,s] of list){
+    const d=document.createElement('div');
+    d.className='key '+(isWhite(s)?'white':'black');
+    d.style.left=xFor(s)+'px';
+    d.innerHTML=`<span class="k">${k}</span><span class="n">${noteLabel(s)}</span>`;
+    el.appendChild(d); keyEls[k]=d; keySemi[k]=s;
+  }
+}
+renderStrip(UPPER,document.getElementById('stripUpper'));
+renderStrip(LOWER,document.getElementById('stripLower'));
+const board=document.getElementById('board'),boardWrap=document.getElementById('boardWrap');
+const maxX=Math.max(...[...LOWER,...UPPER].map(([,s])=>xFor(s)+W));
+board.style.width=maxX+'px';
+function fitBoard(){
+  const s=Math.min(1.6,(boardWrap.clientWidth-8)/maxX);
+  board.style.transform=`scale(${s})`;
+}
+window.addEventListener('resize',fitBoard); fitBoard();
+
+function highlightStepKeys(){
+  const mask=playing?0n:pattern[curLayer][entStep];
+  for(const k in keyEls){
+    const idx=KEY_TO_IDX[k];
+    const inStep=idx!==undefined&&((mask>>BigInt(idx))&1n)===1n;
+    keyEls[k].classList.toggle('seq',inStep);
+  }
+}
+
+// ── serial ────────────────────────────────────────────────────────────────
+let port=null,writer=null,readBuf='';
+const $log=document.getElementById('log');
+function log(m){$log.textContent+=m+'\n';$log.scrollTop=$log.scrollHeight;}
+function setConn(t,c){document.getElementById('connect').textContent=t;document.getElementById('connect').className=c;}
+
+async function connect(){
+  if(!('serial' in navigator)){setConn('use Chrome/Edge','err');return;}
+  setConn('connecting…','idle');
+  try{
+    port=await navigator.serial.requestPort();
+    await port.open({baudRate:115200});
+    writer=port.writable.getWriter();
+    setConn('● connected','ok');
+    document.getElementById('connect').disabled=true;
+    document.getElementById('connect').blur();
+    send('V'+document.getElementById('vol').value);
+    log('connected');
+    setTimeout(()=>send('?'),300);
+    readLoop();
+  }catch(e){setConn('failed — retry','err');}
+}
+async function send(str){
+  if(!writer) return;
+  try{await writer.write(new TextEncoder().encode(str));}
+  catch(e){setConn('write failed','err');}
+}
+async function readLoop(){
+  const reader=port.readable.getReader();
+  const dec=new TextDecoder();
+  try{
+    while(true){
+      const{value,done}=await reader.read();
+      if(done) break;
+      readBuf+=dec.decode(value);
+      let nl;
+      while((nl=readBuf.indexOf('\n'))>=0){
+        parseLine(readBuf.slice(0,nl).trimEnd());
+        readBuf=readBuf.slice(nl+1);
+      }
+    }
+  }catch(e){log('serial error: '+e.message);}
+}
+
+function parseLine(line){
+  if(!line) return;
+  // Guards: all single-letter handlers require the second char to be a digit,
+  // so lines like "Looper ready." (L) or "PAT …" (P) don't match accidentally.
+  if(line[0]==='S'&&line.length>=2&&line[1]>='0'&&line[1]<='9'){
+    curStep=parseInt(line.slice(1));updateGrid();highlightStepKeys();return;
+  }
+  if(line[0]==='P'&&line.length===2&&(line[1]==='0'||line[1]==='1')){
+    playing=line[1]==='1';
+    document.getElementById('btnPlay').textContent=playing?'■ Stop':'▶ Play';
+    document.getElementById('btnPlay').classList.toggle('playing',playing);
+    const eb=document.getElementById('entryBar');
+    eb.style.opacity=playing?'0.3':'1'; eb.style.pointerEvents=playing?'none':'';
+    updateGrid(); highlightStepKeys(); return;
+  }
+  if(line[0]==='R'&&line.length===2&&(line[1]==='0'||line[1]==='1')){
+    recording=line[1]==='1';
+    document.getElementById('btnRec').classList.toggle('recording',recording);
+    document.getElementById('btnRec').textContent=recording?'⏹ Rec…':'⏺ Record';
+    return;
+  }
+  if(line[0]==='L'&&line.length===2&&line[1]>='0'&&line[1]<='3'){
+    curLayer=parseInt(line[1]);
+    document.querySelectorAll('.layer-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.l)===curLayer));
+    updateGrid(); highlightStepKeys(); return;
+  }
+  if(line[0]==='E'&&line.length>=2&&line[1]>='0'&&line[1]<='9'){
+    entStep=parseInt(line.slice(1));updateGrid();highlightStepKeys();return;
+  }
+  if(line[0]==='T'&&line.length>=2&&line[1]>='0'&&line[1]<='9'){
+    numSteps=parseInt(line.slice(1));
+    document.querySelectorAll('.step-opt').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.n)===numSteps));
+    updateGrid(); return;
+  }
+  if(line[0]==='A'&&line.length===3){
+    const l=parseInt(line[1]), v=parseInt(line[2]);
+    if(l>=0&&l<NUM_LAYERS){
+      layerVol[l]=v;
+      layerVolEls[l].value=v;
+      rowLabelEls[l].classList.toggle('muted',v===0);
+    }
+    return;
+  }
+  if(line.startsWith('LA ')){
+    const parts=line.slice(3).trim().split(/\s+/);
+    parts.forEach((v,l)=>{
+      if(l<NUM_LAYERS){
+        layerVol[l]=parseInt(v);
+        layerVolEls[l].value=layerVol[l];
+        rowLabelEls[l].classList.toggle('muted',layerVol[l]===0);
+      }
+    });
+    return;
+  }
+  if(line.startsWith('PAT ')){
+    const parts=line.split(' ');
+    const l=parseInt(parts[1]);
+    if(l>=0&&l<NUM_LAYERS){
+      for(let s=0;s<NUM_STEPS;s++) pattern[l][s]=parts[2+s]?BigInt('0x'+parts[2+s]):0n;
+      updateGrid(); highlightStepKeys();
+    }
+    return;
+  }
+  if(line.length>0&&!line.startsWith('Looper')&&line[0]!=='\\') log('fw: '+line);
+}
+
+// ── transport ─────────────────────────────────────────────────────────────
+document.getElementById('btnPlay').addEventListener('click',()=>send('\\'));
+document.getElementById('btnRec').addEventListener('click', ()=>send('\r'));
+
+document.getElementById('layerBtns').addEventListener('click',e=>{
+  const btn=e.target.closest('.layer-btn');
+  if(!btn) return;
+  const diff=(parseInt(btn.dataset.l)-curLayer+NUM_LAYERS)%NUM_LAYERS;
+  for(let i=0;i<diff;i++) send(']');
+});
+
+const $bpm=document.getElementById('bpmInput');
+$bpm.addEventListener('change',()=>{
+  const v=Math.max(20,Math.min(300,parseInt($bpm.value)||120));
+  $bpm.value=v; send('B'+v+'\n'); log('BPM '+v);
+});
+
+document.querySelectorAll('.step-opt').forEach(btn=>{
+  btn.addEventListener('click',()=>{send('T'+btn.dataset.n+'\n');log('steps '+btn.dataset.n);});
+});
+
+// ── entry controls ────────────────────────────────────────────────────────
+document.getElementById('btnPrevStep').addEventListener('click',()=>send('{'));
+document.getElementById('btnNextStep').addEventListener('click',()=>send('}'));
+document.getElementById('btnClearStep').addEventListener('click',()=>{
+  pattern[curLayer][entStep]=0n; send('X'); updateGrid(); highlightStepKeys();
+});
+document.getElementById('btnClearAll').addEventListener('click',()=>{
+  pattern=Array.from({length:NUM_LAYERS},()=>new Array(NUM_STEPS).fill(0n));
+  send('Z'); updateGrid(); highlightStepKeys(); log('cleared all');
+});
+
+// ── volume ────────────────────────────────────────────────────────────────
+const $vol=document.getElementById('vol');
+function setVol(v){v=Math.max(0,Math.min(9,v));$vol.value=v;send('V'+v);$vol.blur();}
+$vol.addEventListener('input',()=>setVol(+$vol.value));
+document.getElementById('volDown').addEventListener('click',()=>setVol(+$vol.value-1));
+document.getElementById('volUp').addEventListener('click',  ()=>setVol(+$vol.value+1));
+
+// ── keyboard ─────────────────────────────────────────────────────────────
+const down=new Set();
+
+function onKeyDown(e){
+  if(e.target.tagName==='INPUT') return;
+
+  // transport shortcuts
+  if(e.key===' '){e.preventDefault();if(!e.repeat)send('\\');return;}
+  if(e.key==='Enter'){e.preventDefault();if(!e.repeat)send('\r');return;}
+
+  // navigation
+  if(e.key==='ArrowLeft') {e.preventDefault();if(!playing&&!e.repeat)send('{');return;}
+  if(e.key==='ArrowRight'){e.preventDefault();if(!playing&&!e.repeat)send('}');return;}
+  if(e.key==='ArrowUp')   {e.preventDefault();if(!e.repeat)send('[');return;}
+  if(e.key==='ArrowDown') {e.preventDefault();if(!e.repeat)send(']');return;}
+
+  // master volume
+  if(e.key==='-'){e.preventDefault();if(!e.repeat)setVol(+$vol.value-1);return;}
+  if(e.key==='='){e.preventDefault();if(!e.repeat)setVol(+$vol.value+1);return;}
+
+  // note keys
+  const k=e.key.toLowerCase();
+  if(!KEYSET.has(k)) return;
+  e.preventDefault();
+  if(e.repeat||down.has(k)) return;
+  down.add(k);
+  send('+'+k);
+  keyEls[k]?.classList.add('down');
+
+  const idx=KEY_TO_IDX[k];
+  if(idx!==undefined){
+    if(recording&&playing){
+      pattern[curLayer][curStep]|=(1n<<BigInt(idx));
+      updateGrid();
+    } else if(!playing){
+      pattern[curLayer][entStep]^=(1n<<BigInt(idx));
+      updateGrid(); highlightStepKeys();
+    }
+  }
+}
+
+function onKeyUp(e){
+  if(e.target.tagName==='INPUT') return;
+  const k=e.key.toLowerCase();
+  if(!KEYSET.has(k)) return;
+  e.preventDefault();
+  if(!down.has(k)) return;
+  down.delete(k);
+  send('-'+k);
+  keyEls[k]?.classList.remove('down');
+}
+
+document.getElementById('connect').addEventListener('click',connect);
+window.addEventListener('keydown',onKeyDown);
+window.addEventListener('keyup',  onKeyUp);
+window.addEventListener('blur',()=>{
+  for(const k of [...down]) onKeyUp({key:k,preventDefault(){}});
+});
+
+updateGrid();
+</script>
+</body>
+</html>

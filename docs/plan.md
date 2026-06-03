@@ -67,8 +67,7 @@ Combine modules into a playable instrument on breadboard, then perfboard/protobo
 - [ ] Basic synth voice (waveform + envelope) — theory & build path in [synthesis.md](theory/synthesis.md)
 - [ ] Encoders control volume and one parameter
 - [ ] Display (ST7789) shows live state (note, BPM, preset)
-- [ ] Step sequencer: program and play back a pattern — `firmware/10-audio-looper` ⬅ next test (4 layers × 16 steps, play/stop, layer cycling)
-- [ ] Simple loop station: record and replay a phrase — same sketch (record notes per step, playback loops, layers stack)
+- [ ] Step sequencer + loop station — `firmware/10-audio-looper` ⬅ next to flash and test (4 layers × 4/8/12/16/32 steps, live recording, step-entry editing, per-layer volume, free improvisation over a loop; Web Serial bridge: `app/looper-bridge.html`)
 - [x] Play through the speaker and the headphone output ✅ 440 Hz via PAM8403 → small speaker works (keep `AMPLITUDE` low — fixed-gain amp overdrives a tiny speaker)
 - [ ] Lock the final control layout
 
