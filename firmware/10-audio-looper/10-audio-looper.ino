@@ -155,11 +155,21 @@ void startPlay() {
 
 void stopPlay() {
   playing = false;
-  applyNotes(notesUnion(curStep), 0);
-  for (int j = 0; j < NUM_KEYS; j++)
-    if ((heldKeys >> j) & 1) gateOn(j);
+  // Force all voices off directly — don't rely on pattern state, which may have been
+  // cleared while notes were playing, leaving orphaned voices with no pattern entry.
+  for (int j = 0; j < NUM_KEYS; j++) { keys[j].on = false; keys[j].autoOff = 0; }
+  for (int j = 0; j < NUM_KEYS; j++) if ((heldKeys >> j) & 1) gateOn(j);
   recomputeVoiceAmps();
   Serial.println("P0");
+}
+
+// Gate off any voices that are sounding but no longer in the pattern or held by the user.
+// Call after any pattern-clear operation during playback.
+void gateOrphanedNotes() {
+  if (!playing) return;
+  uint64_t shouldSound = notesUnion(curStep) | heldKeys;
+  for (int j = 0; j < NUM_KEYS; j++)
+    if (keys[j].on && !((shouldSound >> j) & 1)) gateOff(j, true);
 }
 
 void setBpm(uint32_t b) {
@@ -241,6 +251,7 @@ void handleByte(int b) {
     int l = c - '0';
     if (l >= 0 && l < NUM_LAYERS)
       for (int s = 0; s < NUM_STEPS; s++) pattern[l][s] = 0;
+    gateOrphanedNotes();
     return;
   }
   if (st == LAYER_VOL_L) {
@@ -293,9 +304,10 @@ void handleByte(int b) {
   }
   if (c == 'X') {
     pattern[curLayer][playing ? curStep : entStep] = 0;
+    gateOrphanedNotes();
     return;
   }
-  if (c == 'Z') { memset(pattern, 0, sizeof(pattern)); return; }
+  if (c == 'Z') { memset(pattern, 0, sizeof(pattern)); gateOrphanedNotes(); return; }
   if (c == '?') { dumpPattern(); return; }
 
   int idx = keyIndex(tolower(c));
