@@ -6,6 +6,8 @@ Check items off as you go. Each done step — with notes, wiring, and photos —
 
 > Built on the **ESP32-S3** for both prototyping and V1 (no separate prototype board).
 
+---
+
 ## Phase 0 — Define project limits
 
 Nail the scope before building anything.
@@ -15,6 +17,8 @@ Nail the scope before building anything.
 - [ ] Finalize the component list (see [hardware.md](hardware/README.md#component-selection))
 - [ ] Confirm the control-layout direction (handheld, Steam Deck–style)
 - [ ] Restate the brief's success signals as the bar for "done"
+
+---
 
 ## Phase 1 — Hardware 🚧 (paused — incomplete, needs work)
 
@@ -27,22 +31,24 @@ Gather, identify, and document every module; plan the wiring. **Provisional** �
 - [ ] Draft the wiring plan (which pins connect where)
 - [ ] Start a module doc per part (copy [`modules/module-template.md`](hardware/modules/module-template.md))
 
+---
+
 ## Phase 2 — Software install and base tests
 
 Get the dev environment running and verify each peripheral on its own.
 
-- [x] Install the toolchain — see [development.md](development.md) (Arduino IDE now; PlatformIO later)
+- [x] Install the toolchain — see [development.md](development.md) (Arduino IDE now; PlatformIO next)
 - [x] Flash a blink/serial sketch to the ESP32-S3; confirm upload works
 
-**Next — three quick tests to get comfortable with the hardware:**
+**Three quick tests to get comfortable with the hardware:**
 
-- [x] **Audio · sound** — play a test tone over I2S (PCM5102) — [`firmware/03-PCM5102A-test`](../firmware/03-PCM5102A-test/03-PCM5102A-test.ino) ✅ verified: 440 Hz tone on headphones
-  - [x] _Amp + speaker:_ 440 Hz through the PAM8403 to a small speaker; sweeps amplitude to find a safe (non-distorting) level — [`firmware/08-amp-speaker-test`](../firmware/08-amp-speaker-test/08-amp-speaker-test.ino) ✅ verified (fixed-gain amp overdrives a tiny speaker — keep amplitude low; see [modules/pam8403.md](hardware/modules/pam8403.md))
-- [ ] **Audio · notes** — send a letter over the Serial Monitor / Plotter and play the matching note — [`firmware/04-audio-notes`](../firmware/04-audio-notes/04-audio-notes.ino) (one octave mapped to `a w s e d f t g y h u j k`)
-  - [ ] _Experiment:_ BLE UART variation — same notes, but the letter arrives from a phone over Bluetooth LE — [`firmware/04-audio-notes-ble`](../firmware/04-audio-notes-ble/04-audio-notes-ble.ino) (S3 is BLE-only; iOS has no USB serial — see [development.md](development.md#input-desktop-serial-or-ble-uart))
-  - [ ] _Note-on/off + polyphony:_ real key-down/up gate — a serial terminal can't send key-up, so [`app/keyboard-bridge.html`](../app/keyboard-bridge.html) (Web Serial, piano layout) turns the laptop keyboard's keydown/keyup into a `+a`/`-a` protocol that [`firmware/09-audio-notes-gate`](../firmware/09-audio-notes-gate/09-audio-notes-gate.ino) plays polyphonically (hold a chord, each note releases on its own key-up). ~2.5 octaves across two QWERTY rows (tracker layout, base C3). Holding an arrow gives a momentary, monophonic major/minor triad (extra keys ignored; chord tones highlighted; release collapses to the base note). Volume slider (`V0`..`V9`). Bare keys still work as taps in a plain serial monitor. Open audio/output issues + feature-split plan: [issues/01-audio-issues.md](issues/01-audio-issues.md).
-- [x] **Display · play** — drive the ST7789 over SPI; draw text, shapes, and live values to get a feel for it — [`firmware/06-display-hello`](../firmware/06-display-hello/06-display-hello.ino) (Arduino_GFX) ✅ verified
-  - [x] _Experiment:_ chord player — serial keys play single/maj/min on the DAC + show the chord on the ST7789 (landscape) — [`firmware/07-chord-player`](../firmware/07-chord-player/07-chord-player.ino) ✅ verified (with the serial hold/release limitation)
+- [x] **Audio · sound** — play a test tone over I2S (PCM5102) — [`firmware/03-PCM5102A-test`](../firmware/03-PCM5102A-test/03-PCM5102A-test.ino) ✅ 440 Hz tone on headphones
+  - [x] _Amp + speaker:_ 440 Hz through the PAM8403 to a small speaker — [`firmware/08-amp-speaker-test`](../firmware/08-amp-speaker-test/08-amp-speaker-test.ino) ✅ (fixed-gain amp overdrives a tiny speaker — keep amplitude low; see [modules/pam8403.md](hardware/modules/pam8403.md))
+- [ ] **Audio · notes** — send a letter over Serial Monitor and play the matching note — [`firmware/04-audio-notes`](../firmware/04-audio-notes/04-audio-notes.ino)
+  - [ ] _Experiment:_ BLE UART variation — [`firmware/04-audio-notes-ble`](../firmware/04-audio-notes-ble/04-audio-notes-ble.ino)
+  - [ ] _Note-on/off + polyphony:_ [`firmware/09-audio-notes-gate`](../firmware/09-audio-notes-gate/09-audio-notes-gate.ino) via [`app/keyboard-bridge.html`](../app/keyboard-bridge.html). Open audio issues: [issues/01-audio-issues.md](issues/01-audio-issues.md).
+- [x] **Display · play** — drive the ST7789 over SPI — [`firmware/06-display-hello`](../firmware/06-display-hello/06-display-hello.ino) ✅
+  - [x] _Experiment:_ chord player — serial keys + chord display on ST7789 — [`firmware/07-chord-player`](../firmware/07-chord-player/07-chord-player.ino) ✅
 
 **Remaining peripheral checks:**
 
@@ -51,29 +57,68 @@ Get the dev environment running and verify each peripheral on its own.
 - [ ] Power: run from the 18650 cell through the regulator
 - [ ] Update each module doc with wiring + gotchas as it passes
 
-## Checkpoint — Re-evaluate before serious development
+---
 
-After the tests above, pause and reassess before committing to deeper work.
+## Checkpoint — Toolchain + Architecture (⬅ current)
 
-- [ ] Re-evaluate the hardware selection against what the tests revealed — confirm or swap modules (see [hardware.md](hardware/README.md#component-selection))
-- [ ] Revisit this plan and the scope; reshape the phases for "serious" development
-- [ ] Decide the toolchain move (Arduino IDE → PlatformIO) now that firmware is growing — see [development.md](development.md#future-platformio)
+Pause here. The exploration sketches have taught us enough to plan seriously. Two things to
+do before writing more firmware.
+
+### 1. Migrate to PlatformIO
+
+Arduino IDE served the exploration phase but doesn't scale:
+- No dependency management — libraries installed globally, version conflicts are silent
+- No project-level build config — every sketch reimports everything manually
+- Poor C++ support — auto-prototype injection causes real bugs (hit this with the drum sketch)
+- No unit testing, no CI, no multi-target builds
+
+**Tasks:**
+- [ ] Install PlatformIO CLI + VS Code extension
+- [ ] Create `platformio.ini` at the repo root with the ESP32-S3 target and shared lib paths
+- [ ] Migrate the two "keeper" sketches (09-audio-notes-gate, 10-audio-looper) as PlatformIO projects under `firmware/`
+- [ ] Confirm upload + serial monitor work from VS Code
+- [ ] Update [development.md](development.md) with the new workflow
+
+### 2. Design the firmware architecture
+
+Before writing Phase 3 code, define the system. The exploration taught us what we need;
+now build it the right way: modular, configurable, maintainable.
+
+See the architecture design document: [architecture.md](architecture.md)
+
+**Key decisions to finalize:**
+- [ ] Firmware structure: how state flows (state machine? task-based? event queue?)
+- [ ] Audio engine abstraction: voice pool, mixing, effects chain — how voices are allocated and freed
+- [ ] Envelope model: exponential ADSR + per-voice params, not hardcoded rates
+- [ ] Waveform model: oscillator abstraction that supports sine / saw / square / triangle + wavetable
+- [ ] Filter: state-variable filter (SVF) — gives LP, HP, BP from one struct; the right choice for both synth and drums
+- [ ] Sequencer: data model for patterns (pitched notes + drum hits on the same timeline or separate?)
+- [ ] UI layer: display + encoder + key matrix decoupled from audio — how do they communicate?
+- [ ] Persistence: NVS (Non-Volatile Storage) for settings, patterns, presets
+- [ ] Drum approach: synthesized (SVF + exponential env) vs sample playback from flash — decide before building either
+
+---
 
 ## Phase 3 — Core prototype (breadboard / protoboard)
 
-Combine modules into a playable instrument on breadboard, then perfboard/protoboard; validate interaction and workflow before committing to an enclosure or PCB.
+Build from the architecture plan. Each item here depends on the architecture decisions above.
 
-- [ ] Keyboard → audible synth note (key press makes sound)
-- [ ] Basic synth voice (waveform + envelope) — theory & build path in [synthesis.md](theory/synthesis.md)
-- [ ] Encoders control volume and one parameter
-- [ ] Display (ST7789) shows live state (note, BPM, preset)
-- [ ] Step sequencer + loop station — `firmware/10-audio-looper` ⬅ next to flash and test (4 layers × 4/8/12/16/32 steps, live recording, step-entry editing, per-layer volume, free improvisation over a loop; Web Serial bridge: `app/looper-bridge.html`)
-- [x] Play through the speaker and the headphone output ✅ 440 Hz via PAM8403 → small speaker works (keep `AMPLITUDE` low — fixed-gain amp overdrives a tiny speaker)
-- [ ] Lock the final control layout
+- [ ] **PlatformIO project structure in place** (from Checkpoint)
+- [ ] **Audio engine v1** — voice pool, exponential ADSR, sine oscillator, SVF filter (LP mode)
+- [ ] **Synth voice** — full waveform + envelope + filter from the architecture; playable via keyboard matrix
+- [ ] **Encoders** — volume and one live parameter (e.g. filter cutoff)
+- [ ] **Display** — live state (note, BPM, mode, parameter values)
+- [ ] **Step sequencer** — pitched notes + drums on the same pattern timeline
+- [ ] **Drum voices** — either synthesized (TR-606 style; see [theory/drums.md](theory/drums.md)) or sample playback from flash; decide after architecture is settled
+- [ ] **Loop station** — live record, layer playback (evolve from `firmware/10-audio-looper`)
+- [ ] **Speaker + headphone** — both outputs working ✅ (already verified in Phase 2)
+- [ ] **Control layout** — lock the final physical layout
+
+---
 
 ## Phase 4 — Standalone V1
 
-Turn the breadboard into a self-contained, battery-powered device that runs without a computer.
+Turn the breadboard prototype into a self-contained battery-powered device.
 
 - [ ] Design the PCB in KiCad (MCU + charger + amp + display + encoders + key matrix)
 - [ ] Order the PCB from a fab service (e.g. PCBway or a local provider)
@@ -86,6 +131,29 @@ Turn the breadboard into a self-contained, battery-powered device that runs with
 
 Out of scope for V1: advanced effects, massive sampling, complex DAW features.
 
+---
+
+## Exploration log
+
+Sketches written during Phase 2 exploration. Not production code — each was a learning exercise.
+
+| Sketch | What it taught | Status |
+| --- | --- | --- |
+| 01-hello-esp | Upload works, serial works | Done |
+| 02-led-serial | GPIO, serial input | Done |
+| 03-PCM5102A-test | I2S DAC wiring + basic tone | Done ✅ |
+| 04-audio-notes | Pitch table, simple tone mapping | Done |
+| 04-audio-notes-ble | BLE UART — S3 BLE-only, iOS has no USB serial | Done |
+| 05-audio-pitch-wave | Waveform switching over serial | Done |
+| 06-display-hello | ST7789 + Arduino_GFX | Done ✅ |
+| 07-chord-player | Chord logic + display + I2S | Done ✅ |
+| 08-amp-speaker-test | PAM8403 wiring + safe amplitude | Done ✅ |
+| 09-audio-notes-gate | Note-on/off protocol, polyphony, envelope | Done |
+| 10-audio-looper | Step sequencer architecture, live recording | Done |
+| 11-drum-machine | Synthesized drums — removed; linear decay is wrong, need exponential env + SVF; see [theory/drums.md](theory/drums.md) | Removed |
+
+---
+
 ## Toward a tutorial
 
-A "build your own" guide is a later goal, not a current task. The plan is structured to feed it: keep notes, wiring tables, and front/back + pinout photos in each module doc as you work through Phases 1–3. When V1 works, those docs assemble into a step-by-step build guide — bill of materials, tools, wiring, firmware flashing, assembly.
+A "build your own" guide is a later goal, not a current task. The plan is structured to feed it: keep notes, wiring tables, and front/back + pinout photos in each module doc as you work through the phases. When V1 works, those docs assemble into a step-by-step build guide — bill of materials, tools, wiring, firmware flashing, assembly.
