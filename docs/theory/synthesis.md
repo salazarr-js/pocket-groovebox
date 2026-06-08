@@ -95,7 +95,7 @@ It adds two new concerns:
 - **Voice allocation** — map each key-press to a free voice; when all are busy, **steal** one
   (usually the oldest or quietest). Decide the max voice count up front.
 
-> Today `firmware/09-audio-notes-gate` is a simple form of this: one "voice" slot per key, summed,
+> Today `sketches/09-audio-notes-gate` is a simple form of this: one "voice" slot per key, summed,
 > with a hard clamp instead of a real mixer/limiter.
 
 ## 6. Cost on the ESP32-S3

@@ -3,7 +3,7 @@
 The musical side companion to [synthesis.md](synthesis.md): that doc is *how sound is generated*,
 this one is *which pitches and relationships we play*. Grounded in what the project already does —
 the note→frequency math, the two-row keyboard, and the major/minor chord layers in
-[`firmware/09-audio-notes-gate`](../../firmware/09-audio-notes-gate/09-audio-notes-gate.ino).
+[`sketches/09-audio-notes-gate`](../../sketches/09-audio-notes-gate/09-audio-notes-gate.ino).
 
 ## 1. Notes, semitones, octaves
 
@@ -85,7 +85,7 @@ A **triad** stacks the root, a third, and a fifth:
 The black/white key pattern is a visual map of the 12 semitones: 7 white + 5 black per octave,
 with black-key gaps at E–F and B–C. Our two-row computer-keyboard mapping (tracker style) lays one
 octave on the bottom row + home row and the next on the top + number rows — see the layout in
-[`firmware/09-audio-notes-gate`](../../firmware/09-audio-notes-gate/09-audio-notes-gate.ino) and the piano in
+[`sketches/09-audio-notes-gate`](../../sketches/09-audio-notes-gate/09-audio-notes-gate.ino) and the piano in
 [`app/keyboard-bridge.html`](../../app/keyboard-bridge.html).
 
 ## 7. Rhythm & time (for the sequencer, later)

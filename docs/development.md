@@ -3,11 +3,29 @@
 How to set up the toolchain and build/flash firmware. Board-specific flash settings live
 in the board's module doc ([modules/esp32-s3-devkit.md](hardware/modules/esp32-s3-devkit.md#flashing-this-board)).
 
-> Currently using the **Arduino IDE** for quick module tests. When the firmware grows
-> (synth engine, sequencer), the plan is to move to **PlatformIO** for proper project
-> structure — see the note at the bottom.
+> Phase 3 firmware uses **PlatformIO** (VS Code). Arduino IDE is kept only for opening legacy exploration sketches under `sketches/`.
 
-## Arduino IDE
+## PlatformIO (primary)
+
+**1. Install PlatformIO.** Install the [PlatformIO IDE extension](https://platformio.org/install/ide?install=vscode) for VS Code.
+
+**2. Open the repo root** in VS Code. PlatformIO will detect `platformio.ini` automatically and generate `.vscode/c_cpp_properties.json` and `launch.json`.
+
+**3. Build and upload.**
+
+```sh
+pio run                  # build
+pio run -t upload        # build + flash
+pio device monitor       # open serial monitor (115200 baud)
+```
+
+Board-specific settings (`flash_mode`, `memory_type`, partition table) are already configured in `platformio.ini`. See [modules/esp32-s3-devkit.md → Flashing this board](hardware/modules/esp32-s3-devkit.md#flashing-this-board) for why each setting matters.
+
+If the upload fails, enter download mode: hold **BOOT**, tap **RESET**, release **BOOT**.
+
+---
+
+## Arduino IDE (legacy sketches only)
 
 **1. Add the ESP32 boards URL.** File → Preferences → *Additional Boards Manager URLs*:
 
@@ -35,7 +53,7 @@ are in [modules/esp32-s3-devkit.md → Flashing this board](hardware/modules/esp
 
 ## Sketches
 
-Test sketches live under [`../firmware/`](../firmware/):
+Exploration sketches from Phase 2 live under [`../sketches/`](../sketches/):
 
 - `01-hello-esp` — board bring-up: serial chip info + RGB LED cycle
 - `02-led-serial` — set the RGB LED color from the Serial Monitor (send `r`/`g`/`b`/`y`/`c`/`m`/`w`/`o`)
@@ -66,9 +84,23 @@ Two constraints shape this:
 The BLE sketch uses the core's bundled BLE library (no install); `NimBLE-Arduino` is a
 lighter alternative if flash/RAM gets tight.
 
-## Future: PlatformIO
+## Maintenance scripts
 
-When firmware outgrows single sketches, switch to **PlatformIO** (VS Code). It uses the
-same Arduino framework (all libraries still work) but adds project structure, pinned
-library versions, and a git-friendly `platformio.ini`. It also auto-configures C/C++
-IntelliSense. ESP-IDF stays available as an escape hatch for low-level audio if needed.
+When files are moved or renamed, doc references break. Fix them with a shell one-liner instead of asking Claude (saves tokens, faster, repeatable):
+
+```sh
+# Rename a path prefix across all markdown docs
+find docs -name "*.md" | xargs sed -i '' 's|old/path|new/path|g'
+
+# Verify no stale references remain
+grep -r "old/path" docs/
+```
+
+Write a dedicated script (`scripts/fix-refs.sh`) when the pattern recurs often enough to be worth it.
+
+## Libraries
+
+All libraries from the Arduino IDE phase still work under PlatformIO — declare them in `platformio.ini` under `lib_deps`. The ones used in the exploration sketches:
+
+- **ESP_I2S** — ships with the esp32 core, no install needed
+- **GFX Library for Arduino** (`Arduino_GFX`, by moononournation) — add to `lib_deps` when the display layer is built

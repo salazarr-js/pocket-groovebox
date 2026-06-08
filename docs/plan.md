@@ -42,13 +42,13 @@ Get the dev environment running and verify each peripheral on its own.
 
 **Three quick tests to get comfortable with the hardware:**
 
-- [x] **Audio · sound** — play a test tone over I2S (PCM5102) — [`firmware/03-PCM5102A-test`](../firmware/03-PCM5102A-test/03-PCM5102A-test.ino) ✅ 440 Hz tone on headphones
-  - [x] _Amp + speaker:_ 440 Hz through the PAM8403 to a small speaker — [`firmware/08-amp-speaker-test`](../firmware/08-amp-speaker-test/08-amp-speaker-test.ino) ✅ (fixed-gain amp overdrives a tiny speaker — keep amplitude low; see [modules/pam8403.md](hardware/modules/pam8403.md))
-- [ ] **Audio · notes** — send a letter over Serial Monitor and play the matching note — [`firmware/04-audio-notes`](../firmware/04-audio-notes/04-audio-notes.ino)
-  - [ ] _Experiment:_ BLE UART variation — [`firmware/04-audio-notes-ble`](../firmware/04-audio-notes-ble/04-audio-notes-ble.ino)
-  - [ ] _Note-on/off + polyphony:_ [`firmware/09-audio-notes-gate`](../firmware/09-audio-notes-gate/09-audio-notes-gate.ino) via [`app/keyboard-bridge.html`](../app/keyboard-bridge.html). Open audio issues: [issues/01-audio-issues.md](issues/01-audio-issues.md).
-- [x] **Display · play** — drive the ST7789 over SPI — [`firmware/06-display-hello`](../firmware/06-display-hello/06-display-hello.ino) ✅
-  - [x] _Experiment:_ chord player — serial keys + chord display on ST7789 — [`firmware/07-chord-player`](../firmware/07-chord-player/07-chord-player.ino) ✅
+- [x] **Audio · sound** — play a test tone over I2S (PCM5102) — [`sketches/03-PCM5102A-test`](../sketches/03-PCM5102A-test/03-PCM5102A-test.ino) ✅ 440 Hz tone on headphones
+  - [x] _Amp + speaker:_ 440 Hz through the PAM8403 to a small speaker — [`sketches/08-amp-speaker-test`](../sketches/08-amp-speaker-test/08-amp-speaker-test.ino) ✅ (fixed-gain amp overdrives a tiny speaker — keep amplitude low; see [modules/pam8403.md](hardware/modules/pam8403.md))
+- [ ] **Audio · notes** — send a letter over Serial Monitor and play the matching note — [`sketches/04-audio-notes`](../sketches/04-audio-notes/04-audio-notes.ino)
+  - [ ] _Experiment:_ BLE UART variation — [`sketches/04-audio-notes-ble`](../sketches/04-audio-notes-ble/04-audio-notes-ble.ino)
+  - [ ] _Note-on/off + polyphony:_ [`sketches/09-audio-notes-gate`](../sketches/09-audio-notes-gate/09-audio-notes-gate.ino) via [`app/keyboard-bridge.html`](../app/keyboard-bridge.html). Open audio issues: [issues/01-audio-issues.md](issues/01-audio-issues.md).
+- [x] **Display · play** — drive the ST7789 over SPI — [`sketches/06-display-hello`](../sketches/06-display-hello/06-display-hello.ino) ✅
+  - [x] _Experiment:_ chord player — serial keys + chord display on ST7789 — [`sketches/07-chord-player`](../sketches/07-chord-player/07-chord-player.ino) ✅
 
 **Remaining peripheral checks:**
 
