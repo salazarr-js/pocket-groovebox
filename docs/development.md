@@ -23,6 +23,91 @@ Board-specific settings (`flash_mode`, `memory_type`, partition table) are alrea
 
 If the upload fails, enter download mode: hold **BOOT**, tap **RESET**, release **BOOT**.
 
+**Other useful commands:**
+
+```sh
+pio run -t erase       # wipe entire flash (use when partition table changes)
+pio run -t uploadfs    # upload LittleFS filesystem image (samples, wavetables)
+pio test               # run unit tests in test/
+```
+
+## Debugging
+
+The ESP32-S3 has **built-in USB JTAG** — no external probe needed. The `USB JTAG/serial debug unit` port that appears when you plug in the board is it. To enable in VS Code:
+
+```ini
+; platformio.ini
+debug_tool  = esp-builtin
+debug_speed = 5000
+```
+
+Press **F5** in VS Code to start a debug session. Set breakpoints normally. Useful for catching crashes in the audio callback or PSRAM issues.
+
+**Serial debug levels** — add to `build_flags` to get verbose output from the ESP32 Arduino core:
+
+```ini
+build_flags =
+    -DCORE_DEBUG_LEVEL=0   ; 0=none  1=error  2=warn  3=info  4=debug  5=verbose
+```
+
+Keep at `0` in normal builds — level 3+ adds significant serial noise.
+
+## Unit testing
+
+Tests live in `firmware/test/`. PlatformIO uses the **Unity** framework (included, no install):
+
+```cpp
+// firmware/test/test_envelope/test_envelope.cpp
+#include <unity.h>
+#include "Envelope.h"
+
+void test_decay_is_exponential() {
+    // ...
+    TEST_ASSERT_FLOAT_WITHIN(0.001f, expected, actual);
+}
+
+void setup() {
+    UNITY_BEGIN();
+    RUN_TEST(test_decay_is_exponential);
+    UNITY_END();
+}
+void loop() {}
+```
+
+Run on host (no hardware needed — tests the audio math directly):
+
+```sh
+pio test -e native   # requires a [env:native] entry in platformio.ini
+```
+
+Or on the device:
+
+```sh
+pio test
+```
+
+Host testing is the goal for `lib/audio` — lets us verify Envelope, SVF, and Oscillator math without flashing hardware every time.
+
+## Embedding audio samples
+
+Binary files (PCM samples, wavetables) can be baked directly into the firmware binary — no filesystem needed:
+
+```ini
+; platformio.ini
+board_build.embed_files =
+    firmware/src/samples/kick.raw
+    firmware/src/samples/snare.raw
+```
+
+Accessed in code as:
+
+```cpp
+extern const uint8_t kick_raw_start[] asm("_binary_kick_raw_start");
+extern const uint8_t kick_raw_end[]   asm("_binary_kick_raw_end");
+```
+
+Alternative: store samples in LittleFS and stream them at runtime (more flexible, uses the filesystem partition). Decision pending the drum approach choice.
+
 ---
 
 ## Arduino IDE (legacy sketches only)

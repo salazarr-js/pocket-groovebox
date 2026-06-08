@@ -61,9 +61,9 @@ Configured in `platformio.ini` at the repo root. Key settings and why they matte
 | --- | --- | --- |
 | `board_build.flash_mode` | `opi` | WROOM-2 has **Octal SPI flash** — `qio` causes boot failure |
 | `board_build.arduino.memory_type` | `opi_opi` | Both flash AND PSRAM are OPI — `qio_opi` selects the wrong SDK |
-| `board_build.psram_type` | `opi` | Explicit OPI PSRAM declaration |
-| `board_build.partitions` | `default_32MB.csv` | Without this, only ~3 MB of the 32 MB flash is usable |
+| `board_build.partitions` | `large_littlefs_32MB.csv` | Without this, only ~4 MB of the 32 MB flash is usable |
 | `upload_speed` | `921600` | CH343 supports this; default 460800 is unnecessarily slow |
+| `monitor_port` | `cu.usbmodem*` (Single Serial) | Two ports appear on this board; PIO defaults to JTAG, not CH343 |
 
 If upload fails, enter download mode: hold **BOOT**, tap **RESET**, release **BOOT**.
 
