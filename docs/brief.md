@@ -29,6 +29,10 @@ No single device is the blueprint. Each one below contributes a piece — the sp
 | <a href="https://www.m-vave.com/product?id=smk25-mini"><img src="https://www.m-vave.com/images/productInfo/smk25-mini-4.webp" width="110"></a> | [M-Vave SMK25 Mini](https://www.m-vave.com/product?id=smk25-mini) | Secondary | Compact mini-key MIDI keyboard in a portable layout |
 | <a href="https://www.korg.com/us/products/dj/monotron_duo/"><img src="https://cdn.korg.com/us/products/upload/6c8dfb0cef26b60ff372a0c609d5afc4_pc.png" width="110"></a> | [Korg Monotron family](https://www.korg.com/us/products/dj/monotron_duo/) | Secondary | Tiny analog synths — physical controls as part of the experience |
 
+### Videos
+
+- [NES-SY2.0 Nintendo homage synth](https://www.youtube.com/watch?v=KWfsQgcx9cc) — Nintendo-inspired synthesizer build
+
 ## Product Concept
 
 A **modern**, lightweight, battery-powered standalone synthesizer / sampler / loop station with a step sequencer, in a **handheld console form factor** (Steam Deck–style — held in two hands, screen flanked by controls), with a built-in speaker, display, and one-octave keyboard. Works without a computer or internet.

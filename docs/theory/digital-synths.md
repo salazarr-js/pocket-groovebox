@@ -122,6 +122,7 @@ times more compute.
 | [Synthesis for beginners](https://www.youtube.com/watch?v=eu0zpa7OiYA) | Broad overview; watch before diving into FM or wavetable |
 | [An Introduction to Analog Synthesizers (Moog Mavis)](https://www.youtube.com/watch?v=kBT4ycltfBE) | Explains subtractive synthesis on real hardware; good complement to theory |
 | [what is an LFO? simple explanation](https://www.youtube.com/shorts/m3w7RsckJoI) | LFO explained simply — critical for the modulation system |
+| [Sound Design and Synth Fundamentals](https://www.youtube.com/watch?v=NJLIS2MkFe4) | Sound design and synth fundamentals |
 
 ### FM synthesis
 
@@ -233,6 +234,7 @@ These run on macOS/Windows and let you hear synthesis techniques before implemen
 | **Surge XT** (free, open source) | Wavetable + FM + subtractive | Open-source C++ — excellent reference code |
 | **Dexed** (free, open source) | FM (DX7 clone) | Open-source FM implementation in C++ |
 | **ZynAddSubFX** (free, open source) | Additive + subtractive | Deep but educational open-source synth |
+| **3x Osc** (FL Studio built-in) | Subtractive | 3-oscillator subtractive synth; simple, good starting reference for the classic signal chain |
 
 > **Surge XT and Dexed are particularly worth studying as source code** — both are
 > open-source C++ synths that implement real production-quality DSP. Surge XT's
