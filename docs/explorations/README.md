@@ -5,7 +5,7 @@ alternatives, tradeoffs. Each file is lightweight (ADR-style) with a `Status:` l
 (`exploring → leaning toward X → decided`). One numbered file per topic.
 
 This is **not** for bugs (see [../issues/](../issues/)) nor settled reference material
-(see [../synthesis.md](../theory/synthesis.md), [../music-theory.md](../theory/music-theory.md)).
+(see [../synthesis.md](../research/synthesis.md), [../music-theory.md](../research/music-theory.md)).
 
 | # | Topic | Status | File |
 | --- | --- | --- | --- |

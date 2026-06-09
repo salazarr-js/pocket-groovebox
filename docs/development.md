@@ -106,7 +106,7 @@ extern const uint8_t kick_raw_start[] asm("_binary_kick_raw_start");
 extern const uint8_t kick_raw_end[]   asm("_binary_kick_raw_end");
 ```
 
-Alternative: store samples in LittleFS and stream them at runtime (more flexible, uses the filesystem partition). Decision pending the drum approach choice.
+Alternative: store samples in LittleFS and stream them at runtime (more flexible, uses the filesystem partition). For V1, drums are synthesized so neither path is needed yet — this section is relevant when V2 sampler support is added.
 
 ---
 

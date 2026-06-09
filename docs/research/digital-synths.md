@@ -147,7 +147,7 @@ Before implementing the audio engine, work through these in sequence:
 1. **Watch:** "How to Use Any Synthesizer (60s)" → "Synthesis for beginners" → Berklee basics video
    *Goal: solid mental model of the subtractive chain we're already building.*
 
-2. **Read:** `docs/theory/synthesis.md` in this repo — already covers oscillator, ADSR, filter, polyphony.
+2. **Read:** `docs/research/synthesis.md` in this repo — already covers oscillator, ADSR, filter, polyphony.
 
 3. **Watch:** "What is an LFO" → understand modulation before implementing the modulation matrix.
 

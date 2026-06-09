@@ -3,8 +3,18 @@
 Design decisions for the Phase 3 firmware. Written after the Phase 2 exploration sketches
 to capture what we learned and define the right foundation before writing production code.
 
-> **Status:** planning. Nothing here is implemented yet. Decisions marked ✅ are settled;
-> those marked ❓ are open questions to resolve before building that layer.
+> **Status:** planning — **blocked on research.** Nothing here is implemented yet.
+> Decisions marked ✅ are settled; those marked ❓ are open questions.
+>
+> **Two research tracks must complete before this architecture is finalized:**
+> - **Synthesis system** — which engines (subtractive, FM, wavetable, phase distortion?),
+>   voice budget, modulation system, patch model. Current audio engine design is a starting
+>   point, not a final answer. Research may change the voice model, layer count, or CPU
+>   budget assumptions.
+> - **Input method** — mechanical keys vs. capacitive touch. See
+>   `docs/explorations/0001-input-method.md`. Drives the entire UI/HAL layer design.
+>
+> Do not begin Phase 3 implementation until both are resolved.
 
 ---
 
@@ -69,7 +79,7 @@ Oscillator → Filter (SVF) → VCA → out
           [filter env]     [amp env]        ← both are full ADSR
 ```
 
-This is the same subtractive model described in [theory/synthesis.md](theory/synthesis.md),
+This is the same subtractive model described in [research/synthesis.md](research/synthesis.md),
 but now the envelope and oscillator are concrete, reusable C++ types.
 
 ### Oscillator ✅
@@ -209,41 +219,45 @@ This matches the looper sketch behavior and feels natural for performance record
 
 ---
 
-## Drum voices ❓ (open question — decide before Phase 3)
+## Drum voices ✅
 
-Two approaches, not yet decided:
+**Decision: synthesized drums for V1, with the sampler path kept open for V2.**
 
-### Option A — Synthesized (TR-606 style)
-
-Use the audio engine voice primitives (SVF + exponential ADSR + oscillator):
+Drum voices use the same audio engine primitives as synth voices (SVF + exponential ADSR +
+oscillator). Each drum type is a fixed recipe:
 
 ```
-Kick  = Oscillator(SINE) + exp_pitch_env + SVF(BP) + exp_amp_env
-Snare = 2× Oscillator(SINE, detuned) + SVF(BP, noise) + exp_amp_env
-Hat   = 6× Oscillator(SQUARE, inharmonic) + SVF(HP) + short exp_amp_env
+Kick  = Oscillator(SINE) + exp_pitch_env (fast drop) + SVF(LP) + exp_amp_env
+Snare = 2× Oscillator(SINE, detuned) + noise source + SVF(BP) + exp_amp_env
+Hat   = 6× Oscillator(SQUARE, inharmonic) + SVF(HP) + very short exp_amp_env
 ```
 
-**Pro:** no flash storage, fully configurable, same code as synth voices.
-**Con:** harder to get sounding good; took an entire experiment sketch to discover this.
-Reference: Mutable Instruments Peaks source code (open source, used in PO-32 Tonic).
+Reference implementations: Mutable Instruments Peaks (open source), the LZXIV and
+MI Elements source for noise generation.
 
-### Option B — Sample playback from internal flash
+**Why synthesized first:**
+- No flash storage overhead — drum recipes are just parameter sets
+- Fully configurable: tune a kick's pitch, decay, punch with the same envelope/filter
+  params used everywhere else
+- Reuses the voice pool without a separate sample-playback path
+- Hardware constraint: exponential envelopes are already required (learned from sketch 11)
 
-Bake 8–12 short PCM samples (kick, snare, hat, clap, etc.) as C arrays in flash:
+**Sampler upgrade path (V2):**
+The voice pool interface is designed so a `SampleVoice` can slot in alongside `SynthVoice`
+without touching the mixer or sequencer. When the sampler is added:
 
 ```cpp
-// generated from wav files: python wav2c.py kick.wav > kick_sample.h
-extern const int16_t KICK_SAMPLE[];
-extern const int     KICK_SAMPLE_LEN;
+// V1: all voices are SynthVoice
+Voice pool[MAX_VOICES];  // SynthVoice = Oscillator + SVF + ADSR
+
+// V2: voice pool becomes polymorphic
+struct IVoice { virtual float next() = 0; virtual void noteOn(int key) = 0; ... };
+SynthVoice  : IVoice  // current drum + synth voices
+SampleVoice : IVoice  // PCM16 array reader, added in V2
 ```
 
-A sample voice simply reads through the array at the right playback rate.
-
-**Pro:** sounds like real drums immediately; no DSP complexity.
-**Con:** samples are fixed assets; changing a sound requires recompiling.
-
-**Likely decision:** Option B for V1 (get it working and fun fast), Option A for V2
-(full synthesis once the audio engine primitives are solid).
+PCM samples (if added) would be baked as C arrays in flash via a `wav2c` script and played
+back at the original sample rate. The mixer treats them identically to synth voices.
 
 ---
 
@@ -315,7 +329,7 @@ the ESP32) makes this possible.
 
 ## Open questions (resolve in order)
 
-1. **Drum approach** — samples vs synthesis? Resolve first — it affects the voice pool design.
+1. ~~**Drum approach**~~ ✅ Synthesized for V1; polymorphic `IVoice` interface keeps sampler path open for V2.
 2. **Sequencer data model** — unified timeline vs separate grids? Resolve when display layout is designed.
 3. **Number of encoders** — physical control layout TBD.
 4. **FreeRTOS or single-core loop?** — single-core loop works if the audio block stays < ~3 ms. Measure first.

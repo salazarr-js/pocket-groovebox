@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Build, flash, and monitor
 
 ```sh
@@ -49,10 +47,21 @@ HAL             — I2S, SPI, GPIO, NVS wrappers
 - Mixer: sum + `1/MAX_VOICES` scale + `tanh` soft limiter before int16 conversion
 - UI↔Audio communication: lock-free ring buffer or atomic flags only — **no mutexes in the audio path**
 
-**Open architecture questions** (resolve before Phase 3, in priority order):
-1. Drum approach: synthesized (SVF + exponential env) vs. PCM samples baked into flash
+**⛔ Blocked — research required before Phase 3 starts:**
+
+Two areas of deep research must be completed before any Phase 3 implementation decisions are locked. Both could change the architecture:
+
+1. **Synthesis system design** — what synthesis engines will this device actually have? The current architecture assumes basic subtractive (oscillator → SVF → VCA), but the right answer requires a proper research pass: which paradigms fit the ESP32-S3 CPU budget (subtractive, FM, wavetable, phase distortion?), how many voices, what modulation system (LFOs, envelopes, macro routing), what the patch model looks like. See `docs/research/digital-synths.md` and `docs/research/synthesis.md` as starting points. This research may reshape the audio engine layer.
+
+2. **Input method** — mechanical keys vs. capacitive touch vs. hybrid. See `docs/explorations/0001-input-method.md`. This decision drives pin assignments, physical layout, and the entire keyboard/UI layer design.
+
+**Do not finalize the architecture or begin Phase 3 code until both are resolved.**
+
+**Remaining architecture questions** (after the above are answered):
+1. ~~Drum approach~~ ✅ Synthesized for V1; `IVoice` interface keeps sampler path open for V2
 2. Sequencer data model: unified timeline vs. separate pitched + drum grids
-3. FreeRTOS dual-core vs. single-core loop (measure audio block latency first)
+3. Device modes: Play / Sequencer / Looper / Drums — mode machine and screen layouts not yet designed
+4. FreeRTOS dual-core vs. single-core loop (measure audio block latency first)
 
 ## Unit testing
 
@@ -76,10 +85,13 @@ Audio output chain: ESP32-S3 → I2S → PCM5102 → headphone jack + PAM8403 am
 
 | File | What it covers |
 |---|---|
-| `docs/architecture.md` | Firmware layer model, audio engine design, open questions |
+| `docs/architecture.md` | Firmware spec: layer model, audio engine, open questions |
 | `docs/brief.md` | Vision, design principles, inspirations |
 | `docs/plan.md` | Phase checklist (what's done vs. next) |
 | `docs/hardware/wiring.md` | Pin assignments and wiring rationale |
-| `docs/development.md` | Toolchain setup, embedding samples, debug flags |
-| `docs/theory/` | Synthesis, drums, digital DSP — DSP theory behind the audio engine |
-| `docs/brief.md#inspirations` | Design inspirations (devices + videos) that inform the direction |
+| `docs/hardware/README.md` | Component selection, system diagrams |
+| `docs/development.md` | Toolchain setup, embedding samples, debug flags (tutorial source) |
+| `docs/design.md` | Concept renders of the physical device |
+| `docs/research/` | Background: synthesis theory, drum machines, music theory, digital synths |
+| `docs/explorations/` | Open decisions being weighed (ADR-style, one file per topic) |
+| `docs/issues/` | Bug and investigation log |

@@ -59,7 +59,7 @@ Get the dev environment running and verify each peripheral on its own.
 
 ---
 
-## Checkpoint — Toolchain + Architecture (⬅ current)
+## Checkpoint — Toolchain + Architecture + Research (⬅ current)
 
 Pause here. The exploration sketches have taught us enough to plan seriously. Two things to
 do before writing more firmware.
@@ -86,6 +86,10 @@ now build it the right way: modular, configurable, maintainable.
 
 See the architecture design document: [architecture.md](architecture.md)
 
+> **⛔ Blocked on research before any Phase 3 work begins:**
+> - **Synthesis system** — deep research into which engines (subtractive, FM, wavetable…), voice budget, modulation model, and patch design. May reshape the audio engine layer. Starting points: `docs/research/digital-synths.md`, `docs/research/synthesis.md`.
+> - **Input method** — mechanical keys vs. capacitive touch. See `docs/explorations/0001-input-method.md`. Drives pin assignments and the entire UI layer.
+
 **Key decisions to finalize:**
 - [ ] Firmware structure: how state flows (state machine? task-based? event queue?)
 - [ ] Audio engine abstraction: voice pool, mixing, effects chain — how voices are allocated and freed
@@ -95,7 +99,7 @@ See the architecture design document: [architecture.md](architecture.md)
 - [ ] Sequencer: data model for patterns (pitched notes + drum hits on the same timeline or separate?)
 - [ ] UI layer: display + encoder + key matrix decoupled from audio — how do they communicate?
 - [ ] Persistence: NVS (Non-Volatile Storage) for settings, patterns, presets
-- [ ] Drum approach: synthesized (SVF + exponential env) vs sample playback from flash — decide before building either
+- [x] Drum approach: synthesized (SVF + exp env) for V1; polymorphic `IVoice` interface keeps sampler path open for V2
 
 ---
 
@@ -109,7 +113,7 @@ Build from the architecture plan. Each item here depends on the architecture dec
 - [ ] **Encoders** — volume and one live parameter (e.g. filter cutoff)
 - [ ] **Display** — live state (note, BPM, mode, parameter values)
 - [ ] **Step sequencer** — pitched notes + drums on the same pattern timeline
-- [ ] **Drum voices** — either synthesized (TR-606 style; see [theory/drums.md](theory/drums.md)) or sample playback from flash; decide after architecture is settled
+- [ ] **Drum voices** — synthesized (TR-606 style; see [research/drums.md](research/drums.md)); SVF + exp env recipes per drum type
 - [ ] **Loop station** — live record, layer playback (evolve from `firmware/10-audio-looper`)
 - [ ] **Speaker + headphone** — both outputs working ✅ (already verified in Phase 2)
 - [ ] **Control layout** — lock the final physical layout
@@ -150,7 +154,7 @@ Sketches written during Phase 2 exploration. Not production code — each was a 
 | 08-amp-speaker-test | PAM8403 wiring + safe amplitude | Done ✅ |
 | 09-audio-notes-gate | Note-on/off protocol, polyphony, envelope | Done |
 | 10-audio-looper | Step sequencer architecture, live recording | Done |
-| 11-drum-machine | Synthesized drums — removed; linear decay is wrong, need exponential env + SVF; see [theory/drums.md](theory/drums.md) | Removed |
+| 11-drum-machine | Synthesized drums — removed; linear decay is wrong, need exponential env + SVF; see [research/drums.md](research/drums.md) | Removed |
 
 ---
 

@@ -4,10 +4,9 @@ The conceptual base for the sound sketches. Explains the model we're building to
 the code maps to it. Grounded in this project: ESP32-S3 generating samples in software, out
 over I2S to the PCM5102 DAC → PAM8403 → speaker (see [hardware.md](../hardware/README.md)).
 
-> **Where we are today:** every sketch makes sound with a single **sine** oscillator and a
-> simple **attack/release** gate — no other waveforms, no full ADSR, no filter. The target
-> below is what the next synth-voice sketch will build. Audio quirks
-> and deferred fixes live in [issues/01-audio-issues.md](../issues/01-audio-issues.md).
+> **Phase 3 starting point:** Phase 2 exploration is complete. The architecture in
+> `docs/architecture.md` defines the production implementation of everything described here.
+> This doc is the theory foundation; `architecture.md` is the build spec.
 
 ## 1. The subtractive-synth voice
 
@@ -117,4 +116,4 @@ Monophonic first (hear each change in isolation), then go polyphonic:
 4. **Polyphony** — replicate the voice, add a mixer + voice allocation; measure voice count.
 
 Companion: [music-theory.md](music-theory.md) (which notes/pitches/chords we play). Glossary
-terms: [glossary.md](../glossary.md). Hardware path: [hardware.md](../hardware/README.md).
+Hardware path: [hardware.md](../hardware/README.md).

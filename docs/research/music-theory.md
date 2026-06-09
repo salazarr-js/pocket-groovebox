@@ -104,4 +104,4 @@ octave on the bottom row + home row and the next on the top + number rows — se
 - **Keyboard** → the two-row mapping + web piano (§6).
 - **Scales / 7ths / sequencer timing** → not built yet; this doc is the reference when we do.
 
-Glossary: [glossary.md](../glossary.md).
+See [music-theory.md](music-theory.md) for terms.

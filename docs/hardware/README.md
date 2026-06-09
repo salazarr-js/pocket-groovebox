@@ -1,8 +1,8 @@
 # Pocket Groovebox — Hardware
 
-> 🚧 **Draft — not final.** These component and architecture choices are provisional and still need validation through bench tests. Expect changes (especially the audio path). Treat nothing here as locked until verified on the board.
+> I2S DAC (PCM5102) and SPI display (ST7789) are verified and wired. Encoder and keyboard wiring is TBD — pending the input method decision in [explorations/0001-input-method.md](../explorations/0001-input-method.md).
 
-Hardware decisions for the device. For the *why* and *what*, see [brief.md](../brief.md); for build steps, see [plan.md](../plan.md). Term definitions are in [glossary.md](../glossary.md).
+Hardware decisions for the device. For the *why* and *what*, see [brief.md](../brief.md); for build steps, see [plan.md](../plan.md).
 
 > **DIY constraint.** These choices follow the brief's "Open, DIY hardware" principle: every part is an accessible, off-the-shelf maker module (breakout boards, common dev boards, standard cells) that anyone can source and rebuild — no custom silicon, no specialized fabrication. Enclosure and mechanical parts lean on home-friendly techniques (3D printing, laser-cut/CNC acrylic, repurposed toy instruments, robotics kits). When weighing a component, prefer the one that keeps the build reproducible.
 
