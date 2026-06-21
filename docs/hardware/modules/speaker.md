@@ -27,6 +27,10 @@ Driven by the PAM8403, **BTL** — the two leads go to one channel's `+` and `�
 
 ⚠️ **Never connect either speaker lead to GND** — the PAM8403 output is bridge-tied; grounding a `−` output shorts the bridge and can destroy the amp. See [pam8403.md](pam8403.md). Full connection structure: [../wiring.md](../wiring.md#connections).
 
+## Upgrade — 40 mm full-range speaker
+
+The 30 mm driver is being replaced with a **40 mm neodymium full-range speaker** (4Ω, 20W, 90 dB, rubber edge). Ordered from AliExpress. The enclosure body will act as a sealed acoustic chamber (~100 cc internal volume) around the driver. The PAM8403 amp and wiring remain unchanged — the 40 mm speaker connects across L+/L− in BTL just like the 30 mm driver.
+
 ## Notes & gotchas
 
 - **It's robust — rated 3 W / 4 Ω.** It comfortably handles the PAM8403's full output (≈ 1.7 W at our peak test amplitude), so there's no fragility concern; the goal is a *comfortable* level, not protecting the driver.

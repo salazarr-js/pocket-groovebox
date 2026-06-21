@@ -1,0 +1,250 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 355 232" width="355mm" height="232mm">
+<!--
+  POCKET GROOVEBOX — interior layout, 2D top view.
+  Coordinate system: 1 user unit = 1 mm (real measures). Page 355 × 232 mm.
+  Enclosure 280 × 160 mm at (25,20). Edit module positions via each group's
+  coordinates; restyle via the <style> block; key shapes are reusable <use>.
+-->
+  <style>
+    text       { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .title     { font-size: 5.5px; font-weight: 700; letter-spacing: .75px; fill: #262626; }
+    .lbl       { font-size: 4.25px; font-weight: 700; fill: #333; text-anchor: middle; }
+    .sub       { font-size: 3.5px; fill: #5c5c5c; text-anchor: middle; }
+    .faint     { font-size: 3.5px; fill: #888; text-anchor: middle; }
+    .cap       { font-size: 3.75px; fill: #5c5a52; letter-spacing: .4px; text-anchor: middle; }
+    .klbl      { font-size: 3.5px; fill: #7a7a7a; text-anchor: middle; }
+    .klbl-r    { font-size: 3.5px; font-weight: 600; fill: #4a4a4a; text-anchor: middle; }
+    .dim       { font-size: 4px; fill: #666; text-anchor: middle; }
+    .scr       { font-size: 3px; }
+    .grid-lbl  { font-size: 3.5px; fill: #7c7a70; }
+    .legend    { font-size: 3.75px; fill: #777; text-anchor: middle; }
+
+    .wkey  { fill: #f7f4ed; stroke: #666; stroke-width: .4; }
+    .bkey  { fill: #141414; stroke: #000; stroke-width: .25; }
+    .led-i { fill: #2f6fd0; opacity: .85; }
+    .led-r { fill: #d63a3a; opacity: .95; }
+    .led-b { fill: #9a55ff; opacity: .95; }
+
+    .dimln  { stroke: #888; stroke-width: .4; fill: none; }
+    .dimk   { stroke: #555; stroke-width: .5; fill: none; }
+    .dimkw  { stroke: #dcdcdc; stroke-width: .5; fill: none; }
+  </style>
+
+  <defs>
+    <!-- Technical grid: "+" cross at every 1 cm intersection, dotted gridlines between.
+         Offset x=5 so lines fall on the enclosure edges (25,305). Keys are now on an
+         18 mm pitch, so they no longer align to the 1 cm grid crosses (they did at 20 mm). -->
+    <pattern id="grid" x="5" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+      <g stroke="#8d8b80" stroke-width="0.28">
+        <path d="M -1.25 0 H 1.25 M 0 -1.25 V 1.25"/>
+        <path d="M 8.75 0 H 11.25 M 10 -1.25 V 1.25"/>
+        <path d="M -1.25 10 H 1.25 M 0 8.75 V 11.25"/>
+        <path d="M 8.75 10 H 11.25 M 10 8.75 V 11.25"/>
+      </g>
+      <g fill="#9a988d" opacity="0.55">
+        <circle cx="2.5" cy="0"   r=".35"/><circle cx="5" cy="0"   r=".35"/><circle cx="7.5" cy="0"   r=".35"/>
+        <circle cx="2.5" cy="10"  r=".35"/><circle cx="5" cy="10"  r=".35"/><circle cx="7.5" cy="10"  r=".35"/>
+        <circle cx="0"   cy="2.5" r=".35"/><circle cx="0" cy="5"   r=".35"/><circle cx="0"   cy="7.5" r=".35"/>
+        <circle cx="10"  cy="2.5" r=".35"/><circle cx="10" cy="5"  r=".35"/><circle cx="10"  cy="7.5" r=".35"/>
+      </g>
+    </pattern>
+    <!-- Speaker grille dots -->
+    <pattern id="grille" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#454545"/>
+    </pattern>
+    <!-- Arrow markers (userSpaceOnUse so they stay ~2 mm regardless of stroke) -->
+    <marker id="arr"   markerUnits="userSpaceOnUse" markerWidth="2.4" markerHeight="2.4" refX="2"   refY="1.2" orient="auto"><path d="M0,0 L0,2.4 L2.4,1.2 z" fill="#555"/></marker>
+    <marker id="arrL"  markerUnits="userSpaceOnUse" markerWidth="2.4" markerHeight="2.4" refX="0.4" refY="1.2" orient="auto"><path d="M2.4,0 L2.4,2.4 L0,1.2 z" fill="#555"/></marker>
+    <marker id="arrW"  markerUnits="userSpaceOnUse" markerWidth="2.4" markerHeight="2.4" refX="2"   refY="1.2" orient="auto"><path d="M0,0 L0,2.4 L2.4,1.2 z" fill="#888"/></marker>
+    <marker id="arrWL" markerUnits="userSpaceOnUse" markerWidth="2.4" markerHeight="2.4" refX="0.4" refY="1.2" orient="auto"><path d="M2.4,0 L2.4,2.4 L0,1.2 z" fill="#888"/></marker>
+    <marker id="arrK"  markerUnits="userSpaceOnUse" markerWidth="2.4" markerHeight="2.4" refX="2"   refY="1.2" orient="auto"><path d="M0,0 L0,2.4 L2.4,1.2 z" fill="#dcdcdc"/></marker>
+    <marker id="arrKL" markerUnits="userSpaceOnUse" markerWidth="2.4" markerHeight="2.4" refX="0.4" refY="1.2" orient="auto"><path d="M2.4,0 L2.4,2.4 L0,1.2 z" fill="#dcdcdc"/></marker>
+
+    <!-- Reusable key silhouettes (local mm: keycap 16 wide (1 mm gap each side from
+         neighbours), depth 72; black 10 wide / 44 deep (≈56% of the 18 mm pitch);
+         1 mm gap between black & white keys with a rounded separation — the notch fillet
+         r3 = black r2 + 1 mm, concentric with the black-key corner, so the gap stays
+         uniform; all keys have 2 mm rounded bottom corners.
+         c = black on right · e = black on left · d = black both sides · x = plain end -->
+    <path id="wkey-c" d="M0,0 H11 V42 A3 3 0 0 0 14,45 H14.5 A1.5 1.5 0 0 1 16,46.5 V70 A2 2 0 0 1 14,72 H2 A2 2 0 0 1 0,70 Z"/>
+    <path id="wkey-e" d="M5,0 H16 V70 A2 2 0 0 1 14,72 H2 A2 2 0 0 1 0,70 V46.5 A1.5 1.5 0 0 1 1.5,45 H2 A3 3 0 0 0 5,42 Z"/>
+    <path id="wkey-d" d="M5,0 H11 V42 A3 3 0 0 0 14,45 H14.5 A1.5 1.5 0 0 1 16,46.5 V70 A2 2 0 0 1 14,72 H2 A2 2 0 0 1 0,70 V46.5 A1.5 1.5 0 0 1 1.5,45 H2 A3 3 0 0 0 5,42 Z"/>
+    <path id="wkey-x" d="M0,0 H16 V70 A2 2 0 0 1 14,72 H2 A2 2 0 0 1 0,70 Z"/>
+    <path id="bkey"   d="M0,0 H10 V42 A2 2 0 0 1 8,44 H2 A2 2 0 0 1 0,42 Z"/>
+
+    <clipPath id="enc-clip"><rect x="25" y="20" width="280" height="160" rx="8"/></clipPath>
+  </defs>
+
+  <!-- Page + full-canvas grid -->
+  <rect width="355" height="232" fill="#f3efe8"/>
+  <rect width="355" height="232" fill="url(#grid)"/>
+
+  <text class="title" x="177.5" y="13" text-anchor="middle">POCKET GROOVEBOX — INTERIOR LAYOUT — 280 × 160 mm</text>
+
+  <!-- ENCLOSURE (280 × 160 mm = 70 × 40 units of 4 mm) -->
+  <rect x="25" y="20" width="280" height="160" rx="8" fill="#cdc7ba" stroke="#5f5d54" stroke-width="1"/>
+  <rect x="25" y="20" width="280" height="160" fill="url(#grid)" clip-path="url(#enc-clip)" opacity="0.5"/>
+  <text class="grid-lbl" x="284" y="26.5">grid 1 cm</text>
+
+  <circle cx="35"  cy="30"  r="2.5" fill="#bfbaad" stroke="#7c7970" stroke-width=".5"/>
+  <circle cx="295" cy="30"  r="2.5" fill="#bfbaad" stroke="#7c7970" stroke-width=".5"/>
+  <circle cx="35"  cy="170" r="2.5" fill="#bfbaad" stroke="#7c7970" stroke-width=".5"/>
+  <circle cx="295" cy="170" r="2.5" fill="#bfbaad" stroke="#7c7970" stroke-width=".5"/>
+
+  <line class="dimln" x1="25" y1="96" x2="305" y2="96" stroke="#807d73" stroke-dasharray="2.5,1.5" stroke-width=".5"/>
+
+  <!-- ═══ DISPLAY — ST7789 1.9" landscape, 46 × 25 mm ═══ -->
+  <g id="display">
+    <rect x="142" y="40" width="46" height="25" rx="4" fill="#161616" stroke="#3a3a3a" stroke-width=".75"/>
+    <rect x="144" y="42" width="42" height="21" rx="2" fill="#08182c"/>
+    <text class="scr" x="165" y="47.5" text-anchor="middle" fill="#4a8cc4" letter-spacing=".5">POCKET GB</text>
+    <line x1="145.5" y1="49" x2="184.5" y2="49" stroke="#234e74" stroke-width=".25"/>
+    <text class="scr" x="151.5" y="54" fill="#7ec0ff" font-weight="bold">128</text>
+    <text x="151.5" y="58" font-size="2.75" fill="#3f86bf" letter-spacing=".5">BPM</text>
+    <text class="scr" x="168" y="54" fill="#5fb0ec">▶ PLAY</text>
+    <text x="168" y="58.5" font-size="3" fill="#3f86bf">C MAJ  vol 7</text>
+    <line x1="145.5" y1="60" x2="184.5" y2="60" stroke="#244e74" stroke-width=".25"/>
+    <text x="165" y="62" font-size="2.75" text-anchor="middle" fill="#2e5a86">patch 001  seq OFF</text>
+    <text class="lbl" x="165" y="73">ST7789 1.9" (landscape)</text>
+    <text class="sub" x="165" y="78.5" fill="#6a6a6a">46 × 25 mm</text>
+  </g>
+
+  <!-- ═══ ENCODER 1 — GPIO 39/40/16 ═══ -->
+  <g id="enc1">
+    <circle cx="81" cy="52" r="12" fill="#6c6c6c" stroke="#3c3c3c" stroke-width=".75"/>
+    <circle cx="81" cy="52" r="8"  fill="#525252" stroke="#2e2e2e" stroke-width=".5"/>
+    <circle cx="81" cy="52" r="1.75" fill="#8a8a8a"/>
+    <line x1="81" y1="52" x2="81" y2="45" stroke="#e2e2e2" stroke-width="1.25" stroke-linecap="round"/>
+    <circle cx="81" cy="52" r="4" fill="none" stroke="#404040" stroke-width=".5" stroke-dasharray="1,1"/>
+    <text class="lbl" x="81" y="71">ENC 1</text>
+    <text class="sub" x="81" y="76.5">39 / 40 / 16</text>
+  </g>
+
+  <!-- ═══ ENCODER 2 — GPIO 41/42/17 ═══ -->
+  <g id="enc2">
+    <circle cx="121" cy="52" r="12" fill="#6c6c6c" stroke="#3c3c3c" stroke-width=".75"/>
+    <circle cx="121" cy="52" r="8"  fill="#525252" stroke="#2e2e2e" stroke-width=".5"/>
+    <circle cx="121" cy="52" r="1.75" fill="#8a8a8a"/>
+    <line x1="121" y1="52" x2="121" y2="45" stroke="#e2e2e2" stroke-width="1.25" stroke-linecap="round"/>
+    <circle cx="121" cy="52" r="4" fill="none" stroke="#404040" stroke-width=".5" stroke-dasharray="1,1"/>
+    <text class="lbl" x="121" y="71">ENC 2</text>
+    <text class="sub" x="121" y="76.5">41 / 42 / 17</text>
+  </g>
+
+  <!-- ═══ JOYSTICK — 25 × 25 mm (TBD) ═══ -->
+  <g id="joystick">
+    <rect x="33" y="40" width="25" height="25" rx="4" fill="#4a4a4a" stroke="#2c2c2c" stroke-width=".75"/>
+    <circle cx="45.5" cy="52.5" r="9"   fill="#5c5c5c" stroke="#363636" stroke-width=".5"/>
+    <circle cx="45.5" cy="52.5" r="5"   fill="#7e7e7e" stroke="#4e4e4e" stroke-width=".5"/>
+    <circle cx="45.5" cy="52.5" r="2.5" fill="#a0a0a0" stroke="#6e6e6e" stroke-width=".25"/>
+    <line x1="40.5" y1="52.5" x2="50.5" y2="52.5" stroke="#3a3a3a" stroke-width=".6"/>
+    <line x1="45.5" y1="47.5" x2="45.5" y2="57.5" stroke="#3a3a3a" stroke-width=".6"/>
+    <text class="lbl"   x="45.5" y="72">JOYSTICK</text>
+    <text class="sub"   x="45.5" y="77.5">GPIO 1 / 2 / 21</text>
+    <text class="faint" x="45.5" y="83">25 × 25 mm  (TBD)</text>
+  </g>
+
+  <!-- ═══ SPEAKER — 40 × 40 mm (upgrade planned) ═══ -->
+  <g id="speaker">
+    <rect x="249" y="32" width="40" height="40" rx="4" fill="#161616" stroke="#3a3a3a" stroke-width=".75"/>
+    <rect x="252" y="35" width="34" height="34" rx="2" fill="url(#grille)"/>
+    <circle cx="269" cy="52" r="14"  fill="none" stroke="#383838" stroke-width=".75"/>
+    <circle cx="269" cy="52" r="8.5" fill="none" stroke="#383838" stroke-width=".5"/>
+    <circle cx="269" cy="52" r="3"   fill="none" stroke="#383838" stroke-width=".4"/>
+    <circle cx="253" cy="36" r="1.25" fill="#0c0c0c" stroke="#454545" stroke-width=".25"/>
+    <circle cx="285" cy="36" r="1.25" fill="#0c0c0c" stroke="#454545" stroke-width=".25"/>
+    <circle cx="253" cy="68" r="1.25" fill="#0c0c0c" stroke="#454545" stroke-width=".25"/>
+    <circle cx="285" cy="68" r="1.25" fill="#0c0c0c" stroke="#454545" stroke-width=".25"/>
+    <text class="lbl"   x="269" y="77.5">SPEAKER</text>
+    <text class="sub"   x="269" y="83" fill="#6a6a6a">40 × 40 mm</text>
+    <text class="faint" x="269" y="88.5">(upgrade planned)</text>
+  </g>
+
+  <!-- ═══ KEYBOARD — 25 keys, 2 octaves (C3–C5), 18 mm pitch, span 270 mm, keys 72 × 16 mm ═══ -->
+  <g id="keyboard" transform="translate(0,6)">
+    <!-- keybed background — bottom corners rounded r8 to follow the enclosure shell -->
+    <path d="M25,90 H305 V166 A8 8 0 0 1 297,174 H33 A8 8 0 0 1 25,166 Z" fill="#aeaba1"/>
+    <rect x="33" y="172" width="264" height="2" fill="#97948a"/>
+
+    <!-- White keys — left edge = 18 mm pitch boundary + 1 mm (centers the 16 mm key in its slot) -->
+    <use class="wkey" xlink:href="#wkey-c" x="31"  y="100"/>
+    <use class="wkey" xlink:href="#wkey-d" x="49"  y="100"/>
+    <use class="wkey" xlink:href="#wkey-e" x="67"  y="100"/>
+    <use class="wkey" xlink:href="#wkey-c" x="85"  y="100"/>
+    <use class="wkey" xlink:href="#wkey-d" x="103" y="100"/>
+    <use class="wkey" xlink:href="#wkey-d" x="121" y="100"/>
+    <use class="wkey" xlink:href="#wkey-e" x="139" y="100"/>
+    <use class="wkey" xlink:href="#wkey-c" x="157" y="100"/>
+    <use class="wkey" xlink:href="#wkey-d" x="175" y="100"/>
+    <use class="wkey" xlink:href="#wkey-e" x="193" y="100"/>
+    <use class="wkey" xlink:href="#wkey-c" x="211" y="100"/>
+    <use class="wkey" xlink:href="#wkey-d" x="229" y="100"/>
+    <use class="wkey" xlink:href="#wkey-d" x="247" y="100"/>
+    <use class="wkey" xlink:href="#wkey-e" x="265" y="100"/>
+    <use class="wkey" xlink:href="#wkey-x" x="283" y="100"/>
+
+    <!-- Black keys (10 mm wide, centered on boundary → left edge = boundary − 5 mm) -->
+    <use class="bkey" xlink:href="#bkey" x="43"  y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="61"  y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="97"  y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="115" y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="133" y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="169" y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="187" y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="223" y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="241" y="100"/>
+    <use class="bkey" xlink:href="#bkey" x="259" y="100"/>
+  </g>
+
+  <!-- ═══ DIMENSION ANNOTATIONS — kept outside the part for a clean keyboard view ═══ -->
+
+  <!-- Vertical (depths) → left margin, nested: 72 outer · 44 inner, labels in separate columns -->
+  <line class="dimln" x1="25" y1="106" x2="6" y2="106"/>
+  <line class="dimln" x1="25" y1="178" x2="6" y2="178"/>
+  <line class="dimln" x1="25" y1="150" x2="16" y2="150"/>
+  <line class="dimk" x1="8" y1="106" x2="8" y2="178" marker-end="url(#arr)" marker-start="url(#arrL)"/>
+  <text class="dim" x="3" y="142" font-size="3.25" fill="#444" transform="rotate(-90 3 142)">72 mm</text>
+  <line class="dimk" x1="18" y1="106" x2="18" y2="150" marker-end="url(#arr)" marker-start="url(#arrL)"/>
+  <text class="dim" x="13.5" y="128" font-size="3" fill="#555" transform="rotate(-90 13.5 128)">44 mm</text>
+
+  <!-- Horizontal (widths, margins) → bottom, stepped left→right = top→bottom so labels never overlap -->
+  <!-- 5 mm left margin (row 1, top) -->
+  <line class="dimln" x1="25" y1="180" x2="25" y2="185"/>
+  <line class="dimln" x1="30" y1="180" x2="30" y2="185"/>
+  <line class="dimk" x1="25" y1="184" x2="30" y2="184" marker-end="url(#arr)" marker-start="url(#arrL)"/>
+  <text class="dim" x="27.5" y="182.5" font-size="2.8" fill="#444">5 mm</text>
+  <!-- 16 mm keycap (row 2) -->
+  <line class="dimln" x1="31" y1="180" x2="31" y2="189"/>
+  <line class="dimln" x1="47" y1="180" x2="47" y2="189"/>
+  <line class="dimk" x1="31" y1="188" x2="47" y2="188" marker-end="url(#arr)" marker-start="url(#arrL)"/>
+  <text class="dim" x="39" y="186.5" font-size="3.25" fill="#444">16 mm</text>
+  <!-- 10 mm black key (row 3) -->
+  <line class="dimln" x1="43" y1="180" x2="43" y2="193"/>
+  <line class="dimln" x1="53" y1="180" x2="53" y2="193"/>
+  <line class="dimk" x1="43" y1="192" x2="53" y2="192" marker-end="url(#arr)" marker-start="url(#arrL)"/>
+  <text class="dim" x="48" y="190.5" font-size="3" fill="#444">10 mm</text>
+  <!-- 5 mm right margin (row 1, top) -->
+  <line class="dimln" x1="300" y1="180" x2="300" y2="185"/>
+  <line class="dimln" x1="305" y1="180" x2="305" y2="185"/>
+  <line class="dimk" x1="300" y1="184" x2="305" y2="184" marker-end="url(#arr)" marker-start="url(#arrL)"/>
+  <text class="dim" x="302.5" y="182.5" font-size="2.8" fill="#444">5 mm</text>
+
+  <!-- Enclosure overall -->
+  <line class="dimln" x1="25" y1="197" x2="305" y2="197" marker-end="url(#arrW)" marker-start="url(#arrWL)"/>
+  <line class="dimln" x1="25"  y1="188.5" x2="25"  y2="199.5"/>
+  <line class="dimln" x1="305" y1="188.5" x2="305" y2="199.5"/>
+  <text class="dim" x="165" y="203">280 mm</text>
+
+  <line class="dimln" x1="317.5" y1="20" x2="317.5" y2="180" marker-end="url(#arrW)" marker-start="url(#arrWL)"/>
+  <line class="dimln" x1="305.5" y1="20"  x2="320" y2="20"/>
+  <line class="dimln" x1="305.5" y1="180" x2="320" y2="180"/>
+  <text class="dim" x="327.5" y="100" transform="rotate(90 327.5 100)">160 mm</text>
+
+  <!-- ═══ NOTES ═══ -->
+  <rect x="25" y="208" width="280" height="20" rx="2" fill="#fdf6bd" stroke="#d9c64a" stroke-width=".5"/>
+  <text x="30" y="214" font-size="3.4" font-weight="700" fill="#6b5d00" letter-spacing=".3">NOTES</text>
+  <text x="30" y="220" font-size="3.2" fill="#5c5208">KS-33 · 25 KEYS · 2 OCT · 270 mm SPAN · 18 mm PITCH · 16 mm KEY (2 mm GAP)</text>
+  <text x="30" y="225.5" font-size="3.2" fill="#5c5208">scale 1 unit = 1 mm · grid 1 cm · 4 mm design grid (280 × 160 = 70 × 40) · keyboard 18 mm pitch (off-grid) · SK6812 LED per key (red = C4 root)</text>
+
+</svg>

@@ -49,13 +49,16 @@ HAL             — I2S, SPI, GPIO, NVS wrappers
 
 **⛔ Blocked — research required before Phase 3 starts:**
 
-Two areas of deep research must be completed before any Phase 3 implementation decisions are locked. Both could change the architecture:
+**Synthesis system design** is the one open research area that must be completed before Phase 3 implementation decisions are locked — it could still reshape the audio engine layer:
 
-1. **Synthesis system design** — what synthesis engines will this device actually have? The current architecture assumes basic subtractive (oscillator → SVF → VCA), but the right answer requires a proper research pass: which paradigms fit the ESP32-S3 CPU budget (subtractive, FM, wavetable, phase distortion?), how many voices, what modulation system (LFOs, envelopes, macro routing), what the patch model looks like. See `docs/research/digital-synths.md` and `docs/research/synthesis.md` as starting points. This research may reshape the audio engine layer.
+- What synthesis engines will this device actually have? The current architecture assumes basic subtractive (oscillator → SVF → VCA), but the right answer requires a proper research pass: which paradigms fit the ESP32-S3 CPU budget (subtractive, FM, wavetable, phase distortion?), how many voices, what modulation system (LFOs, envelopes, macro routing), what the patch model looks like. See `docs/research/digital-synths.md` and `docs/research/synthesis.md` as starting points.
 
-2. **Input method** — mechanical keys vs. capacitive touch vs. hybrid. See `docs/explorations/0001-input-method.md`. This decision drives pin assignments, physical layout, and the entire keyboard/UI layer design.
+**Resolved (no longer blocking):**
 
-**Do not finalize the architecture or begin Phase 3 code until both are resolved.**
+- ✅ **Input method** — mechanical keys via 2× PCF8575 I2C expanders. See `docs/explorations/0001-input-method.md`.
+- ✅ **Key design** — lever bridge + KS-33 Silent Brown switches, **18mm pitch** (16mm keycap, 10mm black, 72/44mm depths, 1mm rounded black↔white gap). See `docs/explorations/0002-key-design.md` + `docs/explorations/0003-design-system.md`.
+
+**Do not finalize the audio engine or begin Phase 3 code until the synthesis research is resolved.**
 
 **Remaining architecture questions** (after the above are answered):
 1. ~~Drum approach~~ ✅ Synthesized for V1; `IVoice` interface keeps sampler path open for V2
@@ -95,3 +98,6 @@ Audio output chain: ESP32-S3 → I2S → PCM5102 → headphone jack + PAM8403 am
 | `docs/research/` | Background: synthesis theory, drum machines, music theory, digital synths |
 | `docs/explorations/` | Open decisions being weighed (ADR-style, one file per topic) |
 | `docs/issues/` | Bug and investigation log |
+| `docs/hardware/modules/sk6812mini-e.md` | SK6812 MINI-E addressable RGB LED — specs, timing, level shifter requirement, BOM |
+| `docs/hardware/enclosure-layout.svg` | Interior layout diagram — 280×160mm enclosure on a 355×232mm page, 2D top view. Authored in **mm units** (1 user unit = 1mm); styling via a `<style>` block of CSS classes; each module is a `<g id="…">`; the keyboard `<g>` is `translate`d to sit at the shell bottom; piano keys are reusable `<use>` of 5 shape defs (16mm white / 10mm black, rounded bottoms + 1mm rounded black↔white gap; keybed bg path rounds r8 to follow the shell). Dimension annotations live **outside** the part (vertical→left, horizontal→bottom, stepped so labels don't overlap); a yellow **NOTES** box at the page bottom holds the spec + legend text. Edit module positions by their group coords (or drag in Boxy SVG); restyle via the class block |
+| `docs/explorations/0003-design-system.md` | 4mm base grid decision — key proportions, wall thicknesses, reference values. Revised 2026-06: 280mm frame, keyboard at 18mm pitch (off-grid exception) |

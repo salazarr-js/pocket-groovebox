@@ -17,7 +17,7 @@ Early prototyping. Most hardware is on hand; currently testing individual module
 - [docs/hardware/wiring.md](docs/hardware/wiring.md) — how the modules connect to the ESP32-S3 (diagram + pin tables)
 - [docs/plan.md](docs/plan.md) — build plan (checklist of steps by phase)
 - [docs/development.md](docs/development.md) — dev environment setup (toolchain, libraries, build/flash)
-- [docs/glossary.md](docs/glossary.md) — definitions of acronyms and terms (MIDI, DAW, I2S, …)
+- [docs/explorations/](docs/explorations/) — open decisions (input method, key design, design system)
 
 ## References
 

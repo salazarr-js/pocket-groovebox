@@ -265,7 +265,7 @@ back at the original sample rate. The mixer treats them identically to synth voi
 
 ### Inputs ❓
 
-- Key matrix (13 keys): debounced via timer or state comparison each frame
+- Key matrix (25 keys, 2× PCF8575): debounced via timer or state comparison each frame
 - Rotary encoders (EC11 × N): interrupt-driven edge count + button debounce
 - How many encoders? TBD — depends on final control layout
 

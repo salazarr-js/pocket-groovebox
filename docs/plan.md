@@ -20,16 +20,20 @@ Nail the scope before building anything.
 
 ---
 
-## Phase 1 — Hardware 🚧 (paused — incomplete, needs work)
+## Phase 1 — Hardware 🚧 (in progress)
 
-Gather, identify, and document every module; plan the wiring. **Provisional** — hardware selection isn't final; revisit after the board tests in Phase 2.
+Gather, identify, and document every module; plan the wiring.
 
-- [ ] Inventory all parts on hand against hardware.md
+- [x] Inventory most parts on hand against hardware.md
 - [ ] Toolbox ready (iron, solder, multimeter — see hardware.md Tools)
 - [ ] Identify the exact variant of each module; photograph front + back
-- [ ] Find and save the pinout for each module
-- [ ] Draft the wiring plan (which pins connect where)
-- [ ] Start a module doc per part (copy [`modules/module-template.md`](hardware/modules/module-template.md))
+- [x] Find and save the pinout for each module
+- [x] Draft the wiring plan (which pins connect where) — see [wiring.md](hardware/wiring.md)
+- [x] Module docs created: ESP32-S3, PCM5102, PAM8403, ST7789, PCF8575, SK6812 MINI-E, speaker, template
+- [x] Input method decision: **mechanical keys** ([0002-key-design.md](explorations/0002-key-design.md))
+- [x] Keyboard mechanism: **lever bridge with KS-33 Silent Brown switches**
+- [x] Speaker upgrade: **40 mm full-range neodymium** (on order)
+- [ ] Finalize lever bridge CAD design
 
 ---
 
@@ -53,7 +57,7 @@ Get the dev environment running and verify each peripheral on its own.
 **Remaining peripheral checks:**
 
 - [ ] Rotary encoder (EC11): read rotation + button
-- [ ] Keyboard: read all 13 keys
+- [ ] Keyboard: read all 25 keys
 - [ ] Power: run from the 18650 cell through the regulator
 - [ ] Update each module doc with wiring + gotchas as it passes
 
