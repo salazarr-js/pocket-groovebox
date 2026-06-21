@@ -1,5 +1,5 @@
 // 09-audio-notes-gate — polyphonic note-on / note-off over serial, with a REAL gate, plus
-// momentary major/minor chord layers and a serial volume control.
+// momentary major/minor/min7 chord layers and a serial volume control.
 //
 // The problem this solves: a serial terminal sends *characters*, never key-up events — so
 // holding a key (04-audio-notes, 07-chord-player) can only be faked with OS auto-repeat +
@@ -9,11 +9,11 @@
 //   "+a" → note-on  for key 'a'      "-a" → note-off for key 'a'
 //
 // Chord layers are MOMENTARY (held, like Shift), not sticky:
-//   ">" → major while held   "<" → minor while held   "=" → back to single (key released)
-// In a chord layer the synth is MONOPHONIC: the first key pressed owns one clean triad
-// (root, +4/+3, +7); extra keys are ignored so chords don't pile up. Releasing the layer
-// ("=") collapses the held chord back to its single base note. The keyboard bridge maps the
-// arrow keys to these (ArrowUp = '>' down / '=' up, ArrowDown = '<' down / '=' up).
+//   ">" → major while held   "<" → minor while held   "{" → min7 while held   "}" → maj7 while held   "=" → back to single
+// In a chord layer the synth is MONOPHONIC: the first key pressed owns one clean chord
+// (root, 3rd, 5th [, 7th for min7]); extra keys are ignored so chords don't pile up. Releasing
+// the layer ("=") collapses the held chord back to its single base note. The keyboard bridge maps
+// arrow keys to these (ArrowUp = major, ArrowDown = minor, ArrowLeft = min7, ArrowRight = maj7, release = single).
 //
 // Volume: "V" followed by a digit '0'..'9' sets the level (see VOL[]); the bridge has a slider.
 //
@@ -34,16 +34,16 @@
 
 // Declared up here (before any function) so the Arduino IDE's auto-generated prototypes,
 // which it inserts at the top of the file, can see the Layer and Key types.
-enum Layer { SINGLE, MAJOR, MINOR };
+enum Layer { SINGLE, MAJOR, MINOR, MIN7, MAJ7 };
 
-// one key drives up to 3 oscillators (root, 3rd, 5th). Each oscillator has its OWN envelope
+// one key drives up to 4 oscillators (root, 3rd, 5th, 7th). Each oscillator has its OWN envelope
 // so notes can be added/removed mid-sound (layer changes, note-off) with a click-free fade.
 struct Key {
-  float    phase[3] = {0, 0, 0};
-  float    inc[3]   = {0, 0, 0};
-  float    env[3]   = {0, 0, 0};            // per-oscillator level 0..1
-  bool     on[3]    = {false, false, false}; // per-oscillator target (should it sound?)
-  uint32_t autoOff  = 0;                     // for bare-key taps; 0 = none
+  float    phase[4] = {0, 0, 0, 0};
+  float    inc[4]   = {0, 0, 0, 0};
+  float    env[4]   = {0, 0, 0, 0};                      // per-oscillator level 0..1
+  bool     on[4]    = {false, false, false, false};       // per-oscillator target (should it sound?)
+  uint32_t autoOff  = 0;                                  // for bare-key taps; 0 = none
 };
 
 constexpr int PIN_BCLK = 5, PIN_DOUT = 6, PIN_LRCK = 7;
@@ -97,7 +97,7 @@ Key keys[NUM_KEYS];
 I2SClass i2s;
 
 void setOsc(Key &k, int sub, int semi) { k.inc[sub] = TWO_PI * semiToFreq(semi) / SAMPLE_RATE; }
-bool held(const Key &k) { return k.on[0] || k.on[1] || k.on[2]; }
+bool held(const Key &k) { return k.on[0] || k.on[1] || k.on[2] || k.on[3]; }
 
 // Note-on. In a chord layer, the first key becomes the monophonic chord owner (root,3rd,5th)
 // and any further keys are ignored. In single mode, every key is an independent voice.
@@ -107,12 +107,15 @@ void gateOn(int idx) {
   int root = KEYMAP[idx].semi;
   if (layer != SINGLE) {
     if (chordOwner >= 0 && chordOwner != idx && held(keys[chordOwner])) return;  // mono: ignore extra
-    int third = (layer == MAJOR) ? 4 : 3;
+    int third = (layer == MAJOR || layer == MAJ7) ? 4 : 3;
     setOsc(k, 0, root); setOsc(k, 1, root + third); setOsc(k, 2, root + 7);
     k.on[0] = k.on[1] = k.on[2] = true;
+    if (layer == MIN7) { setOsc(k, 3, root + 10); k.on[3] = true; }
+    else if (layer == MAJ7) { setOsc(k, 3, root + 11); k.on[3] = true; }
+    else k.on[3] = false;
   } else {
     setOsc(k, 0, root);
-    k.on[0] = true; k.on[1] = false; k.on[2] = false;   // 3rd/5th fade out if they were sounding
+    k.on[0] = true; k.on[1] = false; k.on[2] = false; k.on[3] = false;  // upper partials fade out
   }
   k.autoOff = 0;
   chordOwner = idx;   // remember the lead so a later layer change re-voices it live
@@ -120,7 +123,7 @@ void gateOn(int idx) {
 
 void gateOff(int idx) {
   Key &k = keys[idx];
-  k.on[0] = k.on[1] = k.on[2] = false;   // fade all oscillators out
+  k.on[0] = k.on[1] = k.on[2] = k.on[3] = false;   // fade all oscillators out
   k.autoOff = 0;
   if (idx == chordOwner) chordOwner = -1;
 }
@@ -136,12 +139,15 @@ void setLayer(Layer want) {
   Key &k = keys[chordOwner];
   int root = KEYMAP[chordOwner].semi;
   if (layer == SINGLE) {
-    k.on[1] = k.on[2] = false;           // fade out the 3rd/5th, keep the base note
+    k.on[1] = k.on[2] = k.on[3] = false;  // fade out 3rd/5th/7th, keep the base note
   } else {
-    int third = (layer == MAJOR) ? 4 : 3;
-    setOsc(k, 1, root + third);          // retune the 3rd (smooth if it's already sounding)
+    int third = (layer == MAJOR || layer == MAJ7) ? 4 : 3;
+    setOsc(k, 1, root + third);            // retune the 3rd (smooth if it's already sounding)
     setOsc(k, 2, root + 7);
-    k.on[1] = k.on[2] = true;            // fade in (no-op pitch glide if already on)
+    k.on[1] = k.on[2] = true;
+    if (layer == MIN7)      { setOsc(k, 3, root + 10); k.on[3] = true; }
+    else if (layer == MAJ7) { setOsc(k, 3, root + 11); k.on[3] = true; }
+    else k.on[3] = false;                  // maj/min: fade out the 7th if it was sounding
   }
 }
 
@@ -158,6 +164,8 @@ void handleByte(int b) {
   if (c == '-') { sign = -1; return; }
   if (c == '>') { setLayer(MAJOR);  return; }
   if (c == '<') { setLayer(MINOR);  return; }
+  if (c == '{') { setLayer(MIN7);   return; }
+  if (c == '}') { setLayer(MAJ7);   return; }
   if (c == '=') { setLayer(SINGLE); return; }
   if (c == '\n' || c == '\r' || c == ' ') return;
 
@@ -178,8 +186,8 @@ void audioBlock() {
     int32_t acc = 0;
     for (int j = 0; j < NUM_KEYS; j++) {
       Key &k = keys[j];
-      if (!held(k) && k.env[0] <= 0.0f && k.env[1] <= 0.0f && k.env[2] <= 0.0f) continue;  // idle key
-      for (int v = 0; v < 3; v++) {
+      if (!held(k) && k.env[0] <= 0.0f && k.env[1] <= 0.0f && k.env[2] <= 0.0f && k.env[3] <= 0.0f) continue;  // idle key
+      for (int v = 0; v < 4; v++) {
         float target = k.on[v] ? 1.0f : 0.0f;
         if (k.env[v] < target)      { k.env[v] += ATT_STEP; if (k.env[v] > target) k.env[v] = target; }
         else if (k.env[v] > target) { k.env[v] -= REL_STEP; if (k.env[v] < target) k.env[v] = target; }
@@ -205,7 +213,7 @@ void setup() {
     Serial.println("I2S init failed!");
     while (true) delay(1000);
   }
-  Serial.println("\nNote gate v2 — +a/-a (on/off), hold '>' maj / '<' min (mono chord), '=' single.");
+  Serial.println("\nNote gate v2 — +a/-a (on/off), hold '>' maj / '<' min / '{' min7 / '}' maj7 (mono chord), '=' single.");
   Serial.println("Volume: V0..V9.  ~2.5 octaves, base C3.  Use tools/keyboard-bridge.html.");
 }
 

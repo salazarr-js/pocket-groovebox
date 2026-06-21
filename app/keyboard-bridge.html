@@ -82,8 +82,9 @@
   .pad .cap.lbl { background:transparent; font-size:15px; color:#9aa0b4; font-weight:700; }
   .pad .cap.active { background:#ff8c42; color:#1b1d26; box-shadow:0 0 0 2px #ff8c4255; }
   #arrUp   { grid-column:2; grid-row:1; } #arrDown { grid-column:2; grid-row:3; }
-  #arrL    { grid-column:1; grid-row:2; opacity:.3; } #arrR { grid-column:3; grid-row:2; opacity:.3; }
+  #arrL    { grid-column:1; grid-row:2; } #arrR { grid-column:3; grid-row:2; }
   #lblMaj  { grid-column:3; grid-row:1; } #lblMin { grid-column:3; grid-row:3; }
+  #lblMin7 { grid-column:1; grid-row:3; } #lblMaj7 { grid-column:1; grid-row:1; }
 </style>
 </head>
 <body>
@@ -113,6 +114,8 @@
       <div class="cap" id="arrR">→</div>
       <div class="cap" id="arrDown">↓</div>
       <div class="cap lbl" id="lblMin">min</div>
+      <div class="cap lbl" id="lblMin7">min7</div>
+      <div class="cap lbl" id="lblMaj7">maj7</div>
     </div>
   </footer>
 
@@ -194,10 +197,13 @@ async function send(str) {
   catch (e) { setConn('write failed', 'err'); }
 }
 
-// highlight the pressed key (orange) + the other triad tones that sound (teal)
+// highlight the pressed key (orange) + the other chord tones that sound (teal)
 function highlightChord(owner) {
-  const root = keySemi[owner], third = layer === 'major' ? 4 : 3;
+  const root = keySemi[owner];
+  const third = (layer === 'major' || layer === 'maj7') ? 4 : 3;
   const tones = new Set([root, root + third, root + 7]);
+  if (layer === 'min7') tones.add(root + 10);
+  if (layer === 'maj7') tones.add(root + 11);
   for (const key in keyEls)
     keyEls[key].classList.toggle('chord', key !== owner && tones.has(keySemi[key]));
   keyEls[owner].classList.add('down');
@@ -207,7 +213,7 @@ function clearChord() { for (const key in keyEls) keyEls[key].classList.remove('
 function updateNote() {
   const prev = $note.textContent;
   if (chordOwner && sounding.has(chordOwner)) {
-    const txt = noteName(keySemi[chordOwner]) + (layer === 'major' ? 'maj' : layer === 'minor' ? 'min' : '');
+    const txt = noteName(keySemi[chordOwner]) + (layer === 'major' ? 'maj' : layer === 'minor' ? 'min' : layer === 'min7' ? 'min7' : layer === 'maj7' ? 'maj7' : '');
     $note.textContent = txt;
     $note.classList.toggle('single', layer === 'single');
     $note.classList.remove('off');
@@ -220,11 +226,13 @@ function updateNote() {
 function updateArrows() {
   document.getElementById('arrUp').classList.toggle('active', layer === 'major');
   document.getElementById('arrDown').classList.toggle('active', layer === 'minor');
+  document.getElementById('arrL').classList.toggle('active', layer === 'min7');
+  document.getElementById('arrR').classList.toggle('active', layer === 'maj7');
 }
 
 // arrows are momentary; track them in press order so the last held wins (smooth maj↔min)
-const arrowFor = { ArrowUp: 'major', ArrowDown: 'minor' };
-const LAYER_CMD = { major: '>', minor: '<', single: '=' };   // serial char the firmware expects per layer
+const arrowFor = { ArrowUp: 'major', ArrowDown: 'minor', ArrowLeft: 'min7', ArrowRight: 'maj7' };
+const LAYER_CMD = { major: '>', minor: '<', min7: '{', maj7: '}', single: '=' };  // serial char the firmware expects per layer
 let arrowStack = [];
 function applyArrows() {
   const nl = arrowStack.length ? arrowStack[arrowStack.length - 1] : 'single';
