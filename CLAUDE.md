@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## Git workflow
+
+Solo project — **work directly on `main`, no feature branches**. Committing and pushing straight to `main` is pre-approved and considered safe; don't create branches or PRs for changes here.
+
 ## Build, flash, and monitor
 
 ```sh
