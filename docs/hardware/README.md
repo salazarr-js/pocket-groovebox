@@ -1,6 +1,6 @@
 # Pocket Groovebox — Hardware
 
-> I2S DAC (PCM5102) and SPI display (ST7789) are verified and wired. EC11 encoders and joystick are on hand but not yet wired. Keyboard wiring is TBD — pending the lever bridge design. Input method decision: **mechanical keys** ([0002-key-design.md](../explorations/0002-key-design.md)).
+> I2S DAC (PCM5102), SPI display (ST7789), and KY-023 joystick are verified and wired. EC11 encoders not yet wired. Keyboard wiring is TBD — pending the lever bridge design. Input method decision: **mechanical keys** ([0002-key-design.md](../explorations/0002-key-design.md)).
 
 Hardware decisions for the device. For the *why* and *what*, see [brief.md](../brief.md); for build steps, see [plan.md](../plan.md).
 
@@ -52,7 +52,7 @@ Note: both the PAM8403 and the MAX98357A are BTL (bridge-tied) speaker amps and 
 | Key I/O | 2× PCF8575 I2C expander (0x20 + 0x21) | 16 + 9 pins for 25 keys; shared INT on GPIO15 (open-drain wired-OR) |
 | Key LEDs | SK6812 MINI-E ×25 | Per-key RGB, south-facing MX mount, 74AHCT125 level shifter on GPIO18 |
 | Display | 1.9" ST7789 LCD, 170×320 SPI | BPM, presets, waveforms, menus |
-| Controls | 2× EC11 rotary encoders + mini joystick | Encoders on JTAG GPIO39–42 + GPIO16/17; joystick role TBD (pitch/expression/menu nav) |
+| Controls | 2× EC11 rotary encoders + KY-023 joystick | Encoders on JTAG GPIO39–42 + GPIO16/17; joystick role TBD (pitch/expression/menu nav) — see [modules/ky023.md](modules/ky023.md) |
 | Audio | PCM5102 I2S DAC + PAM8403 amp | DAC line out → headphone (PJ-320) + amp → speaker |
 | Power | 1× 18650 Li-Ion (prototype) | Single charge/discharge module (IP5306-class): USB-C charge → boost → 5V → 3.3V, power-path, **KEY pin = power button**. Final cell *form* (cylindrical 18650 vs flat LiPo) TBD with enclosure layout |
 | USB / data | Single combined USB-C 2.0 port | VBUS → charge module; D+/D− → ESP32 native USB (GPIO19/20) for serial + **USB-MIDI**; CC1/CC2 = 5.1 kΩ pulldowns |
@@ -67,7 +67,8 @@ Each module gets its own doc (pinout, photos, wiring, source) under [`modules/`]
 |---|---|
 | ESP32-S3 dev board (Waveshare N32R16V) | ✅ On hand |
 | PCM5102 DAC · PAM8403 amp (QA03) · ST7789 1.9" display | ✅ On hand |
-| EC11 encoder ×2 · joystick (analog) · protoboard ×2 | ✅ On hand |
+| EC11 encoder ×2 · protoboard ×2 | ✅ On hand |
+| KY-023 joystick | ✅ On hand · verified (sketch 12) |
 | Dupont jumpers | ✅ On hand |
 | KS-33 Silent Brown switches ×35 | 🛒 Ordered |
 | SK6812 MINI-E ×50 | 🛒 Ordered |

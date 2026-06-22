@@ -156,14 +156,16 @@ One LED per key, driven from a single GPIO via the ESP32-S3 RMT peripheral. A 74
 
 See [modules/sk6812mini-e.md](modules/sk6812mini-e.md) for full timing, power budget, and level-shifter details.
 
-### Joystick — mini analog thumbstick
+### KY-023 — analog joystick ✅
 
-Physically included. Role TBD (pitch bend / expression / note selection / menu navigation — to be decided). Axis pins feed ADC1; right-header GPIOs are used to avoid any conflict with ADC2 (which shares resources with Wi-Fi).
+Role TBD (pitch bend / expression / note selection / menu navigation). Axis pins feed ADC1; right-header GPIOs avoid ADC2 (shares resources with Wi-Fi). See [modules/ky023.md](modules/ky023.md).
 
 | Signal | ESP32-S3 | Notes |
 | --- | --- | --- |
-| X axis (VRx) | GPIO1 (ADC1_CH0) | analog; 10 kΩ pull to 3.3 V center |
-| Y axis (VRy) | GPIO2 (ADC1_CH1) | analog; 10 kΩ pull to 3.3 V center |
-| Button (SW)  | GPIO21 | digital input; enable internal pull-up |
-| VCC | 3V3 | |
+| VRx | GPIO2 (ADC1_CH1) | analog |
+| VRy | GPIO1 (ADC1_CH0) | analog |
+| SW  | GPIO21 | digital input; `INPUT_PULLUP`; 1=idle, 0=pressed |
+| VCC | 3V3 | ⚠️ labeled "5V" — connect to 3V3 or the S3's ADC is damaged |
 | GND | GND | |
+
+**Orientation:** on the test board the module is rotated 90° CCW (labels facing down). The mount swap and polarity are compensated in software via a single `JOY_MOUNT` knob — see [modules/ky023.md](modules/ky023.md#orientation-and-axis-swap).

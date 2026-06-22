@@ -57,6 +57,7 @@ Get the dev environment running and verify each peripheral on its own.
 **Remaining peripheral checks:**
 
 - [ ] Rotary encoder (EC11): read rotation + button
+- [x] Joystick (KY-023): read both axes + button — [`sketches/12-ky023-joystick-test`](../sketches/12-ky023-joystick-test/12-ky023-joystick-test.ino) ✅ centered deltas + single `JOY_MOUNT` orientation knob; see [modules/ky023.md](hardware/modules/ky023.md)
 - [ ] Keyboard: read all 25 keys
 - [ ] Power: run from the 18650 cell through the regulator
 - [ ] Update each module doc with wiring + gotchas as it passes
@@ -159,6 +160,7 @@ Sketches written during Phase 2 exploration. Not production code — each was a 
 | 09-audio-notes-gate | Note-on/off protocol, polyphony, envelope | Done |
 | 10-audio-looper | Step sequencer architecture, live recording | Done |
 | 11-drum-machine | Synthesized drums — removed; linear decay is wrong, need exponential env + SVF; see [research/drums.md](research/drums.md) | Removed |
+| 12-ky023-joystick-test | KY-023 read + NVS calibration + single-knob mount orientation; see [hardware/modules/ky023.md](hardware/modules/ky023.md) | Done ✅ |
 
 ---
 
