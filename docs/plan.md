@@ -108,6 +108,30 @@ See the architecture design document: [architecture.md](architecture.md)
 
 ---
 
+## Milestone v0.2 — Consolidated hardware + test UI
+
+All hardware in one tidy place; first navigable UI without a laptop.
+
+### Hardware
+
+- [ ] **Wiring diagram** — draw the full circuit in a dedicated tool before committing anything to solder
+  - Investigate which tool to use: **Fritzing** (maker-friendly, has breadboard view), **KiCad Schematic** (open source, same tool we'll use for the PCB in Phase 4), **EasyEDA** (online, integrated with JLCPCB), **Wokwi** (online ESP32 simulator with virtual breadboard view)
+  - Tentative recommendation: start with Fritzing for the breadboard view; migrate to KiCad when Phase 4 (PCB) begins
+- [ ] **Consolidated protoboard** — all modules wired on a single perfboard with the ESP32-S3 seated on the protoboard; connectors / jumpers so each module can be plugged in and out cleanly
+  - Includes: PCF8575 (keyboard), both EC11 encoders + buttons (GPIO 39/40/16, 41/42/17), KY-023 joystick, ST7789 display, PCM5102 DAC, PAM8403 amp, SK6812 LEDs
+  - Encoders are the only peripheral not yet wired and verified
+
+### Software (sketch 16 or similar)
+
+- [ ] **Test menu sketch** — first navigable UI without a laptop; defines the interaction patterns the real firmware will use
+  - Encoders: navigate options (turn = move cursor, click = select / back)
+  - Joystick: move between sections / submenus
+  - Display: two-level menu hierarchy; lock in font size, colors (TEAL on black scheme already established)
+  - Test options to explore: select note, select chord, adjust volume, select mode (Play / Sequencer)
+  - Audio: selected note/chord plays on confirm → immediate feedback
+
+---
+
 ## Phase 3 — Core prototype (breadboard / protoboard)
 
 Build from the architecture plan. Each item here depends on the architecture decisions above.
@@ -161,6 +185,9 @@ Sketches written during Phase 2 exploration. Not production code — each was a 
 | 10-audio-looper | Step sequencer architecture, live recording | Done |
 | 11-drum-machine | Synthesized drums — removed; linear decay is wrong, need exponential env + SVF; see [research/drums.md](research/drums.md) | Removed |
 | 12-ky023-joystick-test | KY-023 read + NVS calibration + single-knob mount orientation; see [hardware/modules/ky023.md](hardware/modules/ky023.md) | Done ✅ |
+| 13-pcf8575-keyboard-test | PCF8575 I2C read, 12-key physical keyboard (inverted wiring), I2C scan, debounce | Done ✅ |
+| 14-pcf8575-display | PCF8575 keyboard → ST7789 display; large centered note name, idle dot, landscape 90° | Done ✅ |
+| 15-hardware-chord-player | Full integration: PCF8575 + KY-023 + ST7789 + I2S; major/minor chords via joystick, 8-level log volume scale, click-free crossfade, layer debounce | Done ✅ |
 
 ---
 

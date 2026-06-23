@@ -28,6 +28,8 @@ No single device is the blueprint. Each one below contributes a piece — the sp
 | <a href="https://www.korg.com/us/products/computergear/nanokey2/"><img src="https://cdn.korg.com/us/products/upload/8db603344139affd32e255b4ad01546e_pc.jpg" width="110"></a> | [Korg nanoKEY2](https://www.korg.com/us/products/computergear/nanokey2/) | Secondary | Compact one-octave mini-key keyboard |
 | <a href="https://www.m-vave.com/product?id=smk25-mini"><img src="https://www.m-vave.com/images/productInfo/smk25-mini-4.webp" width="110"></a> | [M-Vave SMK25 Mini](https://www.m-vave.com/product?id=smk25-mini) | Secondary | Compact mini-key MIDI keyboard in a portable layout |
 | <a href="https://www.korg.com/us/products/dj/monotron_duo/"><img src="https://cdn.korg.com/us/products/upload/6c8dfb0cef26b60ff372a0c609d5afc4_pc.png" width="110"></a> | [Korg Monotron family](https://www.korg.com/us/products/dj/monotron_duo/) | Secondary | Tiny analog synths — physical controls as part of the experience |
+| | Panasonic R1088 | Secondary | |
+| | Roland P-6 | Secondary | |
 
 ### Videos
 
