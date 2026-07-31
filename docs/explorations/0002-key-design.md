@@ -1,190 +1,182 @@
 # 0002 — Key design
 
-**Status:** decided (lever + switch)  ·  (`open → exploring → decided`)
+**Status:** decided (OP-1-style flat caps, direct on switch)  ·  (`open → exploring → decided → revised`)
+
+> **Revision (2026-07) — OP-1 pivot (V1).** For the **first iteration**, the lever-bridge +
+> piano-key mechanism is **deferred** in favour of the OP-1 approach: **flat rectangular keycaps
+> mounted directly on the switch**, no lever, no sculpted piano-key structure. Reasons: far
+> simpler mechanically, no springs or pivot rod, and it's cheap to 3D-print and **easy to
+> re-print a single bad part** — the priority for the first physical instance (fabrication is
+> outsourced to a print service). The note layout stays a **flattened 2-octave piano** (naturals
+> row + sharps offset in a back row) so it still plays like an instrument. The lever design is
+> **kept open below as a candidate for a later iteration** — not rejected, just parked to keep V1
+> simple. Switch choice, 18 mm pitch, and the 2-octave range are unchanged.
 
 Decisions taken:
-- ✅ Switch: **Gateron KS-33 Low Profile 2.0 Silent Brown** (tactile, silent, 3.0mm travel)
-- ✅ Mechanism: **Lever bridge** with continuous rod pivot
-- ✅ Key proportions: **18mm pitch** (revised from 20mm to fit a 280mm frame — see [0003-design-system.md](0003-design-system.md))
-- Mecánica complementaria: **resorte de compresión extra** entre lever y PCB
+- ✅ Switch: **Gateron KS-33 Low Profile 2.0 Silent Brown** — full specs + mechanical drawing in [`../hardware/modules/gateron-ks-33.md`](../hardware/modules/gateron-ks-33.md)
+- ✅ Mechanism (**V1**): **flat rectangular cap directly on the switch** (OP-1 style; no lever, no spring, no pivot rod). Lever bridge deferred to a later iteration — see bottom.
+- ✅ Cap mounting: **thin low-profile cap with a guide rib that inserts into a plate slot** (G915-style — the guide lives in the cap, not the plate walls). The rib reuses the plate's **stabilizer cutout** as its guide slot, so **no MX stabilizer hardware** is needed. Stem socket = MX cross (4.00 / 1.10 / 1.28). *(The "skirt wrapping the switch body" variant and the plate-well "floating cap" were considered and dropped.)*
+- ✅ Layout: **flattened 2-octave piano** = **24 keys** — 14 naturals (C3–B4, 1u × 2u tall) + 10 sharps (back row: C#/D#/F#/A# = 1.5u wide, G# = 1u). From the user's KLE; encoded in [`hardware/3d/octave-layout.scad`](../../hardware/3d/octave-layout.scad). *(No top C5.)*
+- ✅ Pitch: **18 mm** (fits 2 octaves in a 280 mm frame — see [0003-design-system.md](0003-design-system.md))
+- ✅ Plate: **3D-printed**, 1.2 mm low-profile cutout (14 mm), outsourced to a print service
+- ✅ Look & feel: **OP-1 × HiChord** (primary aesthetic references) — refined minimalism, flat rounded-rectangle caps, muted base palette + per-key RGB color accents; premium tactile, not toy-like
+- ✅ Cutout confirmed by **vernier**: switch housing 13.8 mm / relaxed clips 14.5 mm → plate cutout **14.0 mm** (housing passes, clips grip). Two tilt axes to guide: naturals (2u tall) tilt fore-aft; wide sharps (1.5u) tilt sideways.
+- ✅ Toolchain: layout + plate + caps in **OpenSCAD**, PCB in **KiCad** — see [0004-cad-toolchain.md](0004-cad-toolchain.md).
+- 🚧 First build: a **one-octave proto module** (12 keys) before the full 24 — see [0005-proto-keyboard-module.md](0005-proto-keyboard-module.md).
 
 ## Context
 
-The keyboard uses **Gateron KS-33 Low Profile 2.0 Silent Brown** switches (15×15mm footprint).
-The goal is a keyboard that looks and feels like a real instrument — not a computer keyboard.
+The keyboard uses **Gateron KS-33 Low Profile 2.0 Silent Brown** switches (15×15 mm body,
+MX-style cross stem). The goal is a keyboard that looks and plays like an instrument — not a
+computer keyboard — while staying simple enough to 3D-print and iterate cheaply.
 
 ## Decision: switch — KS-33 Silent Brown
 
-**Decided: Gateron KS-33 Low Profile 2.0 Silent Brown.**
+**Decided: Gateron KS-33 Low Profile 2.0 Silent Brown.** Full confirmed specs and the
+dimensional drawing live in the [module doc](../hardware/modules/gateron-ks-33.md). Summary:
 
 | Parameter | Value |
 |---|---|
-| Type | Tactile, silent |
-| Total travel | 3.0 ± 0.2 mm |
-| Pre-travel (actuation) | 1.7 ± 0.4 mm |
+| Type | Silent tactile |
 | Operating force | 55 ± 15 gf |
-| Switch height | ~12.2 mm |
-| Footprint | 15 × 15 mm (MX-compatible) |
-| Pre-lubed | Yes (factory) |
+| Total travel | 3.0 ± 0.2 mm |
+| Pre-travel | 1.7 mm |
+| Body footprint | 15 × 15 mm |
+| Stem | MX-style cross (4.00 env., 1.10 / 1.28 arms) |
+| Plate cutout / thickness | 14.0 mm / 1.2 mm |
 
-Chosen over MX standard ($\varnothing$ 4.0 mm travel, ~18.5 mm height):
-- **Silencioso**: viene con amortiguación de serie y pre-lubricado de fábrica. Los MX silenciosos táctiles son raros y caros (Boba U4, etc.)
-- **Altura**: ahorra ~6 mm en el ensamble total vs MX — crítico en un gabinete de 150 mm
-- **Costo**: más barato que alternativas MX silenciosas táctiles (en ARG ~31,636 ARS)
-- El viaje (3.0 mm) se amplifica con el lever, dando ~7-8 mm en el dedo
+Chosen for: silent + pre-lubed out of the box, low height (~12 mm body saves ~6 mm vs MX),
+cheaper than silent tactile MX, and an MX-cross stem that keeps keycap options open.
 
-Si en el futuro se necesita más viaje sin cambiar el diseño mecánico, se puede migrar a MX
-con el mismo lever y PCB (mismo footprint de 15×15 mm), solo ajustando la altura del lever
-y la posición del switch.
+## Decision: mechanism — flat cap directly on switch (OP-1 style)
 
-## Decision: mechanism — lever bridge + spring
+No lever, no spring, no pivot. **Each key = one switch + one 3D-printed rectangular cap.**
+The finger presses the cap, the cap presses the switch stem, 3 mm of travel. This trades the
+piano-like deep travel of the lever design for radical simplicity and easy iteration.
 
-### Why a lever
+### Cap mounting — two routes
 
-Standard approach (switch + keycap directly on top) produces a flat, computer-keyboard look
-with only 3 mm of key travel. A **lever bridge** decouples keycap shape from switch:
-- Amplifies switch travel at the finger via lever ratio
-- Allows piano-style proportions (72 mm deep keys, elevated black keys)
-- Gives space for proper pivot action, like commercial mini synths (Arturia, Novation, Yamaha)
+- **Floating cap, guided by the plate (primary).** The rectangular cap sits in a well in the
+  plate and pushes the stem via a **nub** underneath; it does *not* clip the stem. Most forgiving
+  for outsourced FDM, and a bad cap is re-printed on its own without depending on the tiny stem
+  fit. Recommended for the first instance.
+- **Stem-mounted cap (plan B).** The cap has a cross socket that clips onto the stem. Cleaner
+  look, feasible now that we have exact stem cotas (model the socket to 4.00 / 1.10 / 1.28, not
+  generic MX 1.17/1.27). Better in resin.
 
-### Lever geometry
+### Terminology
 
-```
-Side view — one white key
+See the [module-doc glossary](../hardware/modules/gateron-ks-33.md#anatomy--glossary) for
+cap / nub / stem / pins.
 
-  FRONT ◄──────────────────────► BACK
-  ┌────────────────────────────────┐
-  │     KEYCAP / lever (3D print)  │  ← player presses here (b = ~55mm from pivot)
-  └─────────────────┬──────────────┘
-                    │  pivot (at back)
-                    │
-     [KS-33 switch] ← lever activates here (a = distance from pivot)
-                    │
-  ══════════════[PCB]═══════════════
-```
+## Decision: layout — flattened 2-octave piano
 
-Key relationship — lever ratio:
+**Range: C3–C5 = 25 keys** (15 naturals + 10 sharps). Two rows of flat rectangular caps:
+naturals in the front row, sharps offset in a back row (with the usual gaps at E–F and B–C),
+like the OP-1.
 
 ```
-finger_travel = switch_travel × (b / a)
-finger_force  = switch_force  × (a / b)    (sin resorte extra)
+  ▢ ▢     ▢ ▢ ▢     ▢ ▢     ▢ ▢ ▢        ← sharps (back row, 10)
+▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢ ▢            ← naturals (front row, 15)
+C D E F G A B C D E F G A B C
 ```
 
-With the white key depth of 72 mm and pivot at the back (~70 mm from front edge),
-the finger contact point is at b ≈ 55 mm from the pivot, leaving ~15 mm of key in front of it.
+### Switch grid (mm, from the left-most natural center = x 0)
 
-| Switch position (a) | Ratio (b/a) | Finger travel | Finger force (no spring) |
+**Naturals (front row, y = 0):** 15 switches at `x = n × 18`, n = 0…14
+→ 0, 18, 36, 54, 72, 90, 108, 126, 144, 162, 180, 198, 216, 234, 252
+(notes C3 D3 E3 F3 G3 A3 B3 C4 D4 E4 F4 G4 A4 B4 C5).
+
+**Sharps (back row, y = +row-spacing):** 10 switches, centered on the boundary between the two
+naturals they sit between → `x = (i + 0.5) × 18`:
+
+| Note | x (mm) | Note | x (mm) |
 |---|---|---|---|
-| **30 mm** from pivot | 1.83× | **5.5 mm** | 30 gf |
-| **25 mm** from pivot | 2.2× | **6.6 mm** | 25 gf |
-| **22 mm** from pivot | 2.5× | **7.5 mm** | 22 gf |
-| **20 mm** from pivot | 2.75× | **8.25 mm** | 20 gf |
+| C#3 | 9 | C#4 | 135 |
+| D#3 | 27 | D#4 | 153 |
+| F#3 | 63 | F#4 | 189 |
+| G#3 | 81 | G#4 | 207 |
+| A#3 | 99 | A#4 | 225 |
 
-**Target:** 7-8 mm travel at the finger with 40-50 gf force.
+(No sharp at x 45 / 117 / 234 — the E–F and B–C gaps.)
 
-### Spring compensation
+### Cap & row dimensions (starting points — tunable)
 
-The lever ratio reduces force at the finger proportionally. To restore a piano-like feel
-(40-50 gf), a **compression spring** is added between the lever and the PCB/enclosure
-at distance `c` from the pivot:
-
-```
-finger_force = switch_force × (a/b) + spring_force × (c/b)
-```
-
-This **decouples travel from force** — the switch defines travel (via lever ratio), the
-spring tunes the force independently.
-
-**Example for ~8 mm + ~45 gf:**
-- Lever ratio b/a = 2.75× → switch at 20 mm from pivot → 8.25 mm at finger
-- Switch contributes: 55 × (20/55) = 20 gf at finger
-- Spring needed: 25 gf at finger → placed at c = 40 mm → spring_force = 25 × (55/40) ≈ 34 gf
-
-The spring can be:
-- A small coil compression spring between lever and PCB (easy to source, replaceable)
-- A torsion spring at the pivot rod (one spring per key or one spanning multiple keys)
-
-### Alternative mechanisms considered
-
-| Mechanism | Travel | Force tuning | DIY-friendly | Verdict |
-|---|---|---|---|---|
-| **Lever bridge + spring** (elegido) | 5-8 mm | Sí (resorte extra) | ★★★★☆ | Mejor balance: viaje, fuerza, forma de piano |
-| Directo sobre switch (sin lever) | 3 mm | No | ★★★★★ | Muy corto, tecla plana |
-| Leaf spring (Yamaha FS/HQ mini) | 4-5 mm | Parcial | ★★☆☆☆ | Excelente tacto pero requiere acero resortado y tratamiento térmico — no práctico para DIY |
-| Living hinge impreso 3D | 1-2 mm | Parcial | ★★★★★ | Viaje muy limitado, fatiga del material |
-| Rubber dome + membrana | 2-4 mm | No | ★★☆☆☆ | Spring + contacto integrados, pero inconsistentes y de vida limitada |
-| Capacitivo (sin mecanismo) | 0 mm | N/A | ★★★★★ | Descartado en 0001-input-method.md — no da suficiente feedback táctil |
-
-## Decision: key proportions
-
-Full-size piano: white key ~23mm wide. nanoKEY2-style mini: ~12mm.
-
-**Decided: 18mm pitch** (revised from 20mm). The original choice was 20mm because it is the
-only pitch where the 60% black-key ratio lands on clean 4mm-grid multiples. That decision was
-**superseded when the frame was shrunk to 280mm wide**: a 15-key (2-octave) keyboard at 20mm
-pitch spans 300mm and no longer fits. 18mm keeps the full C3–C5 range in 270mm (+5mm margins)
-at the cost of leaving the 4mm grid. See `docs/explorations/0003-design-system.md` for the
-full trade-off. The 18mm *pitch* and the 270mm *span* are the only off-grid dimensions; the
-keycap itself was sized to **16mm = 4×4** (with a 2mm gap, 1mm/side) and the depths land on the
-grid too — so everything except the pitch and span stays grid-clean (see below).
-
-**Key length (depth):** set to **72mm white / 44mm black** (up from 60/36). 60mm was the bare
-minimum for the lever; 72mm brings the feel up toward the Casio SA / Yamaha PSS mini standard
-(~78mm white / ~48mm black) — a 28mm front fingertip zone and more lever leverage. It costs no
-extra device depth: the front shelf was trimmed (keys pushed to the bottom edge, ~2mm shelf,
-control band grew to 86mm), so the frame stays 280 × 160mm.
-
-| Dimension | Value | Grid factor |
+| Dimension | Value | Notes |
 |---|---|---|
-| White key pitch (center-to-center) | 18 mm | 4.5×4 (off-grid) |
-| White key visible width (keycap) | 16 mm (pitch − 2 mm gap, 1 mm/side) | 4×4 ✓ |
-| Black key width | 10 mm | off-grid |
-| Black key width ratio | ≈56 % of pitch | — (60% rule = 10.8 mm) |
-| White key depth | 72 mm | 18×4 |
-| Black key depth | 44 mm | 11×4 |
-| Black key depth ratio | ≈61 % | ~✓ |
-| Black–white key gap | 1 mm | rounded separation |
-| 15 white keys total span | 270 mm | 67.5×4 (off-grid) |
+| Natural cap | 16 × 20 mm (W×D) | 16 = pitch − 2 mm gap; depth is free now (no lever) |
+| Sharp cap | 10 × 16 mm | width per design system; free-standing rectangle, can widen |
+| Row spacing (natural↔sharp switch centers) | ~17 mm | **hard floor ≈16 mm**: 15 mm bodies interleave in X, so the rows must clear in Y |
+| Keyboard span (width) | 270 mm | 15 × 18; unchanged |
+| Keyboard depth | **~35 mm** | down from ~72 mm+ with levers — see consequences |
 
-**Black–white separation:** a 1 mm gap separates each black key from its neighbouring white
-keys, with a rounded transition — the white-key notch fillet (r3) is concentric with the black
-key's r2 bottom corner (r3 = r2 + 1 mm), so the gap stays uniform around the corner.
+> **Body-collision constraint:** a sharp at x 9 sits between naturals at x 0 and x 18; their
+> 15 mm bodies overlap in X, so the sharp row must be offset in Y by at least one body depth
+> (~16 mm). This sets the row-spacing floor, not aesthetics.
 
-Black-key width is **10 mm (≈56% of pitch)** rather than the literal 60% rule (10.8 mm):
-cleaner geometry, and real pianos run even slimmer (~40-45% of pitch), so 10 mm reads more
-like an instrument than the heuristic 60%.
+## Look & feel — OP-1 × HiChord (design language)
 
-**Reference instruments.** 18mm pitch / 10mm black / 72mm white matches the mini-key class —
-Casio SA-2/SA-46 (32 mini keys, ~381mm body) and Yamaha PSS-F30 (37 "HQ Mini" keys, 506mm
-body) both use ~18mm white-key pitch and ~78/48mm key lengths. Full-size for comparison is
-23.5mm pitch. So this keyboard sits squarely in proven mini-key territory, just in a narrower
-2-octave frame than either reference (both are ≥38cm wide).
+The keys target the aesthetic of two Primary references in [brief.md](../brief.md):
 
-## Pivot mechanism
+- **OP-1** — flat rectangular caps with softly rounded corners, deliberate color accents, personality without clutter.
+- **HiChord** — premium CNC-aluminium / anodised minimalism, tight tolerances, colored buttons used for *visual hierarchy* (function vs play keys); a "serious tool, pocket-sized" — not a toy.
 
-**Decided: continuous rod.** A single steel or brass rod (3 mm diameter) spans all keys.
-Each key has a U-slot "ear" at the back that wraps around the rod. This is the simplest
-and most proven approach — closest to real piano action, no per-key alignment needed.
+Shared target: **refined minimalism with intentional color**, a quiet premium tactile press, and uniform tight gaps that read as "considered."
 
-| Option | Difficulty | Notes |
-|---|---|---|
-| **Continuous rod** ✅ | Low | Steel/brass wire 3 mm; keys have U-slot ears |
-| Per-key pivot (snap-in shaft) | Medium | All-plastic, no metal parts, but per-key alignment |
-| Living hinge (printed flexure) | Low | Zero assembly, but ~1 mm max travel, fatigue risk |
+| Aspect | Direction |
+|---|---|
+| Cap form | Flat rectangle, softly rounded corners (r ~1–2 mm), uniform tight gaps |
+| Base palette | Muted / anodised-like (black, cream, warm gray) — pick one shell colorway |
+| Color accents | Per-key **SK6812 RGB** carries the color — HiChord-style hierarchy (active note, chord tones, mode) + OP-1 pops. It's *lit*, not painted, so it reconfigures per mode |
+| Feel | KS-33 **silent tactile** already matches the quiet, quality press both aim for |
+| Finish (our reality) | We 3D-print, not CNC aluminium → prefer **resin caps** for a smoother surface, and hold tight, consistent tolerances so the printed grid still reads premium |
+
+Note: HiChord is a *chord* instrument — we borrow its **look and feel**, not its 7-button chord layout. Our layout stays the flattened 2-octave piano; chord/scale behaviour can be layered via modes + the RGB without changing the physical keys.
 
 ## Consequences
 
-- **PCB**: switch footprint must align with lever geometry. Switch position defines the
-  lever ratio and thus travel/force. Default: switch center at ~20 mm from pivot
-  (~52 mm from the front edge of the 72 mm key) for ~8 mm finger travel; the deeper key
-  leaves more room to place the finger press point for the target ratio.
-- **Lever 3D print files needed**: white key lever, black key lever, pivot rod brackets.
-  Each lever includes: U-slot ear for pivot rod, switch pad (contacts switch stem),
-  spring seat (retains compression spring), keycap profile.
-- **Springs**: 20 compression springs 0.4×5×15mm (AliExpress, on order). ~30-42 gf at
-  6 mm compression — matches the ~35 gf target. One spring per key + spares.
-- **Enclosure**: keyboard zone depth and internal clearance must accommodate lever
-  swing arc (~5-8 mm at front, less at pivot). Switch-to-keytop height ~17 mm.
-- Update `docs/hardware/wiring.md` with switch matrix PCB layout once lever
-  geometry is finalized.
-- Update `docs/hardware/enclosure-layout.svg` with keyboard zone geometry.
+- **Keyboard depth drops from ~72 mm to ~35 mm.** Removing the lever frees ~35–40 mm of device
+  depth. This should be reflected in [0003-design-system.md](0003-design-system.md) and the
+  enclosure layout — the 160 mm frame height now has significant slack, or the device can shrink.
+- **PCB**: 25 switches wired directly to 2× PCF8575 (no diodes, common GND — see
+  [module doc](../hardware/modules/gateron-ks-33.md#wiring-to-the-keyboard-i2c-expanders)).
+  Footprint is the KS-33 bottom pattern; two switch rows at the grid above.
+- **3D-print files needed**: (1) natural cap, (2) sharp cap, (3) plate with 14 mm cutouts +
+  cap wells at the grid above. Print a **single-key test** first to validate cutout clip, cap
+  fit, and feel before committing to all 25.
+- **No springs, no pivot rod** — the compression springs and steel rod from the lever design are
+  dropped from the BOM.
+- Update `docs/hardware/enclosure-layout.svg`: replace the sculpted piano keys with the two-row
+  flat-cap grid and reclaim the freed depth.
+
+---
+
+## CAD — plate & keycap (first pass, 2026-07)
+
+First OpenSCAD pass — files + full parametric detail in [`hardware/3d/README.md`](../../hardware/3d/README.md):
+
+- **Plate:** **stepped cutout** — 1.2 mm clip shelf at 14 mm, widened to ~15.2 mm below, so the ~2.4 mm plate sits **flush with the switch base** and both rest on the PCB. **M2 countersunk (allen flat-head)** screws, 4 corners + 1 dead-centre; **heat-set inserts in the enclosure**. Margins 1 mm (the plate is expected to merge into the enclosure as the key container).
+- **Keycap:** **hollow shell** (THT low-profile) — straight base rim → bevel → **rounded top edge**; central cylindrical **post with a "+" cross bore**. **Flat top** (a dish was tried three ways and removed — to revisit).
+- **Pitch:** the cap is fixed at **18 mm**; the gap sets the pitch. Exploring **19–19.5 mm** — **not finalised** (supersedes the earlier "18 mm pitch" once settled).
+- **Assembly:** `assembly-octave.scad` renders the octave with real caps to judge the whole together.
+
+⚠️ **Before any print:** deep-check every measurement (cutout, stepped shelf, plate thickness, cap dims, **stem socket**) against other keycap/plate models — tracked in [plan.md](../plan.md).
+
+## Deferred to a future iteration — lever bridge + spring
+
+> **Open, not rejected.** This mechanism is parked for a later iteration; V1 keeps it simple with
+> flat caps (see top). It's a strong candidate for a V2 that wants real piano feel: it amplifies
+> the 3 mm switch travel to ~7–8 mm at the finger via a lever, with a compression spring tuning
+> force independently — at the cost of springs, a pivot rod, deep 72 mm keys, and per-key parts
+> that are fiddly to 3D-print. Revisit once the flat-cap V1 is validated.
+
+- **Lever bridge**: keycap on a lever pivoting at the back; `finger_travel = switch_travel × (b/a)`.
+  Target was 7–8 mm travel at 40–50 gf, with switch at ~20 mm from a ~55 mm finger point (ratio ~2.75×).
+- **Spring compensation**: a compression spring at distance `c` restored force after the lever
+  divided it down: `finger_force = switch_force × (a/b) + spring_force × (c/b)`.
+- **Pivot**: continuous 3 mm steel/brass rod spanning all keys, U-slot ears per key.
+- **Key proportions**: 72 mm white / 44 mm black depth (for lever leverage + Casio SA / Yamaha
+  PSS mini feel).
+- Alternatives considered and rejected: direct-on-switch (too flat — *now chosen anyway for
+  simplicity*), leaf spring (needs heat-treated steel), living hinge (≤1–2 mm travel, fatigue),
+  rubber dome (inconsistent), capacitive (no tactile feedback, see 0001).

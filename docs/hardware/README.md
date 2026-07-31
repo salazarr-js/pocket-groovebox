@@ -1,6 +1,6 @@
 # Pocket Groovebox — Hardware
 
-> I2S DAC (PCM5102), SPI display (ST7789), and KY-023 joystick are verified and wired. EC11 encoders not yet wired. Keyboard wiring is TBD — pending the lever bridge design. Input method decision: **mechanical keys** ([0002-key-design.md](../explorations/0002-key-design.md)).
+> I2S DAC (PCM5102), SPI display (ST7789), and KY-023 joystick are verified and wired. EC11 encoders not yet wired. Keyboard wiring is defined (25 keys via 2× PCF8575); V1 uses OP-1-style flat caps on switches, keycap + plate CAD in progress. Input method decision: **mechanical keys** ([0002-key-design.md](../explorations/0002-key-design.md)).
 
 Hardware decisions for the device. For the *why* and *what*, see [brief.md](../brief.md); for build steps, see [plan.md](../plan.md).
 
@@ -48,7 +48,7 @@ Note: both the PAM8403 and the MAX98357A are BTL (bridge-tied) speaker amps and 
 | Area | Choice | Notes |
 | --- | --- | --- |
 | MCU | ESP32-S3 | More RAM/CPU, BLE MIDI, native USB |
-| Keyboard | 25 keys (15 white + 10 black) — 2 octaves | KS-33 Silent Brown MX switches, lever bridge, 18mm pitch, 270mm wide |
+| Keyboard | 25 keys (15 white + 10 black) — 2 octaves | KS-33 Silent Brown low-profile switches (MX-cross stem), OP-1-style flat caps directly on switch (no lever — deferred), 18mm pitch, 270mm wide |
 | Key I/O | 2× PCF8575 I2C expander (0x20 + 0x21) | 16 + 9 pins for 25 keys; shared INT on GPIO15 (open-drain wired-OR) |
 | Key LEDs | SK6812 MINI-E ×25 | Per-key RGB, south-facing MX mount, 74AHCT125 level shifter on GPIO18 |
 | Display | 1.9" ST7789 LCD, 170×320 SPI | BPM, presets, waveforms, menus |

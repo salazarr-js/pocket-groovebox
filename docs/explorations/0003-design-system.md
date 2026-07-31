@@ -11,6 +11,14 @@
 > exception in service of fitting two octaves into 280 mm. Tables below are updated to the new
 > values; off-grid entries are marked.
 
+> **Revision (2026-07) — OP-1 flat-cap pivot (V1).** The lever mechanism is deferred (see
+> [0002-key-design.md](0002-key-design.md)); V1 uses flat rectangular caps directly on the
+> switches. This **cuts keyboard depth from ~72 mm to ~35 mm** (natural cap ~20 mm front row +
+> sharp back row at ~17 mm spacing), freeing ~35–40 mm inside the 160 mm frame. The pitch (18 mm)
+> and span (270 mm) are unchanged. Nice side effect: the shorter flat-cap depths land back **on**
+> the 4 mm grid (20 = 5×4, 16 = 4×4). The enclosure depth re-split (control band vs keys vs shelf)
+> and the SVG still need updating to spend the reclaimed depth — tracked in consequences.
+
 ## Context
 
 Physical products benefit from a base measurement unit — a grid that all dimensions snap to,
@@ -63,9 +71,9 @@ rails naturally align. 5mm has no relationship to FDM line width.
 |---|---|---|
 | EC11 encoder body | 24mm | 6×4 ✓ |
 | Speaker (current 30mm → target 40mm) | 40mm | 10×4 ✓ |
-| White key depth | 72mm | 18×4 ✓ |
-| Black key depth | 44mm | 11×4 ✓ |
-| Black key width | 10mm | off-grid (18mm pitch) |
+| Natural cap depth (V1 flat) | 20mm | 5×4 ✓ |
+| Sharp cap depth (V1 flat) | 16mm | 4×4 ✓ |
+| Sharp cap width | 10mm | off-grid (18mm pitch) |
 
 ## Reference values
 
@@ -75,18 +83,18 @@ the 4mm grid; the 16mm keycap and the depth dimensions land on it):
 | Dimension | Value | Grid factor |
 |---|---|---|
 | White key pitch (center-to-center) | 18mm | 4.5×4 ⚠ off-grid |
-| White key visible width (keycap) | 16mm (pitch − 2mm gap, 1mm/side) | 4×4 ✓ |
-| Black key width | 10mm | off-grid (≈56%) |
-| Black key width ratio | ≈56% of pitch | — (60% rule = 10.8mm) |
-| White key depth | 72mm | 18×4 |
-| Black key depth | 44mm | 11×4 |
-| Black key depth ratio | ≈61% | ~✓ |
-| 15 white keys total span | 270mm | 67.5×4 ⚠ off-grid |
+| Natural cap width (keycap) | 16mm (pitch − 2mm gap, 1mm/side) | 4×4 ✓ |
+| Sharp cap width | 10mm | off-grid (≈56%) |
+| Sharp cap width ratio | ≈56% of pitch | — (60% rule = 10.8mm) |
+| Natural cap depth (V1 flat) | 20mm | 5×4 ✓ |
+| Sharp cap depth (V1 flat) | 16mm | 4×4 ✓ |
+| Sharp↔natural row spacing (switch centers) | ~17mm | ⚠ off-grid (15mm body-clearance floor) |
+| 15 natural keys total span | 270mm | 67.5×4 ⚠ off-grid |
 
-Depth (length) was set to 72/44mm — up from 60/36 — to reach Casio SA / Yamaha PSS mini feel
-without deepening the frame; the front shelf absorbs the difference (see margins). Note the
-keycap (16 = 4×4) and *depths* land cleanly on the 4mm grid (72 = 18×4, 44 = 11×4); only the
-18mm pitch and 270mm span remain off-grid.
+V1 uses **flat rectangular caps** (OP-1 style, no lever — see [0002](0002-key-design.md)): two
+rows, naturals in front, sharps offset behind. Cap depths (~20/16mm) are starting points and are
+grid-clean (20 = 5×4, 16 = 4×4); only the 18mm pitch, 270mm span, and ~17mm row spacing are
+off-grid. The deep 72/44mm piano-key depths belonged to the deferred lever design.
 
 *(Previous values were 20mm pitch / 12mm black / 19mm visible / 300mm span at 60/36mm depth —
 see the revision note at the top of this file.)*
@@ -106,6 +114,11 @@ and its 160mm depth splits as **86mm control band + 72mm keys + 2mm front shelf*
 are pushed to the bottom edge, leaving only the shell's corner-radius clearance below them).
 140mm (the other on-grid option) is too short — the 72mm keys plus the control band already
 need ~158mm before any shelf.
+
+> **⚠ Stale after the OP-1 pivot.** Flat caps need only ~35mm of keyboard depth (not 72mm), so
+> this 86 / 72 / 2 split is superseded — the frame now has ~37mm of slack. The re-split (bigger
+> control band? smaller frame? front shelf?) is an open follow-up, resolved together with the
+> enclosure SVG update. 140mm becomes viable again if the frame is shrunk.
 
 ### Margins
 
@@ -137,12 +150,12 @@ the way around the corner.
 
 ## Consequences
 
-- `docs/hardware/enclosure-layout.svg` — ✅ updated: 280×160mm enclosure, 18mm-pitch keyboard
-  pushed to the shell bottom with rounded keys (r2) + a 1mm rounded black↔white gap; keybed bg
-  rounds r8 to follow the shell; dimension annotations moved outside the part and a yellow NOTES
-  box added (see CLAUDE.md docs table for structure)
-- `docs/explorations/0002-key-design.md` — ✅ key proportions table updated to 18mm pitch
-  (16mm white keycap, 10mm black, 72/44mm depths, 1mm black↔white gap)
+- `docs/hardware/enclosure-layout.svg` — 🚧 **needs OP-1 update**: currently draws the sculpted
+  72mm piano keys; replace with the two-row flat-cap grid (15 naturals front + 10 sharps offset
+  behind, ~35mm total depth) and re-spend the freed depth. Previously updated for the 280×160mm
+  shell + 18mm pitch.
+- `docs/explorations/0002-key-design.md` — ✅ pivoted to OP-1 flat caps: 18mm pitch, 16mm natural
+  cap / 10mm sharp, ~20/16mm flat depths, 2-octave 25-key grid; lever design deferred.
 - Enclosure width must accommodate the 270mm keyboard + margins (5mm each side → 280mm = 70×4);
   height is 160mm = 40×4 (see table above)
 - All 3D print files: walls in multiples of 0.8mm, bosses/rails in multiples of 4mm

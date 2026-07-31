@@ -7,7 +7,7 @@ How the modules connect to the ESP32-S3. This doc is **only the connection struc
 **Status:**
 - ✅ PCM5102 DAC, ST7789 display, PAM8403 amp — verified and wired
 - ✅ EC11 encoders and joystick — on hand, wiring defined
-- 🚧 Keyboard (25 keys via PCF8575 ×2) — wiring defined, lever bridge mechanism being designed
+- 🚧 Keyboard (25 keys via PCF8575 ×2) — wiring defined; V1 uses OP-1-style flat caps directly on switches (no lever), keycap + plate CAD in progress
 - 🛒 SK6812 MINI-E LEDs — on order, wiring defined
 
 ## Connection overview

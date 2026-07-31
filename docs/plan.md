@@ -31,9 +31,19 @@ Gather, identify, and document every module; plan the wiring.
 - [x] Draft the wiring plan (which pins connect where) — see [wiring.md](hardware/wiring.md)
 - [x] Module docs created: ESP32-S3, PCM5102, PAM8403, ST7789, PCF8575, SK6812 MINI-E, speaker, template
 - [x] Input method decision: **mechanical keys** ([0002-key-design.md](explorations/0002-key-design.md))
-- [x] Keyboard mechanism: **lever bridge with KS-33 Silent Brown switches**
+- [x] Keyboard mechanism (V1): **OP-1-style flat rectangular caps directly on KS-33 Silent Brown switches** (lever bridge deferred to a later iteration — see [0002](explorations/0002-key-design.md))
 - [x] Speaker upgrade: **40 mm full-range neodymium** (on order)
-- [ ] Finalize lever bridge CAD design
+- [x] Switch mechanical spec confirmed (KS-33 dims + vernier: cutout **14.0mm**, MX-cross stem) — [module doc](hardware/modules/gateron-ks-33.md)
+- [x] Keyboard layout finalized (24 keys) — shared source at [`hardware/3d/octave-layout.scad`](../hardware/3d/octave-layout.scad)
+- [x] **CAD/fab toolchain decided** — OpenSCAD (mechanical + layout) + KiCad (PCB); FreeCAD fallback; tools installed — [0004](explorations/0004-cad-toolchain.md)
+- [ ] **Build the one-octave proto module** (12 keys + SK6812 + PCF8575, all in one) — [0005](explorations/0005-proto-keyboard-module.md). First learning build.
+  - [x] **Plate + cap CAD (OpenSCAD)** — stepped plate, hollow keycap, full-octave assembly — in [`hardware/3d/`](../hardware/3d/README.md)
+  - [x] **DEEP MEASUREMENT INVESTIGATION** — web research (Cherry spec, KeyV2, riskable, clp-keycaps) + **sliced the official STEP in FreeCAD**. Confirmed the mount is **standard MX**: cross **4.00 × 1.11**, collar **ø5.68**, mount tower **2.95 mm** (housing/boss shape is irrelevant — the cap only engages the cross + circle). Cap socket updated in `cap.scad`: `socket_depth` 3.6→**2.8** (low-profile), `cross_arm_width` 1.1 + `stem_clearance` (FDM 0.18 / resin 0.05, on arm width only), added `mouth_flare` lead-in + optional `split_post`. See [gateron-ks-33.md](hardware/modules/gateron-ks-33.md).
+  - [ ] Finalise open cap/plate questions: **dish** (revisit or keep flat), **sharp offset** illusion, **anti-tilt** for tall naturals, **pitch** (19 vs 19.5)
+  - [x] **Test-fit kit printed → PASSED** (PLA + PETG, 0.2 & 0.4 mm nozzles, 3 print services): KS-33 clip + cap socket confirmed with `kerf 0` / `stem_clearance 0.18`. 0.2 mm nozzle = best finish (spec for final parts). One service shipped elephant foot → design bottom-edge chamfers in. Details in [`hardware/3d/README.md`](../hardware/3d/README.md); test files deleted after passing.
+  - [ ] Propagate the final pitch to the docs (still say 18mm pitch)
+  - [ ] KS-33 custom footprint (KiCad) → one-octave PCB (+ SK6812 + JST)
+  - [ ] Assemble + firmware smoke test (read 12 keys, light 12 LEDs)
 
 ---
 

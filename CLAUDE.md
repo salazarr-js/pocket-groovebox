@@ -60,7 +60,7 @@ HAL             — I2S, SPI, GPIO, NVS wrappers
 **Resolved (no longer blocking):**
 
 - ✅ **Input method** — mechanical keys via 2× PCF8575 I2C expanders. See `docs/explorations/0001-input-method.md`.
-- ✅ **Key design** — lever bridge + KS-33 Silent Brown switches, **18mm pitch** (16mm keycap, 10mm black, 72/44mm depths, 1mm rounded black↔white gap). See `docs/explorations/0002-key-design.md` + `docs/explorations/0003-design-system.md`.
+- ✅ **Key design (V1)** — **OP-1-style flat rectangular caps directly on KS-33 Silent Brown switches** (no lever bridge — that's deferred to a later iteration). Flattened 2-octave piano, C3–C5 = **25 keys** (15 naturals front row + 10 sharps offset behind), **18mm pitch**, 16mm natural cap / 10mm sharp, ~20/16mm flat depths (keyboard ~35mm deep). Look & feel: **OP-1 × HiChord** (refined minimalism, flat rounded-rectangle caps, muted base + per-key RGB accents, premium tactile — not toy-like). See `docs/explorations/0002-key-design.md` + `docs/explorations/0003-design-system.md` + `docs/hardware/modules/gateron-ks-33.md`. ⚠ `enclosure-layout.svg` still draws the old piano keys — pending update.
 
 **Do not finalize the audio engine or begin Phase 3 code until the synthesis research is resolved.**
 
@@ -103,5 +103,9 @@ Audio output chain: ESP32-S3 → I2S → PCM5102 → headphone jack + PAM8403 am
 | `docs/explorations/` | Open decisions being weighed (ADR-style, one file per topic) |
 | `docs/issues/` | Bug and investigation log |
 | `docs/hardware/modules/sk6812mini-e.md` | SK6812 MINI-E addressable RGB LED — specs, timing, level shifter requirement, BOM |
+| `docs/hardware/modules/gateron-ks-33.md` | Gateron KS-33 Low Profile 2.0 Silent Brown switch — full mechanical dims (15mm body, 14mm plate cutout, 1.2mm plate, MX-cross stem 4.00/1.10/1.28), 3-pin/plate mount, confirmed Gateron specs (55gf tactile), keycap strategy, PCF8575 wiring |
 | `docs/hardware/enclosure-layout.svg` | Interior layout diagram — 280×160mm enclosure on a 355×232mm page, 2D top view. Authored in **mm units** (1 user unit = 1mm); styling via a `<style>` block of CSS classes; each module is a `<g id="…">`; the keyboard `<g>` is `translate`d to sit at the shell bottom; piano keys are reusable `<use>` of 5 shape defs (16mm white / 10mm black, rounded bottoms + 1mm rounded black↔white gap; keybed bg path rounds r8 to follow the shell). Dimension annotations live **outside** the part (vertical→left, horizontal→bottom, stepped so labels don't overlap); a yellow **NOTES** box at the page bottom holds the spec + legend text. Edit module positions by their group coords (or drag in Boxy SVG); restyle via the class block |
 | `docs/explorations/0003-design-system.md` | 4mm base grid decision — key proportions, wall thicknesses, reference values. Revised 2026-06: 280mm frame, keyboard at 18mm pitch (off-grid exception) |
+| `docs/explorations/0004-cad-toolchain.md` | CAD/fab toolchain decision — OpenSCAD (mechanical + layout) + KiCad (PCB) + FreeCAD (fallback); Ergogen evaluated + dropped; agentic MCP research; installed tool versions |
+| `docs/explorations/0005-proto-keyboard-module.md` | First physical build: one-octave (12-key) proto keyboard module with SK6812 + PCF8575, before the full 24-key keyboard |
+| `hardware/` | Custom hardware, by discipline — `3d/` (OpenSCAD **production**: `octave-layout.scad` shared layout, `switch-cutout`, `plate-octave`, `cap`, `assembly-octave` — fit **print-validated**, see `3d/README.md`), `pcb/` (KiCad, TBD); `README.md` ties to docs. **Design loop = `/cad` skill** (`.claude/skills/cad/`) — Claude edits + renders, user watches live in OpenSCAD (auto-reload) and approves/requests |
