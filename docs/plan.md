@@ -42,7 +42,7 @@ Gather, identify, and document every module; plan the wiring.
   - [ ] Finalise open cap/plate questions: **dish** (revisit or keep flat), **sharp offset** illusion, **anti-tilt** for tall naturals, **pitch** (19 vs 19.5)
   - [x] **Test-fit kit printed → PASSED** (PLA + PETG, 0.2 & 0.4 mm nozzles, 3 print services): KS-33 clip + cap socket confirmed with `kerf 0` / `stem_clearance 0.18`. 0.2 mm nozzle = best finish (spec for final parts). One service shipped elephant foot → design bottom-edge chamfers in. Details in [`hardware/3d/README.md`](../hardware/3d/README.md); test files deleted after passing.
   - [ ] Propagate the final pitch to the docs (still say 18mm pitch)
-  - [ ] KS-33 custom footprint (KiCad) → one-octave PCB (+ SK6812 + JST)
+  - [ ] Hand-wire the octave: switch pins → PCF8575 module via plate wire channels — **no custom PCB** (decided 2026-07-31, see [`octaves-plan.md`](../hardware/3d/octaves-plan.md)); PCF mounts into the plate between the sharps. ⚠ Open: SK6812 mounting without a PCB (defer / strip / flex?)
   - [ ] Assemble + firmware smoke test (read 12 keys, light 12 LEDs)
 
 ---

@@ -3,6 +3,12 @@
 .AppleDouble
 .LSOverride
 
+# OpenSCAD generated artifacts (hardware/) — .stl is KEPT on purpose (GitHub renders it in 3D)
+hardware/**/*.png
+hardware/**/*.3mf
+# OpenSCAD Customizer parameter-set state
+hardware/**/*.json
+
 # Arduino build cache
 firmware/**/build/
 firmware/**/.arduino15/
