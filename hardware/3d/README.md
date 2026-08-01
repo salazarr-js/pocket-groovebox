@@ -16,19 +16,15 @@ live; Claude edits + renders in parallel (`/cad` skill).
 
 ## Design decisions (this session, 2026-07)
 
-### Plate (`plate-octave.scad`, `switch-cutout.scad`)
+### Plate (v0 `plate-octave.scad` / `switch-cutout.scad`, deleted — snapshot in [`octaves-plan.md`](octaves-plan.md) §7)
 - **Stepped cutout**, not a plain 14 mm hole: a **1.2 mm clip shelf at 14 mm** (the switch clips latch here), then the hole **widens to ~15.2 mm** below → the plate bottom sits **flush with the switch base**, so plate + switch both rest on the PCB. Plate total **~2.4 mm**. Rounded cutout corners (`hole_r`).
 - **Screws:** **M2 countersunk hex-socket** (allen flat-head, DIN 7991) so they sit **flush** (a socket-cap counterbore is too deep for a 2.4 mm plate). Layout: **4 corners + 1 dead-centre** (in the gap between the natural and sharp rows). M2 **heat-set threaded inserts** go in the **enclosure**, not the plate (the plate is just a clearance hole).
 - **Margins → 1 mm:** the plate will likely **merge into the enclosure** as the key container, so a big border isn't needed.
-- **Pitch:** the **cap is fixed at 18 mm**; the gap sets the pitch (`pitch = cap + gap`). Currently exploring **19–19.5 mm** (gap 1–1.5 mm) — **NOT finalised**.
+- **Pitch:** the **cap is fixed at 18 mm**; the gap sets the pitch (`pitch = cap + gap`). Current value: **gap 0.5 mm → pitch 18.5 mm** (parametric — decided 2026-07-31, revisit after build 1.0).
 
-### Keycap (`cap.scad`)
-- **Hollow shell** (THT low-profile style) — walls ~1.2 mm, top ~1.4 mm, open bottom (like a real keycap / Lego brick).
-- **Profile:** straight vertical **rim** at the base (`base_rim_height`) → **bevel** up to a slightly smaller top (`top_inset`, top < base) → **rounded top edge / arista** (`top_edge_round`). Separate base/top **vertical-corner** radii (`base_corner_r`, `top_corner_r`) — distinct from the top-edge round.
-- **Mount (standard MX):** central cylindrical **post Ø5.5** with a **"+" cross bore** (cross inside a circle) — `cross_arm_length` 4.0 × `cross_arm_width` 1.1 (male) + **`stem_clearance`** per process (FDM 0.18 / resin 0.05, on arm width only — the length self-locates). **`socket_depth` 2.8 mm** (KS-33 low-profile tower is 2.95 mm — *not* the full-MX ~4). A **`mouth_flare`** 45° lead-in eases insertion + kills elephant-foot; optional **`split_post`** (FDM) so the cross flexes instead of cracking. *Measured from the STEP: cross 4.00×1.11, collar ø5.68, tower 2.95.*
+### Keycap (v0 `cap.scad`, deleted — snapshot in [`octaves-plan.md`](octaves-plan.md) §7)
+- **Design:** hollow shell (THT low-profile style, open bottom), rim → bevel → rounded top edge profile, central MX post with "+" cross bore. **All parameter values** (walls, profile radii, post/cross dims, `stem_clearance`, `mouth_flare`, sizes) live in [`octaves-plan.md`](octaves-plan.md) §7 — the **single source of values**; don't duplicate them here.
 - **Flat top / no dish.** A concave dish was tried three ways (spherical, rounded-rect clipped, ellipsoid "pill") and **removed** — it kept eating the rounded top edge and never matched the reference. **To revisit** with a different method.
-- **Sizes:** naturals **1u × 2u**; sharps C#/D#/F#/A# = **1.5u × 1u**; G# = **1u × 1u**.
-- Variables are explicit + step 0.1 (Customizer accepts locale comma `4,3`).
 
 ### Toolchain proven
 OpenSCAD driven headless by Claude via CLI (edit → `openscad --render` PNG → inspect → iterate),
@@ -49,5 +45,5 @@ The fit-test kit (2-space stepped plate + 1×2 and 1×1 caps) was printed and **
 - Revisit the **dish** (or keep flat).
 - **Sharp offset** ("illusion" toward the true note) — not done.
 - **Anti-tilt** for the tall 2u naturals — not addressed.
-- Finalise **pitch** (19 vs 19.5) and propagate to the docs (still say 18 mm pitch).
-- Sharps: continuous 1.5u vs piano gaps — user decision.
+- ✅ **Pitch** — resolved for now: **18.5 mm** (cap 18 + gap 0.5, parametric — [`octaves-plan.md`](octaves-plan.md) §7); revisit after build 1.0.
+- ✅ **Sharps** — positions follow the layout snapshot in [`octaves-plan.md`](octaves-plan.md) §7 (C#–D# at 1.5·pitch, F#–G#–A# at 1.25·pitch).

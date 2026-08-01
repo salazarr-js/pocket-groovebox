@@ -7,7 +7,7 @@
 
 ## Status
 
-Early prototyping. Most hardware is on hand; currently testing individual modules on the ESP32-S3.
+Hardware checkpoint: peripherals verified on the ESP32-S3 (Phase 2 sketches done); keyboard CAD rebuild in progress ([hardware/3d/octaves-plan.md](hardware/3d/octaves-plan.md)). Next milestone: **build 1.0** — a one-octave (12-key) hand-wired keyboard integration build with printed caps + plate, no LEDs.
 
 ## Docs
 
@@ -16,8 +16,10 @@ Early prototyping. Most hardware is on hand; currently testing individual module
 - [docs/hardware/README.md](docs/hardware/README.md) — hardware decisions (platform, components, power)
 - [docs/hardware/wiring.md](docs/hardware/wiring.md) — how the modules connect to the ESP32-S3 (diagram + pin tables)
 - [docs/plan.md](docs/plan.md) — build plan (checklist of steps by phase)
+- [docs/architecture.md](docs/architecture.md) — firmware architecture (layer model, audio engine, open questions)
 - [docs/development.md](docs/development.md) — dev environment setup (toolchain, libraries, build/flash)
-- [docs/explorations/](docs/explorations/) — open decisions (input method, key design, design system)
+- [docs/research/](docs/research/) — background research (synthesis, digital synths, drums, music theory)
+- [docs/explorations/](docs/explorations/) — ADR-style decision records, mostly resolved (input method, key design, design system decided; keyboard CAD rebuild in progress)
 
 ## References
 
@@ -34,15 +36,7 @@ Inspirations behind the design are in the [brief](docs/brief.md#inspirations).
 - https://fritzing.org/
 - https://wokwi.com/
 
-**Live serial input (char-by-char, no Enter).** The Arduino Serial Monitor is line-buffered
-and can't send arrow keys. To send each keystroke instantly (e.g. to play notes), use a raw
-terminal — find the port with `ls /dev/cu.*`, then:
-
-```
-screen /dev/cu.usbmodemXXXX 115200      # quit: Ctrl-A then K
-```
-
-Arrow keys work here too. Close it before flashing — only one program can hold the port.
+**Live serial input** (char-by-char, raw terminal via `screen`): see [docs/development.md](docs/development.md).
 
 ### Skills
 - https://github.com/ezrover/ESP32-AI-Agent-Skill

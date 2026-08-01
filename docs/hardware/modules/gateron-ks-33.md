@@ -10,15 +10,17 @@ Low-profile mechanical switch used for the keyboard keys. Silent tactile, pre-lu
 | --- | --- |
 | **Role** | Per-key mechanical switch (keyboard) |
 | **Model** | Gateron KS-33 Low Profile 2.0, **Silent Brown** |
-| **Feel** | Silent **tactile**, **55 gf** operating force, factory pre-lubed |
+| **Feel** | Silent **tactile**, **55 gf** (±15 gf) operating force, factory pre-lubed |
 | **Travel** | Pre-travel **1.7 mm**, total **3.0 ±0.2 mm** |
 | **Stem** | **MX-style cross ("+")**, low-profile — brown, POM |
-| **Mount** | 3-pin: 2 metal contact pins + 1 central plastic locating post; plate-mount clips on the sides |
+| **Mount** | 3-pin: 2 metal contact pins + 1 central plastic locating post; plate-mount clips on the sides. 3-pin confirmed on our units by photo + purchase listing (some Gateron marketing text for the range says "5-pin") |
 | **Hot-swap** | Yes (designed for low-profile hot-swap sockets) |
 | **Plate** | Designed for a **1.2 mm** low-profile plate |
 | **LED** | SMD LED slot, south-facing (pairs with [SK6812 MINI-E](sk6812mini-e.md)) |
 | **Housing** | PC transparent top, nylon black bottom, POM stem |
 | **Compatibility** | NOT interchangeable with standard MX or Kailh low-profile switches (different body) |
+
+*Specs confirmed against Gateron's official product page. Reference (same family): Silent Red = linear 45 gf; Silent Brown = tactile 55 gf. Same 1.7 mm / 3.0 mm travel across the line.*
 
 > ✅ **Dimensional drawing obtained** ("Gateron Low Profile" dimensional drawing, via Ranked) — full mechanical dimensions in the [Mechanical dimensions](#mechanical-dimensions-from-drawing) section below. The drawing is labeled generically "Gateron Low Profile", so a quick **caliper sanity-check** was done. Gateron's own product page and the bundled PDF still publish no drawing.
 >
@@ -31,7 +33,7 @@ Terms used throughout the keyboard design:
 - **Switch** — the whole component ("shaft"/"eje" in some listings). Houses spring + contacts.
 - **Stem** — the moving part that travels up/down when pressed. On the KS-33 it's the **brown "+" cross** (MX-compatible). The keycap mounts here.
 - **Keycap / cap** — the plastic top you touch with your finger; clips onto the stem cross. In this project these are **3D-printed, rectangular, OP-1 style**.
-- **Nub** — a small protrusion. Not a stock switch part — a feature we'd add under a *floating* cap to push the stem down. See "Keycap strategy".
+- **Nub** — a small protrusion. Not a stock switch part — a feature the *floating-cap* route would have added under the cap to push the stem down (that route was considered and dropped — see "Keycap strategy").
 - **Pins** — the 2 metal contacts (electrical) + 1 central plastic post (mechanical alignment) = the "3-pin" spec.
 
 ```
@@ -43,22 +45,6 @@ Terms used throughout the keyboard design:
                └─┬─┬─┬──┘
    2 metal pins ─┘ │ └─── + central plastic post ("3-pin")
 ```
-
-## Specs (confirmed — Gateron official)
-
-| Spec | Value |
-| --- | --- |
-| Feel | Silent tactile |
-| Operating force | 55 gf (±15 gf) |
-| Pre-travel (actuation) | 1.7 mm |
-| Total travel | 3.0 ±0.2 mm |
-| Pre-lubed | Yes |
-| Pins | 3-Pin (our units — confirmed by photo + purchase listing; note some Gateron marketing text for the range says "5-pin") |
-| Stem / housing | POM stem, PC transparent top, Nylon black bottom |
-| LED | SMD support (south-facing) |
-| Plate thickness | 1.2 mm |
-
-*Reference (same family): Silent Red = linear 45 gf; Silent Brown = tactile 55 gf. Same 1.7 mm / 3.0 mm travel across the line.*
 
 ## Mechanical dimensions (from drawing)
 
@@ -90,13 +76,13 @@ From the Gateron Low Profile dimensional drawing (all mm) — annotated drawing 
 
 > **The keycap mount is standard MX.** Gateron: *"MX-styled stem with a circular dust wall"*, compatible with standard MX keycaps ([gateron.co](https://www.gateron.co/products/gateron-low-profile-mechanical-switch-set)). So the **housing/boss shape (square vs rectangular) is irrelevant to the cap** — the cap only engages the **cross ("+") + the circular collar**, and both are standard (**cross 4.0 × 1.1, collar ø5.7**). Verified by slicing the official STEP: cross **4.00 × 1.11** arm, collar **ø5.68**. The *one* non-standard trait is **low profile** — the mount tower is only **~2.95 mm** tall, so the cap socket must be shorter than the full-MX ~4 mm.
 
-**Bottom / PCB footprint (hot-swap)** — transcribe directly into the PCB footprint:
+**Bottom / PCB footprint (hot-swap)** — only relevant if a PCB version happens (deferred; build 1.0 is hand-wired, no PCB). Transcribe directly into the PCB footprint:
 
 - Central pole at center, ø ~4.80–5.05 (minor rev variation between drawing sheets).
 - Metal contact pins + RGB LED slot positioned by offsets: 5.00, 3.20, 2.25, 5.75, 4.70, 2.60, 4.40 (from center).
 - RGB (SMD LED) slot on the **south** side — sets where the [SK6812 MINI-E](sk6812mini-e.md) sits relative to switch center.
 
-**Layout implication:** body is 15.00 mm and the key pitch is 18 mm → only **3 mm between switch bodies** (1.5 mm/side) and **4 mm of plate web between 14 mm cutouts**. Tight but workable.
+**Layout implication:** body is 15.00 mm and the natural (1u) pitch is 18.5 mm (18 mm cap + 0.5 mm gap) → **3.5 mm between switch bodies** (1.75 mm/side) and **4.5 mm of plate web between 14 mm cutouts**. Tight but workable. The 1.5u sharps (27 mm caps) sit on wider spacings, so their plate webs differ — see [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md).
 
 ### Silent variant — vernier measurements (SOURCE OF TRUTH)
 
@@ -114,30 +100,25 @@ The STEP/drawing above are the **standard** KS-33 LP 2.0. Our actual switch is t
 
 **For CAD:**
 - **Plate cutout:** target **~14.0 mm** (below-flange 13.9 passes; flange 14.5 rests on top). Dial exactly on the single-key test print.
-- **Plate thickness — DECIDED: ~2.5 mm stepped plate** (variant-independent). The switch geometry: clip notch at **1.2 mm** below the flange, housing **base at 2.5 mm** (the "bed" that rests on the PCB). A plain 1.2 mm plate clamps the clips fine but leaves the base floating **1.3 mm above the PCB**. Instead, use a **2.5 mm-thick plate with a stepped cutout**:
-  - **Top 1.2 mm:** 14.0 mm hole = the **clip shelf** (body passes, clips hook under this ledge).
-  - **Lower 1.3 mm:** widen to **~15 mm** to clear the sprung-out clips (they extend to ~14.7 mm hooked).
-  - Result: switch clips firmly at 1.2 mm **and** the plate bottom sits flush with the switch base → **both plate and switch rest on the PCB** (rigid, no float). Bonus: 2.5 mm prints far sturdier than 1.2 mm.
-  - Make total **~2.4 mm** (a hair under 2.5) so the switch seats fully before the plate bottoms on the PCB. The **1.2 mm clip shelf is the critical reference**; the rest is structural.
-  - LEDs (SK6812) sit on the PCB inside each cutout (under the switch); the plate rests on the PCB **in the ~4 mm webs between keys**, clear of the LEDs.
-  - ⚠️ **Verify on the test print:** confirm the switch **clicks firmly** at the 1.2 mm shelf and the base meets the PCB. Adjust the shelf depth if the measured flange→clip differs.
-- **Cap cross-socket (finalised in [`hardware/3d/cap.scad`](../../../hardware/3d/cap.scad)):** standard MX cross-in-cylinder mount — **post Ø5.5** (matches collar ø5.7), **cross 4.0 span × 1.1 male arm**, **socket depth 2.8 mm** (tower is 2.95). Add print clearance to the **arm width only** — asymmetric, the length self-locates: **+0.18 mm FDM (0.2 mm nozzle) / +0.05 mm resin** (`stem_clearance`). Add a **0.5 mm 45° flared lead-in** at the mouth (eases insertion + absorbs elephant-foot); optional **split-post** for FDM so the cross flexes instead of cracking. Validate with a **stem-only tolerance ladder** (0.10 / 0.15 / 0.20 / 0.25) before committing to a full cap.
+- **Plate thickness — DECIDED: 2.4 mm stepped plate, no PCB underneath.** The keyboard is **plate-mount, hand-wired** to the PCF8575 — there is no PCB, so the plate alone carries the switches and the clips do all the retention (nothing rests on a board below). The **1.2 mm clip shelf is the critical reference**; the rest is structural:
+  - **Top 1.2 mm:** 14.0 mm hole = the **clip shelf** (body passes, clips hook under this ledge — matches the switch's 1.2 mm plate spec).
+  - **Lower 1.2 mm:** widen to **15.2 mm** to clear the 15 mm body and the sprung-out clips (~14.7 mm hooked). Total 2.4 mm prints far sturdier than a bare 1.2 mm plate.
+  - These values are **print-validated** (kerf 0.0, PLA/PETG, multiple print services) — see [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §2 (calibrated values) and §5–6 (rebuild file structure + enclosure context). Switch pins are hand-wired point-to-point below the plate; wire channels in the plate underside route the runs to the PCF8575, which mounts into the plate's sharps-row bays.
+  - Per-key SK6812 LEDs are **deferred** — they require a PCB version of the keyboard; build 1.0 has no LEDs, so the plate needs no LED provisions.
+- **Cap cross-socket (finalised — geometry snapshot in [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §7):** standard MX cross-in-cylinder mount — **post Ø5.5** (matches collar ø5.7), **cross 4.0 span × 1.1 male arm**, **socket depth 2.8 mm** (tower is 2.95). Add print clearance to the **arm width only** — asymmetric, the length self-locates: **+0.18 mm FDM (0.2 mm nozzle) / +0.05 mm resin** (`stem_clearance`). Add a **0.5 mm 45° flared lead-in** at the mouth (eases insertion + absorbs elephant-foot); optional **split-post** for FDM so the cross flexes instead of cracking. Validate with a **stem-only tolerance ladder** (0.10 / 0.15 / 0.20 / 0.25) before committing to a full cap.
 - The STEP model is a **rough visual reference only** for the Silent — geometry authority is this table.
 
 ## Keycap strategy (this project)
 
-Because the stem is an **MX cross**, both routes are viable:
+**Decided: stem-mounted cap** — printed cap with a cross socket on the MX stem, plus a plate guide rib for anti-rotation; the floating-cap route was considered and dropped ([0002-key-design.md](../../explorations/0002-key-design.md)).
 
-- **Floating cap (guided by plate)** — printed rectangular cap sits in a plate well and pushes the stem via a nub; does *not* clip the stem. Most forgiving for outsourced FDM, easiest to re-print a single bad cap. Recommended for the first instance.
-- **Stem-mounted cap** — printed cap with a cross socket clips onto the stem. Cleaner look; feasible now that we have exact stem cotas (4.00 envelope, 1.10 / 1.28 arms). Model the socket to *these* numbers (not generic MX 1.17/1.27) for a snug fit. Better in resin. Plan B.
-
-18 mm key pitch (per the design system). Layout: flattened piano (OP-1 style) — naturals row + sharps offset above.
+Socket geometry and print-calibrated clearances: [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §7.
 
 ## Wiring (to the keyboard I2C expanders)
 
 Direct wiring, no matrix, no diodes:
 
-- One leg of each switch → one input pin of a [PCF8575](../wiring.md) I2C expander (internal pull-up).
+- One leg of each switch → one input pin of a [PCF8575](pcf8575.md) I2C expander. The PCF8575 ports are quasi-bidirectional: each pin has a **weak current source to VCC** (not a true internal pull-up) that the switch pulls low — no external pull-ups needed on the P-pins (see [pcf8575.md](pcf8575.md#how-the-quasi-bidirectional-io-works)).
 - Other leg → common GND.
 - Press = pin reads LOW. Each key is independent (32 inputs across 2× PCF8575), so no ghosting and no diodes needed.
 

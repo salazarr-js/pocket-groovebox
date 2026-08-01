@@ -2,13 +2,13 @@
 
 What we tried, what we learned, and what to do differently when we come back to drums.
 
-> **Status:** drum machine sketch removed after exploration. The synthesis approach needs
-> more work. Come back to drums after the core audio engine (proper envelopes, waveforms,
-> filter) is in place — that same foundation makes drums easier to get right.
+> **Status:** ✅ Decided — synthesized drums for V1 (see `architecture.md` §Drum voices). This doc remains as the technique reference.
 
 ---
 
 ## What we tried (sketch 11-drum-machine)
+
+*(code deleted from the repo; this summary is the record)*
 
 A unified `DrumVoice` struct mixing a sine oscillator and white noise, with a 1-pole IIR
 high-pass filter. Four voices: kick, snare, closed hi-hat, clap.
@@ -41,8 +41,8 @@ because they are real recordings of real drums. Comparing PO-33 to synthesis is
 comparing a tape recorder to an oscillator.
 
 **Takeaway for this project:** if we want PO-33-quality drum sounds, we need sample
-playback. The ESP32-S3 has 8 MB of flash; a 0.5 s drum sample at 44.1 kHz / 16-bit
-takes ~88 KB, so 40–60 samples fit comfortably. That's a different feature, not synthesis.
+playback. The ESP32-S3 board has 32 MB of flash; a 0.5 s drum sample at 44.1 kHz / 16-bit
+takes ~88 KB, so 160–240 samples fit comfortably. That's a different feature, not synthesis.
 
 ### Stylophone Beat — sample playback
 
@@ -142,8 +142,7 @@ full tracks, to understand what each machine actually sounds like.
 
 ## What to build when we come back to drums
 
-The right foundation is the **core audio engine** (see synthesis.md build path and the
-architecture plan). Once we have:
+The right foundation is the **core audio engine** (see `docs/architecture.md`). Once we have:
 
 1. Exponential ADSR envelopes (the single most important fix)
 2. Multiple waveform types (sine, saw, square, triangle)
@@ -152,16 +151,14 @@ architecture plan). Once we have:
 ...synthesizing a TR-606-style kick becomes:
 
 ```
-Kick  = SVF(sine_oscillator, BP) + exponential_pitch_env + exponential_amp_env
+Kick  = SVF(sine_oscillator, LP) + exponential_pitch_env + exponential_amp_env
 Snare = 2× detuned sine + SVF(noise, BP) + exponential_env per component
 Hat   = 6× detuned square at inharmonic ratios + SVF(HP) + short exp_env
 ```
 
 These are direct applications of the same voice building blocks, not a separate system.
 
-**Alternative path:** sample playback from SPI flash or internal flash. Easier to
-implement, sounds better immediately. A hybrid approach (synthesis for pitched sounds,
-samples for drums) is how the TR-909 solved exactly this problem.
+**V2 upgrade path (decided — kept open via `IVoice`):** sample playback from SPI flash or internal flash. Easier to implement, sounds better immediately. A hybrid approach (synthesis for pitched sounds, samples for drums) is how the TR-909 solved exactly this problem. V1 ships synthesized drums; the `IVoice` interface in `architecture.md` keeps this sampler path open.
 
 ---
 

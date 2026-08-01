@@ -1,4 +1,4 @@
-<!-- Module doc template. Copy to docs/modules/<module-name>.md and fill in once the part is in hand. Module *connections* go in ../wiring.md, NOT here — this doc only describes the module itself. Put images in docs/modules/assets/ or hotlink with attribution (repo is public). Delete this comment in the real file. -->
+<!-- Module doc template. Copy to docs/hardware/modules/<module-name>.md and fill in once the part is in hand. Module *connections* go in ../wiring.md, NOT here — this doc only describes the module itself. Images: hotlink with attribution only — no image files in the repo (it's public). Delete this comment in the real file. -->
 
 # <Module Name>
 
@@ -22,7 +22,9 @@ One line: what it is and why it's in the build.
 
 | Front | Back |
 | --- | --- |
-| ![front](assets/<module>-front.jpg) | ![back](assets/<module>-back.jpg) |
+| ![front](https://example.com/front.jpg) | ![back](https://example.com/back.jpg) |
+
+> Source / credit: (hotlink only — no image files in the repo; always attribute the source)
 
 ## Module pins
 

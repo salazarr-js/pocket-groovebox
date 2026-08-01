@@ -13,7 +13,7 @@ hardware/
 Decided in [docs/explorations/0004-cad-toolchain.md](../docs/explorations/0004-cad-toolchain.md):
 **OpenSCAD** (mechanical + layout). FreeCAD is a fallback. KiCad was reserved for a custom PCB —
 **dropped for V1**: the keyboard is hand-wired, no custom PCB (see [`3d/octaves-plan.md`](3d/octaves-plan.md)).
-*(Ergogen was evaluated and dropped — the layout lives in `3d/octave-layout.scad`.)*
+*(Ergogen was evaluated and dropped; v0's `octave-layout.scad` was deleted — the layout lives inside `plate.scad` per [`3d/octaves-plan.md`](3d/octaves-plan.md).)*
 
 ## 3d/
 
@@ -25,5 +25,6 @@ OpenSCAD parts. `.scad` is the versioned source. Design loop + collaborate live:
 ## Key facts (see docs for detail)
 
 - Switch: **Gateron KS-33 Low Profile 2.0 Silent Brown** — cutout **14.0 mm**, **stepped plate ~2.4 mm** (1.2 mm clip shelf), MX-cross stem.
-- **Cap 18 mm fixed**, gap sets the pitch → exploring **19–19.5 mm pitch** (not finalised; docs still say 18 mm). Caps **OP-1 × HiChord** flat; per-key **SK6812** RGB; switches direct to **PCF8575** (no diodes).
-- Full board = 24 keys. First build = **one-octave module** ([0005](../docs/explorations/0005-proto-keyboard-module.md)).
+- **Pitch is parametric** (`pitch = cap + gap`): cap 1u = **18 mm** + gap **0.5 mm** = **18.5 mm** currently. Caps **OP-1 × HiChord** flat; switches hand-wired direct to **PCF8575** (no diodes, no custom PCB). Per-key **SK6812** RGB deferred (needs a PCB version).
+- Full keyboard = **24 keys, C3–B4**. First build = **build 1.0**: one octave (**12 keys, C–B**), 1× PCF8575, hand-wired, **no LEDs** ([0005](../docs/explorations/0005-proto-keyboard-module.md)).
+- This list is a summary — values live in [`3d/octaves-plan.md`](3d/octaves-plan.md) (single source).

@@ -50,11 +50,11 @@ playable capacitive expression.
 
 Native ESP32-S3 touch (Option B) was ruled out: the display and I2S peripherals consume GPIO5–7 and GPIO9–14, leaving only 4–5 native touch channels — not enough for a full keyboard.
 
-A PCF8575 breakout was sourced. It gives 16 GPIO pins over I2C (SDA + SCL), freeing all native GPIOs for encoders and other use. Keys wire directly to P-pins with no matrix or diodes needed. The INT pin enables interrupt-driven key reads. (The initial count was 13 keys; the final design expanded to 25 keys across two PCF8575s — see [Consequences](#consequences) below.)
+A PCF8575 breakout was sourced. It gives 16 GPIO pins over I2C (SDA + SCL), freeing all native GPIOs for encoders and other use. Keys wire directly to P-pins with no matrix or diodes needed. The INT pin enables interrupt-driven key reads. (The initial count was 13 keys; the final design expanded to 24 keys across two PCF8575s — see [Consequences](#consequences) below.)
 
 ## Consequences
 
-- **Expanded to 25 keys (2 octaves, C3–C5).** The original 13-key plan grew — one PCF8575 (16 pins) covers C3–D#4; a second PCF8575 at address 0x21 covers E4–C5.
+- **Expanded to 24 keys (2 octaves, C3–B4).** The original 13-key plan grew — one PCF8575 (16 pins) covers the first 16 keys (C3–D#4); a second PCF8575 at address 0x21 covers the remaining 8 (E4–B4), leaving 8 spare pins.
 - Key wiring: P-pin → key → GND; key pressed = pin reads 0.
 - I2C bus: GPIO4 (SDA) + GPIO8 (SCL). Single 4.7 kΩ pull-up per line, shared by both chips.
 - INT: both chips' INT outputs wire directly to GPIO15 (open-drain wired-OR — any keypress on either chip asserts the line low).

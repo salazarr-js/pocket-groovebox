@@ -2,6 +2,8 @@
 
 Addressable RGB LED with integrated controller IC — one data wire drives the full chain. Used for per-key lighting on the keyboard (active note, chord tones, sequencer steps).
 
+> ⏸ **Deferred** — the per-key LEDs require the PCB version of the keyboard (these are SMD parts, not hand-wireable at 24×). Build 1.0 (hand-wired, 12 keys) has no LEDs.
+
 | | |
 | --- | --- |
 | **Role** | Per-key RGB LED (keyboard backlight) |
@@ -10,9 +12,9 @@ Addressable RGB LED with integrated controller IC — one data wire drives the f
 | **Supply voltage** | 5 V (3.7–5.5 V range) |
 | **Current per LED** | 12 mA per channel, 36 mA max (white), 60 mA absolute max |
 | **Package** | 3.2 × 2.8 × 1.78 mm SMD, 4 pads, south-facing (MX switch compatible) |
-| **Source** | AliExpress (LOAMLIN LED Store) |
-| **Price** | ARS 12.257,98 (50 pcs) |
-| **Quantity** | 50 (25 per key + 25 spares — on order) |
+| **Source** | AliExpress |
+| **Price** | — |
+| **Quantity** | 50 (24 per key + spares — on order) |
 
 ## Datasheets & references
 
@@ -117,12 +119,12 @@ Each LED consumes its first 24 bits and forwards the rest downstream. The chain 
 
 ## Power budget
 
-| Scenario | Current per LED | 25 LEDs total |
+| Scenario | Current per LED | 24 LEDs total |
 | --- | --- | --- |
-| All off | 1 mA (IC idle) | 25 mA |
-| One channel full | 12 mA | 300 mA (worst case 1 color) |
-| Full white (all channels) | 36 mA | 900 mA |
-| Typical use (1/3 brightness) | ~12 mA | ~300 mA |
+| All off | 1 mA (IC idle) | 24 mA |
+| One channel full | 12 mA | 288 mA (worst case 1 color) |
+| Full white (all channels) | 36 mA | 864 mA |
+| Typical use (1/3 brightness) | ~12 mA | ~288 mA |
 
 All current is drawn from **5 V** (VBUS). The 3.3 V rail does not supply the LEDs — only the data signal passes through the level shifter at 3.3 V → 5 V.
 
@@ -131,9 +133,11 @@ All current is drawn from **5 V** (VBUS). The 3.3 V rail does not supply the LED
 | Component | Value | Qty | Purpose |
 | --- | --- | --- | --- |
 | **74AHCT125** level shifter | SO14/DIP14 | 1 (✅ on hand) | 3.3 V → 5 V on DIN data line |
-| Series resistor on DIN | 300–500 Ω | 1 | Damps signal reflections (datasheet recommends ~500 Ω) |
-| Decoupling cap per LED | 100 nF ceramic | 25 | VDD–GND, placed as close to each LED as possible |
-| Bulk cap at 5 V entry | 10 µF electrolytic | 1 | Absorbs current spikes when many LEDs switch together |
+| Series resistor on DIN | 330–500 Ω | 1 | Damps signal reflections (datasheet recommends ~500 Ω) |
+| Decoupling cap per LED | 100 nF ceramic | 24 | VDD–GND, placed as close to each LED as possible |
+| Bulk cap at 5 V entry | 470–1000 µF electrolytic | 1 | Absorbs current spikes when many LEDs switch together |
+
+Passive values and quantities are tracked in the hardware BOM — [../README.md](../README.md#passives-single-source) is the single source; this table is technical context only.
 
 ## Notes & gotchas
 

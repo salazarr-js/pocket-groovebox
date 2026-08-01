@@ -16,8 +16,8 @@ The main board / MCU — runs the firmware and drives every peripheral.
 
 ## Datasheets & references
 
-- Product page: https://www.waveshare.com/esp32-s3-dev-kit-n8r8.htm
-- Waveshare docs (schematic in Resources): https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8
+- Product page: https://www.waveshare.com/esp32-s3-dev-kit-n8r8.htm — ⚠️ N8R8 variant page (same board, different flash/PSRAM; Waveshare has no dedicated N32R16V page)
+- Waveshare docs (schematic in Resources): https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8 — ⚠️ N8R8 variant docs (same board, different flash/PSRAM)
 - Pinout (CircuitState): https://www.circuitstate.com/pinouts/waveshare-esp32-s3-dev-kit-nxr8-wi-fi-development-board-pinout-diagram-arduino-reference/
 - ESP32-S3-WROOM-1 module: https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf
 - ESP32-S3 chip: https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf

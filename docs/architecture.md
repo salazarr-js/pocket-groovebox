@@ -3,24 +3,21 @@
 Design decisions for the Phase 3 firmware. Written after the Phase 2 exploration sketches
 to capture what we learned and define the right foundation before writing production code.
 
-> **Status:** planning — **blocked on research.** Nothing here is implemented yet.
+> **Status:** planning — **blocked on synthesis research.** Nothing here is implemented yet.
 > Decisions marked ✅ are settled; those marked ❓ are open questions.
 >
-> **Two research tracks must complete before this architecture is finalized:**
-> - **Synthesis system** — which engines (subtractive, FM, wavetable, phase distortion?),
->   voice budget, modulation system, patch model. Current audio engine design is a starting
->   point, not a final answer. Research may change the voice model, layer count, or CPU
->   budget assumptions.
-> - **Input method** — mechanical keys vs. capacitive touch. See
->   `docs/explorations/0001-input-method.md`. Drives the entire UI/HAL layer design.
+> **One research track must complete before this architecture is finalized:**
+> - **Synthesis system** — which engines (subtractive, FM, wavetable, phase distortion?), voice budget, modulation system, patch model. Current audio engine design is a starting point, not a final answer. Research may change the voice model, layer count, or CPU budget assumptions.
 >
-> Do not begin Phase 3 implementation until both are resolved.
+> **Resolved:** input method — mechanical keys via 2× PCF8575 I2C expanders. See `docs/explorations/0001-input-method.md` (method) and `docs/explorations/0002-key-design.md` (key design).
+>
+> Do not begin Phase 3 implementation until the synthesis research is resolved.
 
 ---
 
 ## Why a new architecture
 
-The exploration sketches (01–10) were written with Arduino IDE and no shared code. They
+The exploration sketches (01–16) were written with Arduino IDE and no shared code. They
 taught us the hardware and the problem space well. But they don't scale:
 
 - Audio engine, sequencer, and protocol are tangled together in each sketch
@@ -166,6 +163,8 @@ void   release(int key);
 Voice stealing policy: steal the voice with the lowest amplitude (quietest = least audible
 interruption). Fall back to oldest-active if all are at similar levels.
 
+> ⚠ **Open tension:** `MAX_VOICES = 8` may be too low. The HiChord analysis in [research/digital-synths.md](research/digital-synths.md) suggests 12 simultaneous oscillators as the real voice budget for polyphonic chord play — up to 18 note-slots (6 chord voices × 3-note triads). To be resolved in the synthesis research before this constant is locked.
+
 ### Mixer ✅
 
 Sum all active voices, scale by `1.0f / MAX_VOICES` to prevent clipping when all fire
@@ -179,6 +178,8 @@ mix *= 1.0f / MAX_VOICES;
 mix = tanhf(mix * drive) / tanhf(drive);  // soft limiter; drive ≈ 1.5–2.0
 int16_t out = (int16_t)(mix * 32767.0f);
 ```
+
+The **speaker output path** additionally gets a high-pass filter at **~150–200 Hz**: the small speaker barely reproduces anything below that, and cutting the sub-bass frees headroom and reduces distortion through the PAM8403. (Finding migrated from [issues/01-audio-issues.md](issues/01-audio-issues.md), where a 2-pole high-pass was prototyped and deferred to the production DSP chain.)
 
 ### Audio callback ✅
 
@@ -263,11 +264,11 @@ back at the original sample rate. The mixer treats them identically to synth voi
 
 ## UI layer
 
-### Inputs ❓
+### Inputs
 
-- Key matrix (25 keys, 2× PCF8575): debounced via timer or state comparison each frame
+- ✅ Keyboard: **24 keys, C3–B4** (14 naturals + 10 sharps) via 2× PCF8575 I2C expanders (chip #1 = C3–D#4, 16 keys; chip #2 = E4–B4, 8 keys + 8 spares); debounced via timer or state comparison each frame
 - Rotary encoders (EC11 × N): interrupt-driven edge count + button debounce
-- How many encoders? TBD — depends on final control layout
+- ❓ How many encoders? TBD — depends on final control layout
 
 ### Display ✅
 
@@ -302,26 +303,23 @@ NVS survives power cycles and firmware updates (unless the partition table chang
 
 ## Project structure (PlatformIO)
 
+The structure below matches `platformio.ini` as it exists today: a single environment `waveshare-esp32-s3-r32n16`, with `src_dir`, `lib_dir`, `test_dir`, and `include_dir` all under `firmware/`.
+
 ```
 pocket-groovebox/
-├── platformio.ini          ← build targets: esp32-s3 (debug + release)
-├── lib/
-│   ├── audio/              ← Oscillator, SVF, Envelope, Voice, Mixer
-│   ├── sequencer/          ← Pattern, Step, Transport
-│   ├── ui/                 ← Display, Encoder, KeyMatrix
-│   └── hal/                ← I2S, NVS, SPI wrappers
+├── platformio.ini          ← single env: waveshare-esp32-s3-r32n16 (32 MB flash / 16 MB PSRAM)
 ├── firmware/
-│   ├── groovebox/          ← main V1 firmware (src/main.cpp)
-│   └── [exploration]/      ← old .ino sketches kept for reference
-├── test/
-│   ├── test_envelope/      ← unit tests for Envelope math
-│   ├── test_oscillator/    ← unit tests for Oscillator output
-│   └── test_svf/           ← unit tests for SVF stability + response
+│   ├── src/                ← main firmware source (currently a board validation sketch)
+│   ├── lib/                ← shared modules: audio, sequencer, ui, hal
+│   ├── include/            ← shared headers
+│   └── test/               ← unit tests: test_envelope, test_oscillator, test_svf
+├── sketches/               ← Phase 2 exploration .ino sketches (reference only)
 ├── app/                    ← web bridges (keyboard-bridge, looper-bridge)
+├── hardware/               ← OpenSCAD parts + plans (no custom PCB)
 └── docs/
 ```
 
-`lib/audio` is the most critical — it runs at 44.1 kHz and must be tested independently
+`firmware/lib/audio` is the most critical — it runs at 44.1 kHz and must be tested independently
 of the hardware. PlatformIO's native unit test environment (runs on the host machine, not
 the ESP32) makes this possible.
 

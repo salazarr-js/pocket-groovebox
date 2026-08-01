@@ -103,5 +103,3 @@ octave on the bottom row + home row and the next on the top + number rows — se
 - **Chords** → the maj/min layers (§5) in `09-audio-notes-gate`.
 - **Keyboard** → the two-row mapping + web piano (§6).
 - **Scales / 7ths / sequencer timing** → not built yet; this doc is the reference when we do.
-
-See [music-theory.md](music-theory.md) for terms.

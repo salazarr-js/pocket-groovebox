@@ -1,6 +1,8 @@
 # Pocket Groovebox — Hardware
 
-> I2S DAC (PCM5102), SPI display (ST7789), and KY-023 joystick are verified and wired. EC11 encoders not yet wired. Keyboard wiring is defined (25 keys via 2× PCF8575); V1 uses OP-1-style flat caps on switches, keycap + plate CAD in progress. Input method decision: **mechanical keys** ([0002-key-design.md](../explorations/0002-key-design.md)).
+> I2S DAC (PCM5102), SPI display (ST7789), and PAM8403 amp are verified and wired. KY-023 joystick on hand, wiring defined. EC11 encoders not yet wired. Keyboard wiring is defined (24 keys via 2× PCF8575); V1 uses OP-1-style flat caps on switches, keycap + plate CAD in progress. Input method decision: **mechanical keys** ([0002-key-design.md](../explorations/0002-key-design.md)).
+>
+> **Build 1.0 scope** (first integration build): 1 octave C–B — 12 keys, 1× PCF8575, hand-wired, **no LEDs, no PCB**.
 
 Hardware decisions for the device. For the *why* and *what*, see [brief.md](../brief.md); for build steps, see [plan.md](../plan.md).
 
@@ -18,12 +20,12 @@ Hardware decisions for the device. For the *why* and *what*, see [brief.md](../b
 
 ```mermaid
 flowchart LR
-    KEYS["25-key keyboard (2 octaves)"] --> MCU["ESP32-S3"]
+    KEYS["24-key keyboard (2 octaves, C3–B4)"] --> MCU["ESP32-S3"]
     ENC["2× EC11 encoders"] --> MCU
     JOY["Joystick (analog)"] --> MCU
     MCU -->|SPI| LCD["ST7789 1.9in LCD"]
     MCU -->|I2S| DAC["PCM5102 DAC"]
-    MCU -->|"GPIO18 → 74AHCT125"| LED["SK6812 MINI-E ×25"]
+    MCU -->|"GPIO18 → 74AHCT125"| LED["SK6812 MINI-E ×24 (deferred — needs PCB)"]
     DAC -->|line out| HP["Headphone jack"]
     DAC -->|line out| AMP["PAM8403 amp"]
     AMP --> SPK["Speaker"]
@@ -48,9 +50,9 @@ Note: both the PAM8403 and the MAX98357A are BTL (bridge-tied) speaker amps and 
 | Area | Choice | Notes |
 | --- | --- | --- |
 | MCU | ESP32-S3 | More RAM/CPU, BLE MIDI, native USB |
-| Keyboard | 25 keys (15 white + 10 black) — 2 octaves | KS-33 Silent Brown low-profile switches (MX-cross stem), OP-1-style flat caps directly on switch (no lever — deferred), 18mm pitch, 270mm wide |
-| Key I/O | 2× PCF8575 I2C expander (0x20 + 0x21) | 16 + 9 pins for 25 keys; shared INT on GPIO15 (open-drain wired-OR) |
-| Key LEDs | SK6812 MINI-E ×25 | Per-key RGB, south-facing MX mount, 74AHCT125 level shifter on GPIO18 |
+| Keyboard | 24 keys (14 white + 10 black) — 2 octaves, C3–B4 | KS-33 Silent Brown low-profile switches (MX-cross stem), OP-1-style flat caps directly on switch (no lever — deferred), 18 mm cap + 0.5 mm gap → 18.5 mm pitch, front row ≈259 mm wide |
+| Key I/O | 2× PCF8575 I2C expander (0x20 + 0x21) | 16 + 8 pins for 24 keys; shared INT on GPIO15 (open-drain wired-OR) |
+| Key LEDs | SK6812 MINI-E ×24 | Per-key RGB, south-facing MX mount, 74AHCT125 level shifter on GPIO18. **Deferred — needs a PCB; build 1.0 has no LEDs** |
 | Display | 1.9" ST7789 LCD, 170×320 SPI | BPM, presets, waveforms, menus |
 | Controls | 2× EC11 rotary encoders + KY-023 joystick | Encoders on JTAG GPIO39–42 + GPIO16/17; joystick role TBD (pitch/expression/menu nav) — see [modules/ky023.md](modules/ky023.md) |
 | Audio | PCM5102 I2S DAC + PAM8403 amp | DAC line out → headphone (PJ-320) + amp → speaker |
@@ -72,10 +74,10 @@ Each module gets its own doc (pinout, photos, wiring, source) under [`modules/`]
 | Dupont jumpers | ✅ On hand |
 | KS-33 Silent Brown switches ×35 | 🛒 Ordered |
 | SK6812 MINI-E ×50 | 🛒 Ordered |
-| Springs 0.4×5×15mm ×20 | 🛒 Ordered |
+| Springs 0.4×5×15mm ×20 | 🛒 Ordered (for the lever-key iteration — deferred) |
 | 40mm full-range speaker 4Ω ×2 | 🛒 Ordered |
 | PCF8575 ×5 (I2C expander) | 🛒 Ordered (1 on hand) |
-| 74AHCT125 level shifter | 🛒 Ordered |
+| 74AHCT125 level shifter | ✅ On hand (unused until the LED/PCB version — deferred) |
 | Charge/discharge module (IP5306-class, 5V/2A, power-path, KEY) | 🛒 Ordered |
 | USB-C 2.0 breakout (6-pin, CC1/CC2 + 5.1 kΩ) | 🛒 Ordered |
 | 18650 holder | 🛒 Ordered |
@@ -90,8 +92,21 @@ Each module gets its own doc (pinout, photos, wiring, source) under [`modules/`]
 | Heat-shrink tubing kit | ❌ To buy |
 | JST connectors (PH/XH) + crimp tool | ❌ To buy |
 | DIP socket (for 74AHCT125) | ❌ To buy |
-| Passives — 4.7 kΩ ×3, 330–470 Ω, 0.1 µF, 470–1000 µF, 5.1 kΩ ×2 | ❌ To buy — local (AR) |
+| Passives — see [Passives](#passives-single-source) table below | ❌ To buy — local (AR) |
 | Tweezers · helping hands · desolder braid | ❌ To buy (nice-to-have) |
+
+### Passives (single source)
+
+This table is the **single source** for passive quantities and values — module docs reference it, not the other way around.
+
+| Passive | Qty | Purpose |
+| --- | --- | --- |
+| 4.7 kΩ | 3 | I2C pull-ups: SDA, SCL, INT (PCF8575 bus) |
+| 5.1 kΩ | 2 | USB-C CC1/CC2 pulldowns (sink role) |
+| 100 µF electrolytic + 0.1 µF ceramic | 1 + 1 | PAM8403 amp 5 V decoupling (noise-floor reduction) |
+| 330–500 Ω | 1 | LED chain — series resistor on DIN *(deferred — LED/PCB version)* |
+| 100 nF ceramic | 24 | LED chain — decoupling, one per SK6812 *(deferred — LED/PCB version)* |
+| 470–1000 µF electrolytic | 1 | LED chain — bulk cap at 5 V entry *(deferred — LED/PCB version)* |
 
 ## Power architecture
 

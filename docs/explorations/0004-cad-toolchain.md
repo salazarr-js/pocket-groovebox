@@ -2,7 +2,9 @@
 
 **Status:** decided · (`open → decided → revised`)
 
-> **Revision (2026-07) — Ergogen dropped.** Ergogen was meant to hold the layout, but the plate is built in OpenSCAD (Ergogen can't do the **stepped cutout**), and the layout is small — a separate Ergogen YAML just duplicated it, risking drift. The layout now lives **once** in `hardware/3d/octave-layout.scad`, shared by the plate and the caps (and later a KiCad placement export). Toolchain simplified to **OpenSCAD (mechanical + layout) + KiCad (PCB)**.
+> **Revision (2026-07) — Ergogen dropped.** Ergogen was meant to hold the layout, but the plate is built in OpenSCAD (Ergogen can't do the **stepped cutout**), and the layout is small — a separate Ergogen YAML just duplicated it, risking drift. The layout now lives **once** in `hardware/3d/octave-layout.scad` *(v0 — since deleted; see next revision)*, shared by the plate and the caps (and later a KiCad placement export). Toolchain simplified to **OpenSCAD (mechanical + layout) + KiCad (PCB)**.
+
+> **Revision (2026-07-31) — v0 deleted; KiCad dropped for V1.** The v0 sources (including `octave-layout.scad`) were deleted on purpose after print validation; in the rebuild the layout lives **inside `plate.scad`** (not yet created — see [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md)). **KiCad is dropped for V1**: no custom PCB — the keyboard is hand-wired to the PCF8575. Revisit only if a LED/PCB version happens. Toolchain for V1 is effectively **OpenSCAD only** (FreeCAD as fallback).
 
 Which tool holds each part of the hardware design. Chosen primarily for **how agentically Claude can drive it** (the stated priority), plus open-source and git-friendly.
 
@@ -11,8 +13,8 @@ Which tool holds each part of the hardware design. Chosen primarily for **how ag
 | Domain | Tool | Format | Why |
 |---|---|---|---|
 | Knowledge / decisions / measurements | **docs/ (markdown)** | text | tool-independent "brain" — the *why* lives here, not inside CAD files |
-| Keyboard layout (key positions) | **OpenSCAD** (`octave-layout.scad`) | text | one shared data file → feeds the plate + caps (and later a PCB placement export). *(Ergogen evaluated + dropped — see revision note above.)* |
-| PCB (switches, PCF8575, SK6812, JST) | **KiCad 10** | project | only real EDA option; agentic via KiCad-MCP |
+| Keyboard layout (key positions) | **OpenSCAD** (layout data inside `plate.scad` — v0's separate `octave-layout.scad` was deleted with the rebuild) | text | one place → feeds the plate + caps. *(Ergogen evaluated + dropped — see revision note above.)* |
+| PCB — **dropped for V1** (no custom PCB; keyboard hand-wired to PCF8575) | ~~KiCad 10~~ | — | revisit only if a LED/PCB version happens; KiCad was the pick (agentic via KiCad-MCP) |
 | Mechanical (caps, plate, enclosure) | **OpenSCAD** | `.scad` text | most agentic: pure code + CLI render + PNG feedback loop; boxy design fits CSG (BOSL2 for fillets) |
 | Mechanical upgrade path | **build123d** (CadQuery family) | Python | B-rep kernel → STEP + real fillets, *if* OpenSCAD hits a wall |
 | Enclosure fit-check / fallback | **FreeCAD 1.1** | — | KiCad StepUp import; only if needed |
@@ -45,13 +47,13 @@ FreeCAD is more powerful, but its agentic path (`neka-nat/freecad-mcp`) needs a 
 ```
 docs/                       ← knowledge (decisions, specs, measurements)
 hardware/
-  3d/                       ← OpenSCAD: octave-layout.scad (shared layout), switch-cutout, plate, cap, assembly
-  pcb/                      ← KiCad project (TBD)
+  3d/                       ← OpenSCAD rebuild: key_cap.scad + plate.scad (layout lives inside) + assembly.scad — see octaves-plan.md
+  pcb/                      ← (dropped for V1 — no custom PCB; only if a LED/PCB version happens)
   README.md                 ← index, links back to docs/
 hardware/enclosure/         ← later (OpenSCAD, or FreeCAD if needed)
 ```
 
 ## Consequences / next
 
-- No MCP is strictly required for OpenSCAD — the CLI loop is enough. A KiCad-MCP *is* worth setting up for the PCB (custom KS-33 footprint + JLCPCB).
+- No MCP is strictly required for OpenSCAD — the CLI loop is enough. KiCad is **dropped for V1** (no custom PCB — hand-wired); a KiCad-MCP is only worth setting up if a LED/PCB version ever happens.
 - See [0005-proto-keyboard-module.md](0005-proto-keyboard-module.md) for the first physical build that exercises this toolchain.

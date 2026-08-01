@@ -31,6 +31,14 @@ pio run -t uploadfs    # upload LittleFS filesystem image (samples, wavetables)
 pio test               # run unit tests in test/
 ```
 
+**Live serial input (char-by-char, no Enter).** The Arduino Serial Monitor and `pio device monitor` are line-buffered and can't send arrow keys. For sketches that read live keystrokes, use a raw terminal — find the port with `ls /dev/cu.*`, then:
+
+```sh
+screen /dev/cu.usbmodemXXXX 115200   # quit: Ctrl-A then K
+```
+
+Arrow keys work here too. Close it before flashing — only one process can hold the port.
+
 ## Debugging
 
 The ESP32-S3 has **built-in USB JTAG** — no external probe needed. The `USB JTAG/serial debug unit` port that appears when you plug in the board is it. To enable in VS Code:
@@ -90,23 +98,7 @@ Host testing is the goal for `lib/audio` — lets us verify Envelope, SVF, and O
 
 ## Embedding audio samples
 
-Binary files (PCM samples, wavetables) can be baked directly into the firmware binary — no filesystem needed:
-
-```ini
-; platformio.ini
-board_build.embed_files =
-    firmware/src/samples/kick.raw
-    firmware/src/samples/snare.raw
-```
-
-Accessed in code as:
-
-```cpp
-extern const uint8_t kick_raw_start[] asm("_binary_kick_raw_start");
-extern const uint8_t kick_raw_end[]   asm("_binary_kick_raw_end");
-```
-
-Alternative: store samples in LittleFS and stream them at runtime (more flexible, uses the filesystem partition). For V1, drums are synthesized so neither path is needed yet — this section is relevant when V2 sampler support is added.
+**Not needed yet — V1 drums are synthesized** (see [architecture.md → Drum voices](architecture.md#drum-voices-)). When V2 sampler support arrives, binary files (PCM samples, wavetables) can be baked into the firmware via `board_build.embed_files` in `platformio.ini` (accessed in code through the `_binary_<name>_start`/`_end` symbols), or stored in LittleFS and streamed at runtime.
 
 ---
 
@@ -122,9 +114,7 @@ Then Tools → Board → Boards Manager → install **"esp32 by Espressif System
 
 **2. Libraries.** Install via Sketch → Include Library → Manage Libraries:
 
-- **Adafruit NeoPixel** — *not used.* The board's onboard RGB LED was only driven for
-  bring-up testing (with the built-in `rgbLedWrite()`); the instrument has no addressable
-  LEDs, so no LED library is needed.
+- **Adafruit NeoPixel** — *not needed yet.* The final design does include addressable LEDs — 24× SK6812 MINI-E, one per key — but they require a custom PCB and are **deferred to a future PCB version** (build 1.0 has no LEDs). When they're integrated, an RMT-based driver or FastLED will be needed; see [modules/sk6812mini-e.md](hardware/modules/sk6812mini-e.md). The board's onboard RGB LED was only driven for bring-up testing with the built-in `rgbLedWrite()`.
 - **ESP_I2S** — for PCM5102 audio. No install needed: it ships with the esp32 core. Use
   it (`#include <ESP_I2S.h>`) instead of the generic Arduino `I2S.h` that most PCM5102
   examples show — that one doesn't target the ESP32-S3. It lets us assign the I2S pins.
@@ -138,19 +128,7 @@ are in [modules/esp32-s3-devkit.md → Flashing this board](hardware/modules/esp
 
 ## Sketches
 
-Exploration sketches from Phase 2 live under [`../sketches/`](../sketches/):
-
-- `01-hello-esp` — board bring-up: serial chip info + RGB LED cycle
-- `02-led-serial` — set the RGB LED color from the Serial Monitor (send `r`/`g`/`b`/`y`/`c`/`m`/`w`/`o`)
-- `03-PCM5102A-test` — I2S tone test for the PCM5102 DAC
-- `04-audio-notes` — play one octave from the Serial Monitor; keys `a w s e d f t g y h u j k`
-- `04-audio-notes-ble` — experiment: same as above, but the letter arrives over BLE UART (play from a phone, no cable)
-- `05-audio-pitch-wave` — pitch glides up and down continuously (sine LFO → siren/glissando); plays on its own
-- `06-display-hello` — first light for the ST7789: color test + a little UI (title, divider, live counter)
-- `07-chord-player` — hold a serial key to sound a note (continuous, non-blocking); arrows pick a single/major/minor layer; ST7789 shows the chord (landscape UI). Display is always landscape from here on. Needs a raw terminal for live keys (see README → Tools).
-- `08-amp-speaker-test` — sweep amplitude through the PAM8403 → small speaker to find a clean (non-distorting) level
-- `09-audio-notes-gate` — polyphonic note-on/off with real key-down/up gate (+a/-a protocol); momentary maj/min chord layers; Web Serial keyboard bridge
-- `10-audio-looper` — step sequencer / phrase looper (⬅ next to flash and test): 4 layers × up to 32 steps (4/8/12/16/32 selectable), live recording and step-entry editing, per-layer volume, free improvisation over a running loop. Use [`looper-bridge.html`](../app/looper-bridge.html) for full transport control. Keyboard shortcuts: `Space` play/stop, `Enter` record, `←→` step, `↑↓` layer, `Del` clear step, `A{l}{0-9}` layer volume. Clear buttons are disabled while playing as a guard against stuck notes.
+Exploration sketches from Phase 2 live under [`../sketches/`](../sketches/) (01 through 16). The single source of truth for what each sketch covers is the [exploration log table in plan.md](plan.md#exploration-log) — this doc no longer duplicates the list.
 
 ## Input: desktop serial or BLE UART
 

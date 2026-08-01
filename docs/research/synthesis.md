@@ -4,6 +4,8 @@ The conceptual base for the sound sketches. Explains the model we're building to
 the code maps to it. Grounded in this project: ESP32-S3 generating samples in software, out
 over I2S to the PCM5102 DAC → PAM8403 → speaker (see [hardware.md](../hardware/README.md)).
 
+> **Scope:** theory of the subtractive voice chain we're building. Paradigm survey → [digital-synths.md](digital-synths.md); build spec → `docs/architecture.md`.
+
 > **Phase 3 starting point:** Phase 2 exploration is complete. The architecture in
 > `docs/architecture.md` defines the production implementation of everything described here.
 > This doc is the theory foundation; `architecture.md` is the build spec.
@@ -74,7 +76,8 @@ Removes part of the spectrum to shape tone. Most useful here: a **resonant low-p
 - Sweeping cutoff with an envelope or LFO is the signature subtractive-synth motion.
 
 Cheap implementations for an MCU: a **state-variable filter** (gives LP/HP/BP at once, stable,
-easy to modulate) or a **biquad**. Run per sample, per voice — this is the heaviest part (see §6).
+easy to modulate) or a **biquad**. **Decided:** the SVF is what we're building (see `architecture.md`).
+Run per sample, per voice — this is the heaviest part (see §6).
 
 ## 5. Polyphony & voice allocation
 
@@ -92,7 +95,7 @@ It adds two new concerns:
 - **Mixer** — sum the voices; watch headroom/clipping (more notes = louder; may need scaling
   or a limiter — see [issues/01-audio-issues.md](../issues/01-audio-issues.md) #1).
 - **Voice allocation** — map each key-press to a free voice; when all are busy, **steal** one
-  (usually the oldest or quietest). Decide the max voice count up front.
+  (usually the oldest or quietest). Decide the max voice count up front. **Decided:** 8 (`architecture.md`) — with an open tension vs. the HiChord voice-budget analysis in [digital-synths.md](digital-synths.md).
 
 > Today `sketches/09-audio-notes-gate` is a simple form of this: one "voice" slot per key, summed,
 > with a hard clamp instead of a real mixer/limiter.
@@ -106,14 +109,6 @@ glitch-free, and consider: fewer voices, a lighter filter, one shared filter, or
 oscillator (table lookup instead of `sinf`/branches). `sinf()` itself isn't free — a wavetable
 is worth it once there are several voices.
 
-## 7. Build path
+Build spec: see `docs/architecture.md`.
 
-Monophonic first (hear each change in isolation), then go polyphonic:
-
-1. **Oscillator** — add square/triangle/saw next to sine; switch by serial. → `firmware/10-synth-voice`
-2. **ADSR** — replace the A/R gate with full ADSR (4 params, tweakable by serial).
-3. **Filter** — resonant low-pass + (optional) its own envelope to the cutoff.
-4. **Polyphony** — replicate the voice, add a mixer + voice allocation; measure voice count.
-
-Companion: [music-theory.md](music-theory.md) (which notes/pitches/chords we play). Glossary
-Hardware path: [hardware.md](../hardware/README.md).
+Companion: [music-theory.md](music-theory.md) (which notes/pitches/chords we play). Hardware path: [hardware/README.md](../hardware/README.md).

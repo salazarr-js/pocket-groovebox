@@ -4,6 +4,8 @@ A reference list of synths, techniques, and learning material to study before de
 the audio engine. Grounded in what matters for this project: an embedded synth running on
 an ESP32-S3 with limited CPU and no OS.
 
+> **Scope:** survey of synthesis paradigms + learning resources + product references. For the theory of the voice chain we're building, see [synthesis.md](synthesis.md).
+
 ---
 
 ## Synthesis paradigms overview
@@ -70,7 +72,7 @@ per sample. Benefits over a `sinf()` oscillator:
 - Table lookup is ~10× cheaper than `sinf()` per sample
 - Store multiple waveforms in one file — interpolate between them for morphing
 - Classic shapes (sine, saw, square, triangle) plus custom shapes from one table
-- The ESP32-S3 has 8 MB flash — room for hundreds of wavetable files if needed
+- The ESP32-S3 board has 32 MB flash — room for hundreds of wavetable files if needed
 
 Serum uses 2048-sample tables. For embedded use, 256 or 512 is enough (less memory,
 adequate aliasing at normal sample rates).
@@ -164,6 +166,8 @@ Before implementing the audio engine, work through these in sequence:
 
 ## Hichord — primary inspiration device (study the manual)
 
+> **Note:** this section is product/UX analysis of the inspiration device, not synthesis-paradigm research. It is a candidate for its own doc later.
+
 The Hichord is listed in [brief.md](../brief.md) as the primary inspiration for this project's
 concept and play style. Reading the manual reveals concrete architecture decisions worth
 studying closely before finalising our own design.
@@ -215,6 +219,7 @@ constraint is the feature.
 
 - 12 oscillators at once is the real voice budget we need to target. 6 stereo pairs = 6
   polyphonic chord voices, each potentially a 3-note triad = 18 note-slots minimum.
+  ⚠ In tension with `MAX_VOICES = 8` in `architecture.md` — to be resolved by the synthesis research.
 - The diatonic button map is a strong candidate for our own control layout —
   much more playable than a piano keyboard for chord-based music.
 - The joystick-as-chord-modifier is a brilliant interaction model for a small device with

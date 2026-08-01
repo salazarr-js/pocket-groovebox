@@ -50,7 +50,7 @@ No single device is the blueprint. Each one below contributes a piece — the sp
 
 ## Product Concept
 
-A **modern**, lightweight, battery-powered standalone synthesizer / sampler / loop station with a step sequencer, in a **handheld console form factor** (Steam Deck–style — held in two hands, screen flanked by controls), with a built-in speaker, display, and one-octave keyboard. Works without a computer or internet.
+A **modern**, lightweight, battery-powered standalone synthesizer / sampler / loop station with a step sequencer, in a **handheld console form factor** (OP-1 × HiChord layout — screen and controls above, keyboard below), with a built-in speaker, display, and a 2-octave 24-key keyboard (C3–B4). Works without a computer or internet.
 
 > Concept renders exploring form factor and layout: see [design.md](design.md).
 

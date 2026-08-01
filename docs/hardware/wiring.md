@@ -7,8 +7,8 @@ How the modules connect to the ESP32-S3. This doc is **only the connection struc
 **Status:**
 - ✅ PCM5102 DAC, ST7789 display, PAM8403 amp — verified and wired
 - ✅ EC11 encoders and joystick — on hand, wiring defined
-- 🚧 Keyboard (25 keys via PCF8575 ×2) — wiring defined; V1 uses OP-1-style flat caps directly on switches (no lever), keycap + plate CAD in progress
-- 🛒 SK6812 MINI-E LEDs — on order, wiring defined
+- 🚧 Keyboard (24 keys via PCF8575 ×2) — wiring defined; V1 uses OP-1-style flat caps directly on switches (no lever), keycap + plate CAD in progress. **Build 1.0** = 12 keys (one octave C–B) on a single PCF8575 (0x20)
+- ⏸ SK6812 MINI-E LEDs — wiring defined but **deferred** (needs a PCB; not in build 1.0)
 
 ## Connection overview
 
@@ -20,9 +20,9 @@ flowchart LR
     MCU -->|"I2C — SDA 4 / SCL 8 / INT 15 (wired-OR)"| EXP1["PCF8575 #1 (0x20)"]
     MCU -->|"I2C — SDA 4 / SCL 8 / INT 15 (wired-OR)"| EXP2["PCF8575 #2 (0x21)"]
     EXP1 -->|"P00–P15"| KEYS1["Keys C3–D#4 (16 keys)"]
-    EXP2 -->|"P00–P08"| KEYS2["Keys E4–C5 (9 keys)"]
+    EXP2 -->|"P00–P07"| KEYS2["Keys E4–B4 (8 keys)"]
     MCU -->|"GPIO 39/40/41/42 (CLK/DT) + 16/17 (SW)"| ENC["2× EC11 encoders"]
-    MCU -->|"GPIO 18 → 74AHCT125"| LED["SK6812 MINI-E × 25"]
+    MCU -->|"GPIO 18 → 74AHCT125"| LED["SK6812 MINI-E × 24 (deferred)"]
     MCU -->|"ADC GPIO 1/2 + GPIO 21"| JOY["Joystick (analog + button)"]
     DAC -->|"line out"| HP["Headphone jack"]
     DAC -->|"LROUT/ROUT"| AMP["PAM8403"]
@@ -79,13 +79,15 @@ Write-only — no MISO. The 170×320 panel needs a driver offset (Arduino_GFX / 
 
 Two PCF8575s share the same I2C bus (SDA/SCL) and a single INT line wired open-drain (wired-OR). Any key press on either chip pulls INT low and wakes the ESP32-S3 interrupt handler, which then reads both chips to resolve which key(s) changed.
 
+> **Build 1.0:** only 12 keys (one octave, C–B) wired to a single PCF8575 at 0x20 (P00–P13, same order as chip #1 below). The second chip joins in the full 24-key build.
+
 **Shared I2C connections (both chips):**
 
 | ESP32-S3 | PCF8575 | Notes |
 | --- | --- | --- |
 | GPIO4 | SDA | 4.7 kΩ pull-up to 3.3 V (one resistor on the bus is enough) |
 | GPIO8 | SCL | 4.7 kΩ pull-up to 3.3 V (one resistor on the bus is enough) |
-| GPIO15 | INT | 4.7 kΩ pull-up to 3.3 V; both chips' INT pins wire directly to this GPIO (open-drain wired-OR) |
+| GPIO15 | INT | 4.7 kΩ pull-up to 3.3 V; both chips' INT pins wire directly to this GPIO (open-drain wired-OR). Defined, not yet exercised — all sketches poll so far |
 | 3V3 | VCC | |
 | GND | GND | |
 
@@ -122,8 +124,7 @@ Two PCF8575s share the same I2C bus (SDA/SCL) and a single INT line wired open-d
 | P05 | A4 |
 | P06 | A#4 |
 | P07 | B4 |
-| P10 | C5 |
-| P11–P17 | spare |
+| P10–P17 | spare (8) |
 
 Each key is wired between its P-pin and GND. Key pressed = pin reads 0. See [modules/pcf8575.md](modules/pcf8575.md) for pull-up requirements and I2C read protocol.
 
@@ -142,7 +143,9 @@ JTAG pins GPIO39–42 are input-only on the ESP32-S3 but usable for encoder CLK/
 
 All encoder signals wire encoder pin → ESP32-S3 GPIO; the encoder's common/ground pin ties to GND.
 
-### SK6812 MINI-E — per-key RGB LEDs (×25)
+### SK6812 MINI-E — per-key RGB LEDs (×24) — deferred
+
+> ⏸ **Deferred:** the per-key LEDs require the PCB version of the keyboard — build 1.0 (hand-wired) has no LEDs. Wiring below is the target design for the PCB iteration.
 
 One LED per key, driven from a single GPIO via the ESP32-S3 RMT peripheral. A 74AHCT125 level shifter is mandatory (ESP32-S3 outputs 3.3 V; VIH = 3.5 V at 5 V supply — direct connection is out of spec).
 
@@ -150,7 +153,7 @@ One LED per key, driven from a single GPIO via the ESP32-S3 RMT peripheral. A 74
 | --- | --- |
 | ESP32-S3 GPIO18 | → 74AHCT125 input (OE pin tied LOW) |
 | 74AHCT125 output | → 330–500 Ω series resistor → LED #1 DIN |
-| LED #1 DOUT | → LED #2 DIN → … (chain of 25) |
+| LED #1 DOUT | → LED #2 DIN → … (chain of 24) |
 | All LED VDD | 5 V (VBUS) |
 | All LED GND | GND |
 
