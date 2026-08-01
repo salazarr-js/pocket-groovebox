@@ -8,7 +8,7 @@ Working reference for every printed part in this project. The **calibrated, prin
 |---|---|---|
 | KS-33 plate cutout kerf | **0.0** | PLA + PETG, 0.2 & 0.4 mm nozzles, 3 print services — fit passed as-modeled |
 | Cap stem clearance | **0.18** FDM / 0.05 resin | on cross-arm width only, with 0.5 mm `mouth_flare` 45° lead-in |
-| Elephant foot | present on 1 of 3 services | countermeasure: **0.4–0.6 mm chamfer on every bottom edge**, designed in |
+| Elephant foot | present on 1 of 3 services | countermeasure: **0.3 mm chamfer** (≈ first layer height + margin; 0.3–0.5 range, dial up only if a printer's foot is worse). On flat plates, chamfer **both faces** so print orientation can't leave a raw edge |
 
 Lesson: kerf on *this* printer chain is near zero — but every new mating geometry still gets a **parameter + test coupon** before the full part (that's how the values above were earned).
 

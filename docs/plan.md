@@ -42,6 +42,12 @@ Gather, identify, and document every module; plan the wiring.
   - [ ] Finalise open cap/plate questions: **dish** (revisit or keep flat), **sharp offset** illusion, **anti-tilt** for tall naturals. Pitch is settled as **parametric** (cap width + gap; currently 18mm cap + 0.5mm gap = **18.5mm pitch**) — see [`octaves-plan.md`](../hardware/3d/octaves-plan.md)
   - [x] **Test-fit kit printed → PASSED** (PLA + PETG, 0.2 & 0.4 mm nozzles, 3 print services): KS-33 clip + cap socket confirmed with `kerf 0` / `stem_clearance 0.18`. 0.2 mm nozzle = best finish (spec for final parts). One service shipped elephant foot → design bottom-edge chamfers in. Details in [`hardware/3d/README.md`](../hardware/3d/README.md); test files deleted after passing.
   - [x] Propagate the parametric pitch (cap 18mm + gap 0.5mm = 18.5mm) to the docs — done in the 2026-07-31 docs audit; remaining 18mm mentions are annotated historical blocks only
+  - [x] **`plate.scad` rebuilt — first pass (2026-08-01)**: 12 stepped KS-33 cutouts at `octaves = 1`, plate derived from the cap bbox (131 × 56.75 × 2.4), symmetric 0.3mm edge chamfers. Test-batch scope: **no screws / PCF bosses / wire channels yet** — those come when the plate merges into the enclosure top shell
+  - [ ] **`key_cap.scad`** — the cap family `cap(w_u, d_u)` with the **asymmetric cross-bore fix (1.28 / 1.10)**, values from octaves-plan §7
+  - [ ] **`assembly.scad`** — visual fit check: plate + 12 caps (+ PCF dummy later)
+  - [ ] Export STLs → **second test print batch**: plate + 12 caps; switches hand-wired to the PCF8575 module by cable (no mount yet)
+  - [ ] Calipers pass: KY-023 board, PCF8575 module, perfboard — replace the "verify" placeholders in `enclosure-layout.svg`
+  - [ ] (later) PCF8575 bosses + wire channels + M2 screws — when the plate merges into the top shell
   - [ ] Hand-wire the octave: switch pins → PCF8575 module via plate wire channels — **no custom PCB** (decided 2026-07-31, see [`octaves-plan.md`](../hardware/3d/octaves-plan.md)); PCF mounts into the plate between the sharps. SK6812 LEDs: **deferred** — they need a PCB, which is left to a future PCB version
   - [ ] Assemble + firmware smoke test (read 12 keys)
 
