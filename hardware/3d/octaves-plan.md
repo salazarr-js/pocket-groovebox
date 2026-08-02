@@ -28,7 +28,7 @@ centre = screw_center ? [ for (o = [0:octaves-1]) [ (o*7 + 3.5 - 3.5*octaves) * 
 
 At `octaves = 1` this evaluates to the current single `[0, screw_cy]` — no behavior change.
 
-**Sanity check** after wiring it: `octaves = 2` → echo should report 24 keys and 6 screws; `octaves = 1` → 12 keys (= build 1.0, see §8). Plate size: derive from the cap bbox, don't hand-check a number — the old ≈268.5 × 57.5 mm figure was computed at v0's pitch 19 and is stale since the pitch moved to 18.5 (§7). The old "byte-identical to v0's STL" check no longer applies for the same reason (and no STL is committed anymore).
+**Sanity check** after wiring it: `octaves = 2` → echo should report 24 keys and 6 screws; `octaves = 1` → 12 keys (= build 1.0, see §8). Plate size: derive from the cap bbox, don't hand-check a number — the old ≈268.5 × 57.5 mm figure was computed at v0's pitch 19 and is stale since the pitch moved to 18.8 (§7). The old "byte-identical to v0's STL" check no longer applies for the same reason (and no STL is committed anymore).
 
 ## 2. Known-good values — calibrated, don't re-derive
 
@@ -70,7 +70,7 @@ hardware/3d/
   assembly.scad  — VISUAL fit-check: includes both + PCF dummy (collisions, clearances)
 ```
 
-**Pre-flight fixes baked into the rebuild** (details in [README](README.md) Open): asymmetric cross bore (1.28/1.10 + clearance, wide slot horizontal, LED-north), bottom-edge chamfers vs elephant foot, pitch set to 18.5 (§7 — parametric, revisit after build 1.0).
+**Pre-flight fixes baked into the rebuild** (details in [README](README.md) Open): per-arm cross bore (official stem 1.23/1.10 + clearances 0.05/0.18 → both slots 1.28 = the print-validated fit, orientation stays free), bottom-edge chamfers vs elephant foot, pitch set to 18.5 (§7 — parametric, revisit after build 1.0).
 
 ## 6. Enclosure vision (context the plate must fit into)
 
@@ -105,17 +105,17 @@ module ks33_cutout(thick, shelf = 1.2, hole_t = 14.0, hole_b = 15.2, hole_r = 0.
 }
 ```
 
-**Plate params** (from `plate-octave.scad`): `cap_1u 18` (fixed) · `cap_gap` → **pitch is parametric = cap_1u + cap_gap**; v0 shipped `cap_gap 1.0` (pitch 19), **decided 2026-07-31: `cap_gap 0.5` → pitch 18.5** (revisit after build 1.0) · `thick 2.4` · margins `1` · corner `prad 3` · plate = cap bounding box + margins (derive, don't hand-formula). Screws: M2 flat-head countersunk (DIN 7991) — shaft `2.2`, countersink `Ø4.0` 90° (depth = `(4.0−2.2)/2`), 4 corners inset `4` + 1 per octave centre at `y 14`; positions derive from the bbox.
+**Plate params** (from `plate-octave.scad`): `cap_1u 18` (fixed) · `cap_gap` → **pitch is parametric = cap_1u + cap_gap**; v0 shipped `cap_gap 1.0` (pitch 19, print-validated), 2026-07-31 set 0.5 (never printed side-by-side), **decided 2026-08-01: `cap_gap 0.8` → pitch 18.8** (= 2×0.4 grid, backed by v0's validated 1.0) · `margin 1.6` (= 2× gap) · corner `prad 3.2` (= cap corner 1.6 + margin 1.6 → plate edge concentric with the corner cap) · `thick 2.4` · plate = cap bounding box + margins (derive, don't hand-formula). Screws: M2 flat-head countersunk (DIN 7991) — shaft `2.2`, countersink `Ø4.0` 90° (depth = `(4.0−2.2)/2`), 4 corners inset `4` + 1 per octave centre at `y 14`; positions derive from the bbox.
 
 **Cap params** (from `cap.scad` — the tuned look-and-feel values):
 
 | Group | Values |
 |---|---|
-| Size | `unit_mm 18` · `cap_height 5.5` |
-| Bevel/look | `base_rim_height 1` · `top_inset 1` (per side) · `top_edge_round 1` · `base_corner_r 1.5` · `top_corner_r 2.5` · flat top, no dish |
-| Shell (hollow) | `wall_thickness 1.2` · `top_thickness 1.4` · open bottom |
-| Mount | `post_diameter 5.5` · cross `4.0` span · arms `1.1` (v0 both — **rebuild: 1.28 horizontal / 1.10 vertical**) · `socket_depth 2.8` (KS-33 tower 2.95) |
-| Print | `stem_clearance 0.18` FDM / `0.05` resin (arm width only) · `mouth_flare 0.5` (45° lead-in) · optional `split_post` |
+| Size | `unit_mm 18` · `cap_height 5.6` — **design values snapped to a 0.4 mm grid (2026-08-01 polish)**; FIT values (mount/bore) stay off-grid |
+| Bevel/look | **directional profile (decided 2026-08-01)**: `bevel_main 2.4` on the touch side per key (naturals **S**/front · C#/F# **W** · D#/A# **E**) / `bevel_rest 1.2` on the others · **G# (1u×1u) = 1.2 all around, no deep side** · `base_rim_height 1.2` · `top_edge_round 1.2` (all four edges) · `base_corner_r 1.6` · `top_corner_r 3.2` (= 2× base) · flat top, no dish |
+| Shell (hollow) | `wall_thickness 1.2` · `top_thickness 1.6` (must exceed `top_edge_round` — the cavity ceiling has to sit below where the roundover starts) · `cavity_corner_r 1.6` (rounded cavity corners, = outer look) · open bottom · `bottom_chamfer 0.4` — 45° on skirt bottom edges (outer + inner) AND post foot (anti elephant-foot + lead-in) |
+| Mount | `post_diameter 5.5` · stem cross `4.0` span, arms **1.23 horizontal / 1.10 vertical** (official drawing, vernier-confirmed 2026-08-01 — the earlier 1.28 was a misread) · bore length **4.1** (span + 0.1, official cap spec) · **R0.3** inner-corner fillets · `socket_depth 2.8` (KS-33 tower 2.95) |
+| Print | per-arm clearances: thin `stem_clearance 0.18` FDM (resin 0.05) / wide `stem_clearance_wide 0.05` → **both slots 1.28 = print-validated fit**, orientation free · `mouth_flare 0.2` (45° lead-in, official cap spec — was 0.5 in v0) · optional `split_post` |
 | Assembly | caps float `2.0` above the plate (switch stem height, from `assembly-octave.scad`) |
 
 Fits & tolerances reference (in-repo): [`docs/hardware/fdm-tolerances.md`](../../docs/hardware/fdm-tolerances.md) — validated values + rules for the uncalibrated fits (inserts, snap-fits, module pockets). Deep theory lives in **cad-lab (external repo, not part of this repo)**.
@@ -125,6 +125,6 @@ Fits & tolerances reference (in-repo): [`docs/hardware/fdm-tolerances.md`](../..
 The first integrated build after the first 3D prints is a **complete working one-octave device**, not a bare keyboard module. Named **v1.0** (a *build* milestone — not to be confused with the V1/V2 *design-iteration* labels: V1 = flat caps, V2 = lever bridge / sampler). The 2-octave 24-key keybed stays the target for a later version.
 
 - **Keyboard:** ONE octave, **C to B — 12 keys** (`octaves = 1`), a strict subset of the final 24-key C3–B4 keybed, so everything validated here transfers 1:1. `plate.scad` at `octaves = 1` + 12 printed caps (7× 1u×2u naturals, 4× 1.5u×1u sharps, 1× 1u×1u G#) + PCF8575 bosses + wire channels. *Status: `plate.scad` first pass done 2026-08-01 (test-batch scope — cutouts only, no screws/bosses/channels yet; the §7 screw spec still applies at shell-merge time).*
-- **Electronics:** 1× PCF8575 (0x20) hand-wired to the switches — 12 of 16 pins used, 4 spare. **No LEDs** (they need the PCB version, deferred) and **no custom PCB** — main board = perfboard in the bottom shell.
+- **Electronics:** 1× PCF8575 (0x20) hand-wired to the switches — 12 of 16 pins used, 4 spare. **No LEDs** (they need the PCB version, deferred) and **no custom PCB** — main board = perfboard in the bottom shell. **Power (simplified 2026-08-01): no battery in v1.0** — the device runs off the **ESP32-S3's native USB, exposed through a shell opening**; 18650 + charging deferred to a later version.
 - **Enclosure:** the §6 two-shell vision scaled to one octave — top shell absorbs the plate + openings for the ST7789 display, 40 mm speaker, 2× EC11 encoders, joystick; bottom shell carries the perfboard. **Layout decided 2026-08-01: shell 184 × 120 mm ext. (4 mm grid, 2.4 mm walls)** — bottom band: joystick zone left + keyboard right; single top band: display landscape left + 2 encoders centre + speaker ø40 right. Full dimensions: `docs/hardware/enclosure-layout.svg` (v1.0).
-- **Space note:** front row ≈ 129.5 mm at pitch 18.5 — C-to-B chosen over C-to-C (13 keys, ≈148 mm) to keep symmetry with the final keybed and leave horizontal room for the 40 mm speaker.
+- **Space note:** front row ≈ 130.8 mm at pitch 18.8 (plate **134 × 58.4** at margin 1.6 / prad 3.2) — C-to-B chosen over C-to-C (13 keys, ≈150 mm) to keep symmetry with the final keybed and leave horizontal room for the 40 mm speaker. *(`enclosure-layout.svg` still drawn at pitch 18.5 / plate 131 × 56.75 — pending update.)*

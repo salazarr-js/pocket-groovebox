@@ -50,7 +50,7 @@ Note: both the PAM8403 and the MAX98357A are BTL (bridge-tied) speaker amps and 
 | Area | Choice | Notes |
 | --- | --- | --- |
 | MCU | ESP32-S3 | More RAM/CPU, BLE MIDI, native USB |
-| Keyboard | 24 keys (14 white + 10 black) — 2 octaves, C3–B4 | KS-33 Silent Brown low-profile switches (MX-cross stem), OP-1-style flat caps directly on switch (no lever — deferred), 18 mm cap + 0.5 mm gap → 18.5 mm pitch, front row ≈259 mm wide |
+| Keyboard | 24 keys (14 white + 10 black) — 2 octaves, C3–B4 | KS-33 Silent Brown low-profile switches (MX-cross stem), OP-1-style flat caps directly on switch (no lever — deferred), 18 mm cap + 0.8 mm gap → 18.8 mm pitch, front row ≈262 mm wide |
 | Key I/O | 2× PCF8575 I2C expander (0x20 + 0x21) | 16 + 8 pins for 24 keys; shared INT on GPIO15 (open-drain wired-OR) |
 | Key LEDs | SK6812 MINI-E ×24 | Per-key RGB, south-facing MX mount, 74AHCT125 level shifter on GPIO18. **Deferred — needs a PCB; build 1.0 has no LEDs** |
 | Display | 1.9" ST7789 LCD, 170×320 SPI | BPM, presets, waveforms, menus |

@@ -15,7 +15,7 @@
 Decisions taken:
 - ✅ Switch: **Gateron KS-33 Low Profile 2.0 Silent Brown** — full specs + mechanical drawing in [`../hardware/modules/gateron-ks-33.md`](../hardware/modules/gateron-ks-33.md)
 - ✅ Mechanism (**V1**): **flat rectangular cap directly on the switch** (OP-1 style; no lever, no spring, no pivot rod). Lever bridge deferred to a later iteration — see bottom.
-- ✅ Cap mounting: **thin low-profile cap with a guide rib that inserts into a plate slot** (G915-style — the guide lives in the cap, not the plate walls). The rib reuses the plate's **stabilizer cutout** as its guide slot, so **no MX stabilizer hardware** is needed. Stem socket = MX cross (4.00 / 1.10 / 1.28). *(The "skirt wrapping the switch body" variant and the plate-well "floating cap" were considered and dropped.)*
+- ✅ Cap mounting: **thin low-profile cap with a guide rib that inserts into a plate slot** (G915-style — the guide lives in the cap, not the plate walls). The rib reuses the plate's **stabilizer cutout** as its guide slot, so **no MX stabilizer hardware** is needed. Stem socket = MX cross (4.00 / 1.10 / 1.23). *(The "skirt wrapping the switch body" variant and the plate-well "floating cap" were considered and dropped.)*
 - ✅ Layout: **flattened 2-octave piano** = **24 keys** — 14 naturals (C3–B4, 1u × 2u tall) + 10 sharps (back row: C#/D#/F#/A# = 1.5u wide, G# = 1u). From the user's KLE; encoded in `hardware/3d/octave-layout.scad` *(deleted with v0 — the layout now lives inside `plate.scad` per [`octaves-plan.md`](../../hardware/3d/octaves-plan.md))*. *(No top C5.)*
 - ✅ Pitch: **parametric** — `pitch = cap + gap`; cap fixed at 1u = 18 mm, gap currently 0.5 mm → **18.5 mm pitch** (24-key front row ≈ 259 mm; values per [`octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7 — see also [0003-design-system.md](0003-design-system.md))
 - ✅ Plate: **3D-printed**, 1.2 mm low-profile cutout (14 mm), outsourced to a print service
@@ -50,7 +50,7 @@ piano-like deep travel of the lever design for radical simplicity and easy itera
   for outsourced FDM, and a bad cap is re-printed on its own without depending on the tiny stem
   fit. Recommended for the first instance.
 - **Stem-mounted cap (plan B).** The cap has a cross socket that clips onto the stem. Cleaner
-  look, feasible now that we have exact stem cotas (model the socket to 4.00 / 1.10 / 1.28, not
+  look, feasible now that we have exact stem cotas (model the socket to 4.00 / 1.10 / 1.23, not
   generic MX 1.17/1.27). Better in resin.
 
 ### Terminology
@@ -148,7 +148,7 @@ First OpenSCAD pass — files + full parametric detail in [`hardware/3d/README.m
 
 - **Plate:** **stepped cutout** — 1.2 mm clip shelf at 14 mm, widened to ~15.2 mm below, so the ~2.4 mm plate sits **flush with the switch base** and both rest on the PCB. **M2 countersunk (allen flat-head)** screws, 4 corners + 1 dead-centre; **heat-set inserts in the enclosure**. Margins 1 mm (the plate is expected to merge into the enclosure as the key container).
 - **Keycap:** **hollow shell** (THT low-profile) — straight base rim → bevel → **rounded top edge**; central cylindrical **post with a "+" cross bore**. **Flat top** (a dish was tried three ways and removed — to revisit).
-- **Pitch:** the cap is fixed at **18 mm**; the gap sets the pitch (`pitch = cap + gap`). Decided 2026-07-31: gap **0.5 mm → 18.5 mm pitch** (parametric — revisit after build 1.0; the earlier "explore 19–19.5" is settled).
+- **Pitch:** the cap is fixed at **18 mm**; the gap sets the pitch (`pitch = cap + gap`). Decided 2026-07-31: gap 0.5. **Rev. 2026-08-01: gap 0.8 mm → 18.8 mm pitch** (2×0.4 design grid; v0's 1.0 gap was print-validated, 0.5 never was — parametric, revisit after build 1.0).
 - **Assembly:** `assembly-octave.scad` *(deleted with v0 — rebuild target is `assembly.scad` per octaves-plan)* rendered the octave with real caps to judge the whole together.
 
 ⚠️ **Before any print:** deep-check every measurement (cutout, stepped shelf, plate thickness, cap dims, **stem socket**) against other keycap/plate models — tracked in [plan.md](../plan.md).

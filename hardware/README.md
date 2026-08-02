@@ -25,6 +25,6 @@ OpenSCAD parts. `.scad` is the versioned source. Design loop + collaborate live:
 ## Key facts (see docs for detail)
 
 - Switch: **Gateron KS-33 Low Profile 2.0 Silent Brown** — cutout **14.0 mm**, **stepped plate ~2.4 mm** (1.2 mm clip shelf), MX-cross stem.
-- **Pitch is parametric** (`pitch = cap + gap`): cap 1u = **18 mm** + gap **0.5 mm** = **18.5 mm** currently. Caps **OP-1 × HiChord** flat; switches hand-wired direct to **PCF8575** (no diodes, no custom PCB). Per-key **SK6812** RGB deferred (needs a PCB version).
+- **Pitch is parametric** (`pitch = cap + gap`): cap 1u = **18 mm** + gap **0.8 mm** = **18.8 mm** currently (2026-08-01, on the 0.4 grid). Caps **OP-1 × HiChord** flat; switches hand-wired direct to **PCF8575** (no diodes, no custom PCB). Per-key **SK6812** RGB deferred (needs a PCB version).
 - Full keyboard = **24 keys, C3–B4**. First build = **build 1.0**: one octave (**12 keys, C–B**), 1× PCF8575, hand-wired, **no LEDs** ([0005](../docs/explorations/0005-proto-keyboard-module.md)).
 - This list is a summary — values live in [`3d/octaves-plan.md`](3d/octaves-plan.md) (single source).

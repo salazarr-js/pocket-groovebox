@@ -70,7 +70,7 @@ From the Gateron Low Profile dimensional drawing (all mm) — annotated drawing 
 | Dimension | Value |
 | --- | --- |
 | Cross envelope | 4.00 × 4.00 (±0.05) |
-| Cross arm widths | 1.10 ±0.04 and 1.28 ±0.04 |
+| Cross arm widths | 1.10 ±0.04 (vertical) and 1.23 ±0.04 (horizontal, LED side) — *earlier docs misread the wide arm as 1.28; corrected 2026-08-01 against the drawing + vernier (1.1 × 1.2)* |
 | Stem collar diameter | ø5.70 ±0.05 |
 | Keycap-mount tower height | **2.95 mm** — sliced from the STEP; cross + collar + boss all reach the same top plane (z=12.15). **This caps the cap socket depth.** |
 
@@ -95,7 +95,7 @@ The STEP/drawing above are the **standard** KS-33 LP 2.0. Our actual switch is t
 | Housing height (excl. bottom pillar + stem) | **5.2 mm** | — |
 | Bottom centre round pillar (ø) | **4.9 mm** | ~4.8–5.05 |
 | Stem top (the moving part, rounded-rectangle) | **6.4 × 6.2 mm** | round-ish |
-| Cross arm width | **~1.0 mm** | 1.10 / 1.28 |
+| Cross arm width | **~1.0 mm** (re-measured: 1.1 × 1.2) | 1.10 / 1.23 |
 | Stem top difference | clean cross on rounded base | cross + centre detail |
 
 **For CAD:**
@@ -105,7 +105,7 @@ The STEP/drawing above are the **standard** KS-33 LP 2.0. Our actual switch is t
   - **Lower 1.2 mm:** widen to **15.2 mm** to clear the 15 mm body and the sprung-out clips (~14.7 mm hooked). Total 2.4 mm prints far sturdier than a bare 1.2 mm plate.
   - These values are **print-validated** (kerf 0.0, PLA/PETG, multiple print services) — see [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §2 (calibrated values) and §5–6 (rebuild file structure + enclosure context). Switch pins are hand-wired point-to-point below the plate; wire channels in the plate underside route the runs to the PCF8575, which mounts into the plate's sharps-row bays.
   - Per-key SK6812 LEDs are **deferred** — they require a PCB version of the keyboard; build 1.0 has no LEDs, so the plate needs no LED provisions.
-- **Cap cross-socket (finalised — geometry snapshot in [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §7):** standard MX cross-in-cylinder mount — **post Ø5.5** (matches collar ø5.7), **cross 4.0 span × 1.1 male arm**, **socket depth 2.8 mm** (tower is 2.95). Add print clearance to the **arm width only** — asymmetric, the length self-locates: **+0.18 mm FDM (0.2 mm nozzle) / +0.05 mm resin** (`stem_clearance`). Add a **0.5 mm 45° flared lead-in** at the mouth (eases insertion + absorbs elephant-foot); optional **split-post** for FDM so the cross flexes instead of cracking. Validate with a **stem-only tolerance ladder** (0.10 / 0.15 / 0.20 / 0.25) before committing to a full cap.
+- **Cap cross-socket (finalised 2026-08-01 — source of truth: `hardware/3d/key_cap.scad`):** standard MX cross-in-cylinder mount — **post Ø5.5** (matches collar ø5.7), **socket depth 2.8 mm** (tower is 2.95 — do NOT adopt Cherry's 3.6/3.8 full-MX depths). Bore is **per-arm**: stem arms 1.10 (vertical) / 1.23 (horizontal) + clearances **0.18 / 0.05** → **both slots 1.28 mm** — exactly the print-validated fit (PLA/PETG, 0.2 & 0.4 nozzles), and equal slots keep cap orientation free (no LED-north constraint). Bore length **4.1** (stem 4.0 + 0.1, official Cherry cap spec) with **R0.3 inner-corner fillets** (official cap spec; avoids FDM corner cracks). The common symmetric **1.17** slot is for injection POM/ABS (interference grip) — too tight for stiff FDM PLA. **0.2 mm 45° flared lead-in** at the mouth (official cap spec); optional **split-post** for FDM so the cross flexes instead of cracking.
 - The STEP model is a **rough visual reference only** for the Silent — geometry authority is this table.
 
 ## Keycap strategy (this project)

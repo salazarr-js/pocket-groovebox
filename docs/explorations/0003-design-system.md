@@ -4,7 +4,7 @@
 
 > **Revision (2026-06-18) — 280 mm frame.** The frame was shrunk from 320 mm to **280 mm**
 > wide for a more pocketable device. A 2-octave keyboard at 20 mm pitch spans 300 mm and no
-> longer fits, so the keyboard moved to **18 mm pitch** (15 white keys = 270 mm + 5 mm margins) *(since superseded: 24 keys at parametric 18.5 mm pitch — see the 2026-07-31 revision note below)*.
+> longer fits, so the keyboard moved to **18 mm pitch** (15 white keys = 270 mm + 5 mm margins) *(since superseded: 24 keys at parametric 18.8 mm pitch — see the 2026-07-31 revision note below)*.
 > This puts the keyboard **off the 4 mm grid** — which weakens the "decisive argument" below,
 > since that argument was the main reason 4 mm beat 5 mm. The 4 mm grid is **retained for the
 > shell, walls, control placement, and corner radii**; the keyboard is now an explicit, isolated
@@ -77,7 +77,7 @@ rails naturally align. 5mm has no relationship to FDM line width.
 
 ## Reference values
 
-> **Revision (2026-07-31) — keyboard values superseded.** The cap/pitch figures below are superseded: pitch is now **parametric** (`pitch = cap + gap`; cap 1u = 18 mm + gap 0.5 mm = **18.5 mm** currently) and caps are sized in **1u = 18 mm units** per [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7 — the single source for keyboard geometry. The "keyboard on the 4 mm grid" argument no longer applies as such; the **4 mm grid still governs the rest of the enclosure** (shell, walls, controls, radii). Tables kept for the reasoning.
+> **Revision (2026-07-31) — keyboard values superseded.** The cap/pitch figures below are superseded: pitch is now **parametric** (`pitch = cap + gap`; cap 1u = 18 mm + gap 0.8 mm = **18.8 mm** currently (rev. 2026-08-01)) and caps are sized in **1u = 18 mm units** per [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7 — the single source for keyboard geometry. The "keyboard on the 4 mm grid" argument no longer applies as such; the **4 mm grid still governs the rest of the enclosure** (shell, walls, controls, radii). Tables kept for the reasoning.
 
 All key dimensions for the keyboard, at the revised **18mm pitch** (the pitch and span are off
 the 4mm grid; the 16mm keycap and the depth dimensions land on it):
@@ -103,7 +103,7 @@ see the revision note at the top of this file.)*
 
 ### Enclosure outline
 
-> **Revision (2026-07-31).** The keyboard-span figures below (270 mm span, 5 mm side margins, 15 naturals) assume the old fixed 18 mm pitch and 25 keys — superseded: at the current parametric 18.5 mm pitch the **24-key** front row is ≈ **259 mm** (per [`octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7), so the margins need re-deriving with the enclosure re-split. The 280×160 mm shell values on the 4 mm grid still stand as the working outline.
+> **Revision (2026-07-31).** The keyboard-span figures below (270 mm span, 5 mm side margins, 15 naturals) assume the old fixed 18 mm pitch and 25 keys — superseded: at the current parametric 18.8 mm pitch the **24-key** front row is ≈ **262 mm** (per [`octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7), so the margins need re-deriving with the enclosure re-split. The 280×160 mm shell values on the 4 mm grid still stand as the working outline.
 
 | Dimension | Value | Grid factor |
 |---|---|---|
@@ -154,8 +154,8 @@ the way around the corner.
 
 ## Consequences
 
-- `docs/hardware/enclosure-layout.svg` — ✅ **updated 2026-08-01**: now draws the **v1.0 one-octave device** (184×120mm shell, 12 keys C–B at pitch 18.5, joystick left / top band display + 2 encoders + ø40 speaker), per [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §8. The 280×160mm 2-octave layout this doc originally described is a future version; when it returns, derive it from octaves-plan, not from the superseded tables in this doc.
-- `docs/explorations/0002-key-design.md` — ✅ pivoted to OP-1 flat caps: 2-octave **24-key** grid (C3–B4); current cap/pitch geometry lives in [`octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7 (1u = 18mm caps, parametric pitch 18.5mm); lever design deferred.
+- `docs/hardware/enclosure-layout.svg` — ✅ **updated 2026-08-01**: now draws the **v1.0 one-octave device** (184×120mm shell, 12 keys C–B at pitch 18.5 (drawn — pitch has since moved to 18.8, SVG pending), joystick left / top band display + 2 encoders + ø40 speaker), per [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §8. The 280×160mm 2-octave layout this doc originally described is a future version; when it returns, derive it from octaves-plan, not from the superseded tables in this doc.
+- `docs/explorations/0002-key-design.md` — ✅ pivoted to OP-1 flat caps: 2-octave **24-key** grid (C3–B4); current cap/pitch geometry lives in [`octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7 (1u = 18mm caps, parametric pitch 18.8mm); lever design deferred.
 - Enclosure width must accommodate the 270mm keyboard + margins (5mm each side → 280mm = 70×4);
   height is 160mm = 40×4 (see table above)
 - All 3D print files: walls in multiples of 0.8mm, bosses/rails in multiples of 4mm

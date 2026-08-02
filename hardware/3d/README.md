@@ -19,11 +19,11 @@ live; Claude edits + renders in parallel (`/cad` skill).
 ### Plate (v0 `plate-octave.scad` / `switch-cutout.scad`, deleted — snapshot in [`octaves-plan.md`](octaves-plan.md) §7)
 - **Stepped cutout**, not a plain 14 mm hole: a **1.2 mm clip shelf at 14 mm** (the switch clips latch here), then the hole **widens to ~15.2 mm** below → the plate bottom sits **flush with the switch base**, so plate + switch both rest on the PCB. Plate total **~2.4 mm**. Rounded cutout corners (`hole_r`).
 - **Screws:** **M2 countersunk hex-socket** (allen flat-head, DIN 7991) so they sit **flush** (a socket-cap counterbore is too deep for a 2.4 mm plate). Layout: **4 corners + 1 dead-centre** (in the gap between the natural and sharp rows). M2 **heat-set threaded inserts** go in the **enclosure**, not the plate (the plate is just a clearance hole).
-- **Margins → 1 mm:** the plate will likely **merge into the enclosure** as the key container, so a big border isn't needed.
-- **Pitch:** the **cap is fixed at 18 mm**; the gap sets the pitch (`pitch = cap + gap`). Current value: **gap 0.5 mm → pitch 18.5 mm** (parametric — decided 2026-07-31, revisit after build 1.0).
+- **Margins → 1.6 mm** (rev. 2026-08-01: = 2× cap_gap, 0.4 grid; plate corner `prad 3.2` = cap corner + margin, concentric): the plate will likely **merge into the enclosure** as the key container, so a big border isn't needed.
+- **Pitch:** the **cap is fixed at 18 mm**; the gap sets the pitch (`pitch = cap + gap`). Current value: **gap 0.8 mm → pitch 18.8 mm** (decided 2026-08-01: 2×0.4 grid, backed by v0's print-validated 1.0 gap; the interim 0.5 was never printed side-by-side).
 
 ### Keycap (v0 `cap.scad`, deleted — snapshot in [`octaves-plan.md`](octaves-plan.md) §7)
-- **Design:** hollow shell (THT low-profile style, open bottom), rim → bevel → rounded top edge profile, central MX post with "+" cross bore. **All parameter values** (walls, profile radii, post/cross dims, `stem_clearance`, `mouth_flare`, sizes) live in [`octaves-plan.md`](octaves-plan.md) §7 — the **single source of values**; don't duplicate them here.
+- **Design:** hollow shell (THT low-profile style, open bottom), rim → bevel → rounded top edge profile, central MX post with "+" cross bore. **Directional profile (2026-08-01):** per-side top insets, front (south) deepest — the slope reads as touch direction, OEM-style; bottom chamfers on skirt + post foot. **All parameter values** (walls, profile radii, insets, post/cross dims, `stem_clearance`, `mouth_flare`, sizes) live in [`octaves-plan.md`](octaves-plan.md) §7 — the **single source of values**; don't duplicate them here.
 - **Flat top / no dish.** A concave dish was tried three ways (spherical, rounded-rect clipped, ellipsoid "pill") and **removed** — it kept eating the rounded top edge and never matched the reference. **To revisit** with a different method.
 
 ### Toolchain proven
@@ -41,7 +41,7 @@ The fit-test kit (2-space stepped plate + 1×2 and 1×1 caps) was printed and **
 
 ## ⚠️ Open — design questions (see [plan.md](../../docs/plan.md))
 - **Bottom-edge chamfers** against service-side elephant foot (see Print-validated) — add to plate cutouts + enclosure.
-- **Asymmetric cross bore** (print observation): the MX stem cross is not symmetric — the **horizontal arm (LED window north) is the wide one: 1.28 vs 1.10** ([KS-33 doc](../../docs/hardware/modules/gateron-ks-33.md)). `cap.scad` currently bores both arms at `cross_arm_width = 1.1`, so the wide arm gets ~zero clearance and the cap seats better rotated 90° — fine on 1×1, impossible on 1×2 naturals / 1.5u sharps. **Fix: bore each arm to its own width (1.28 / 1.10 + `stem_clearance`), wide slot always horizontal** (what real MX caps do; a symmetric 1.28 bore would give the thin arm ~0.36 rotational slop). Convention: **all switches mount LED-north** on plate + PCB.
+- ✅ **Cross bore — resolved (2026-08-01, `key_cap.scad`):** the stem cross is asymmetric, but the wide arm is **1.23** (official drawing + vernier — the earlier 1.28 was a misread). The bore is now **per-arm** (1.23/1.10) with clearances **0.05/0.18** → **both slots 1.28**, which is bit-for-bit the print-validated v0 geometry (that's *why* it worked: same principle as injection MX caps — snug wide arm, loose thin arm). Equal slots ⇒ **no LED-north constraint needed**; it only appears if `stem_clearance_wide` is raised (the echo warns). Also adopted from the official cap spec: bore length **4.1** + **R0.3** inner-corner fillets.
 - Revisit the **dish** (or keep flat).
 - **Sharp offset** ("illusion" toward the true note) — not done.
 - **Anti-tilt** for the tall 2u naturals — not addressed.

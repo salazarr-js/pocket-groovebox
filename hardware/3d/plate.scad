@@ -1,9 +1,10 @@
 // plate.scad — N-octave keyboard plate for Gateron KS-33 low-profile switches.
 // Spec: hardware/3d/octaves-plan.md — §2 calibrated values (do NOT re-derive),
 // §7 layout/cutout snapshots, §8 v1.0 scope (octaves = 1, 12 keys C–B).
-// Test-batch scope: plate + cutouts only — switches hand-wired to the PCF8575
-// module by cable. Screws / PCF bosses / wire channels come later, when the
-// plate merges into the enclosure top shell.
+// Batch-2 scope (2026-08-01): the plate prints as a COMPLETE keyboard module —
+// PCF8575 bosses + wire channels PENDING (blocked on calipers of the real
+// module: outline, hole positions/ø, tallest top-side component). No M2
+// plate↔shell screws yet — that sandwich comes with the enclosure (batch 3).
 // Print orientation: modeled keyboard-face UP; flip 180° about Y in the slicer
 // (REQUIRED: each cutout step then rests on solid material — no bridging).
 // Edge chamfers are on BOTH faces, so either face down avoids elephant foot.
@@ -12,16 +13,18 @@
 octaves = 1; // [1:4]
 // cap unit (mm) — fixed by the cap design
 cap_1u = 18;
-// pitch = cap_1u + cap_gap (18.5 current, decided 2026-07-31)
-cap_gap = 0.5;
+// pitch = cap_1u + cap_gap (18.8 current, decided 2026-08-01: 0.8 = 2×0.4 grid,
+// backed by v0's print-validated 1.0 gap; 0.5 was never printed side-by-side)
+cap_gap = 0.8;
 
 /* [Plate] */
 // = shelf 1.2 + pocket 1.2
 thick = 2.4;
-// plate margin beyond the cap bounding box
-margin = 1;
-// plate corner radius
-prad = 3;
+// plate margin beyond the cap bounding box (2026-08-01: 1.6 = 2× cap_gap, 0.4 grid)
+margin = 1.6;
+// plate corner radius — cap base_corner_r 1.6 + margin 1.6 = 3.2: the plate edge
+// runs concentric with the corner cap's rounded corner
+prad = 3.2;
 // edge chamfer on BOTH faces — counters elephant foot whichever face prints down;
 // ~0.3 ≈ first layer height + margin (see docs/hardware/fdm-tolerances.md)
 edge_chamfer = 0.3;
@@ -61,6 +64,9 @@ function key_w(k) = k[2] * cap_1u;
 function key_d(k) = k[3] * cap_1u;
 
 keys = layout_keys(octaves);
+
+// accessors for assembly.scad (`use <>` imports functions, not variables)
+function plate_thick() = thick;
 
 // ---- plate outline: cap bbox + margin (derive, don't hand-formula) ----
 cxmin = min([ for (k = keys) key_x(k) - key_w(k)/2 ]) - margin;
