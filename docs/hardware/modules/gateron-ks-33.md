@@ -82,6 +82,17 @@ From the Gateron Low Profile dimensional drawing (all mm) — annotated drawing 
 - Metal contact pins + RGB LED slot positioned by offsets: 5.00, 3.20, 2.25, 5.75, 4.70, 2.60, 4.40 (from center).
 - RGB (SMD LED) slot on the **south** side — sets where the [SK6812 MINI-E](sk6812mini-e.md) sits relative to switch center.
 
+**Under-plate protrusion (sliced from the official STEP, 2026-08-02)** — what hangs below the 2.4 mm stepped plate when the switch is seated (flange on plate top, below-flange body 2.5 tall → housing base ≈ 0.1 proud of the plate bottom):
+
+| Feature | Below housing base | Below plate bottom |
+| --- | --- | --- |
+| Bottom centre pillar (ø4.9) | 3.3 | **3.4** — the deepest hard feature |
+| Metal contact pins (tips) | 2.6 | **2.7** (+ solder when hand-wired) |
+
+**Pin positions (sliced from the STEP, 2026-08-02):** both pins sit in the switch's **south half** — (−4.4, −4.7) and (2.6, −5.75) from the switch centre (x = east, y = north). A switch can be rotated in the square plate cutout to point its pins away from whatever runs underneath.
+
+**PCF8575 mount consequence (settled 2026-08-02):** the module mounts **vertically in the D#↔F# bay**, clear of every pillar — so the standoff in `plate.scad` dropped from 4.0 (old pillar floor) to **2.8** (new floor = the module's right-angle I2C header body 2.5 + 0.3 air). **Assembly rule: D# turns −90° (pins WEST) and F# +90° (pins EAST)** so their pins + solder point away from the board.
+
 **Layout implication:** body is 15.00 mm and the natural (1u) pitch is 18.5 mm (18 mm cap + 0.5 mm gap) → **3.5 mm between switch bodies** (1.75 mm/side) and **4.5 mm of plate web between 14 mm cutouts**. Tight but workable. The 1.5u sharps (27 mm caps) sit on wider spacings, so their plate webs differ — see [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md).
 
 ### Silent variant — vernier measurements (SOURCE OF TRUTH)
