@@ -37,6 +37,7 @@ No single device is the blueprint. Each one below contributes a piece — the sp
 | | [Roland TR-606](https://en.wikipedia.org/wiki/Roland_TR-606) | Secondary (drums) | *Drumatix* — the analog drum machine companion to the TB-303 in the classic acid setup. Reference for the synthesized-drum voices + step sequencer (see [research/drums.md](research/drums.md), already "TR-606-style") |
 | | Panasonic R1088 | Secondary | |
 | | Roland P-6 | Secondary | |
+| | [Casio SK-1](https://en.wikipedia.org/wiki/Casio_SK-1) | Secondary | |
 
 > 🔬 **To research (later):** every inspiration source above deserves a proper deep-research report — pull the full product story, design decisions, feature set, community reception, and the specific lesson for Pocket Groovebox — so this table becomes a set of studied references rather than links. Not doing it now; just flagging it.
 
