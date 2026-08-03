@@ -4,7 +4,7 @@
 
 > **Revision (2026-07) — Ergogen dropped.** Ergogen was meant to hold the layout, but the plate is built in OpenSCAD (Ergogen can't do the **stepped cutout**), and the layout is small — a separate Ergogen YAML just duplicated it, risking drift. The layout now lives **once** in `hardware/3d/octave-layout.scad` *(v0 — since deleted; see next revision)*, shared by the plate and the caps (and later a KiCad placement export). Toolchain simplified to **OpenSCAD (mechanical + layout) + KiCad (PCB)**.
 
-> **Revision (2026-07-31) — v0 deleted; KiCad dropped for V1.** The v0 sources (including `octave-layout.scad`) were deleted on purpose after print validation; in the rebuild the layout lives **inside `plate.scad`** (not yet created — see [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md)). **KiCad is dropped for V1**: no custom PCB — the keyboard is hand-wired to the PCF8575. Revisit only if a LED/PCB version happens. Toolchain for V1 is effectively **OpenSCAD only** (FreeCAD as fallback).
+> **Revision (2026-07-31) — v0 deleted; KiCad dropped for V1.** The v0 sources (including `octave-layout.scad`) were deleted on purpose after print validation; in the rebuild the layout lives **inside `plate.scad`** (not yet created — see [`hardware/3d/keyboard/octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md)). **KiCad is dropped for V1**: no custom PCB — the keyboard is hand-wired to the PCF8575. Revisit only if a LED/PCB version happens. Toolchain for V1 is effectively **OpenSCAD only** (FreeCAD as fallback).
 
 Which tool holds each part of the hardware design. Chosen primarily for **how agentically Claude can drive it** (the stated priority), plus open-source and git-friendly.
 
@@ -47,10 +47,12 @@ FreeCAD is more powerful, but its agentic path (`neka-nat/freecad-mcp`) needs a 
 ```
 docs/                       ← knowledge (decisions, specs, measurements)
 hardware/
-  3d/                       ← OpenSCAD rebuild: key_cap.scad + plate.scad (layout lives inside) + assembly.scad — see octaves-plan.md
+  3d/                       ← OpenSCAD, organized by module family (settled 2026-08-03)
+    keyboard/               ← key_cap.scad + plate.scad (layout lives inside) + assembly.scad + octaves-plan.md + wiring-plan.svg + stl/ (exports)
+    vendor/                 ← third-party reference meshes (committed, provenance in its README)
+    (future: deck/, enclosure/)
   pcb/                      ← (dropped for V1 — no custom PCB; only if a LED/PCB version happens)
   README.md                 ← index, links back to docs/
-hardware/enclosure/         ← later (OpenSCAD, or FreeCAD if needed)
 ```
 
 ## Consequences / next

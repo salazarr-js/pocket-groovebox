@@ -54,7 +54,7 @@ Terms used throughout the keyboard design:
 
 From the Gateron Low Profile dimensional drawing (all mm) — annotated drawing via Ranked, cross-checked against the vernier measurements above. Gateron publishes CAD/3D models and spec sheets at [gateron.com/pages/3d](https://www.gateron.com/pages/3d) and [product-specification](https://www.gateron.com/pages/product-specification).
 
-**Official 3D model (authoritative geometry):** Gateron provides a **STEP (`.stp`)** file — [KS-33 Low Profile 2.0 3D (.rar)](https://www.gateron.com/u_file/2309/25/file/GateronKS-33LowProfile20KS33-20230109KS-33-Y313D.rar) (from the [3D models page](https://www.gateron.com/pages/3d)). Import into **FreeCAD / KiCad** for the exact stem + body geometry — the source of truth for the cap socket, plate cutout, and the KiCad footprint's 3D view. *(Binary — not committed to the repo; download via the link.)*
+**Official 3D model (authoritative geometry):** Gateron provides a **STEP (`.stp`)** file — [KS-33 Low Profile 2.0 3D (.rar)](https://www.gateron.com/u_file/2309/25/file/GateronKS-33LowProfile20KS33-20230109KS-33-Y313D.rar) (from the [3D models page](https://www.gateron.com/pages/3d)). Import into **FreeCAD / KiCad** for the exact stem + body geometry — the source of truth for the cap socket, plate cutout, and the KiCad footprint's 3D view. *(The `.stp` itself is not committed; a converted STL for visual ghosting lives at [`hardware/3d/vendor/ks33-switch.stl`](../../../hardware/3d/vendor/README.md) — standard KS-33, not the Silent, visual only.)*
 
 **Body & mounting**
 
@@ -93,7 +93,7 @@ From the Gateron Low Profile dimensional drawing (all mm) — annotated drawing 
 
 **PCF8575 mount consequence (settled 2026-08-02):** the module mounts **vertically in the D#↔F# bay**, clear of every pillar — so the standoff in `plate.scad` dropped from 4.0 (old pillar floor) to **2.8** (new floor = the module's right-angle I2C header body 2.5 + 0.3 air). **Assembly rule: D# turns −90° (pins WEST) and F# +90° (pins EAST)** so their pins + solder point away from the board.
 
-**Layout implication:** body is 15.00 mm and the natural (1u) pitch is 18.5 mm (18 mm cap + 0.5 mm gap) → **3.5 mm between switch bodies** (1.75 mm/side) and **4.5 mm of plate web between 14 mm cutouts**. Tight but workable. The 1.5u sharps (27 mm caps) sit on wider spacings, so their plate webs differ — see [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md).
+**Layout implication:** body is 15.00 mm and the natural (1u) pitch is 18.5 mm (18 mm cap + 0.5 mm gap) → **3.5 mm between switch bodies** (1.75 mm/side) and **4.5 mm of plate web between 14 mm cutouts**. Tight but workable. The 1.5u sharps (27 mm caps) sit on wider spacings, so their plate webs differ — see [`hardware/3d/keyboard/octaves-plan.md`](../../../hardware/3d/keyboard/octaves-plan.md).
 
 ### Silent variant — vernier measurements (SOURCE OF TRUTH)
 
@@ -114,16 +114,16 @@ The STEP/drawing above are the **standard** KS-33 LP 2.0. Our actual switch is t
 - **Plate thickness — DECIDED: 2.4 mm stepped plate, no PCB underneath.** The keyboard is **plate-mount, hand-wired** to the PCF8575 — there is no PCB, so the plate alone carries the switches and the clips do all the retention (nothing rests on a board below). The **1.2 mm clip shelf is the critical reference**; the rest is structural:
   - **Top 1.2 mm:** 14.0 mm hole = the **clip shelf** (body passes, clips hook under this ledge — matches the switch's 1.2 mm plate spec).
   - **Lower 1.2 mm:** widen to **15.2 mm** to clear the 15 mm body and the sprung-out clips (~14.7 mm hooked). Total 2.4 mm prints far sturdier than a bare 1.2 mm plate.
-  - These values are **print-validated** (kerf 0.0, PLA/PETG, multiple print services) — see [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §2 (calibrated values) and §5–6 (rebuild file structure + enclosure context). Switch pins are hand-wired point-to-point below the plate; wire channels in the plate underside route the runs to the PCF8575, which mounts into the plate's sharps-row bays.
+  - These values are **print-validated** (kerf 0.0, PLA/PETG, multiple print services) — see [`hardware/3d/keyboard/octaves-plan.md`](../../../hardware/3d/keyboard/octaves-plan.md) §2 (calibrated values) and §5–6 (rebuild file structure + enclosure context). Switch pins are hand-wired point-to-point below the plate; wire channels in the plate underside route the runs to the PCF8575, which mounts into the plate's sharps-row bays.
   - Per-key SK6812 LEDs are **deferred** — they require a PCB version of the keyboard; build 1.0 has no LEDs, so the plate needs no LED provisions.
-- **Cap cross-socket (finalised 2026-08-01 — source of truth: `hardware/3d/key_cap.scad`):** standard MX cross-in-cylinder mount — **post Ø5.5** (matches collar ø5.7), **socket depth 2.8 mm** (tower is 2.95 — do NOT adopt Cherry's 3.6/3.8 full-MX depths). Bore is **per-arm**: stem arms 1.10 (vertical) / 1.23 (horizontal) + clearances **0.18 / 0.05** → **both slots 1.28 mm** — exactly the print-validated fit (PLA/PETG, 0.2 & 0.4 nozzles), and equal slots keep cap orientation free (no LED-north constraint). Bore length **4.1** (stem 4.0 + 0.1, official Cherry cap spec) with **R0.3 inner-corner fillets** (official cap spec; avoids FDM corner cracks). The common symmetric **1.17** slot is for injection POM/ABS (interference grip) — too tight for stiff FDM PLA. **0.2 mm 45° flared lead-in** at the mouth (official cap spec); optional **split-post** for FDM so the cross flexes instead of cracking.
+- **Cap cross-socket (finalised 2026-08-01 — source of truth: `hardware/3d/keyboard/key_cap.scad`):** standard MX cross-in-cylinder mount — **post Ø5.5** (matches collar ø5.7), **socket depth 2.8 mm** (tower is 2.95 — do NOT adopt Cherry's 3.6/3.8 full-MX depths). Bore is **per-arm**: stem arms 1.10 (vertical) / 1.23 (horizontal) + clearances **0.18 / 0.05** → **both slots 1.28 mm** — exactly the print-validated fit (PLA/PETG, 0.2 & 0.4 nozzles), and equal slots keep cap orientation free (no LED-north constraint). Bore length **4.1** (stem 4.0 + 0.1, official Cherry cap spec) with **R0.3 inner-corner fillets** (official cap spec; avoids FDM corner cracks). The common symmetric **1.17** slot is for injection POM/ABS (interference grip) — too tight for stiff FDM PLA. **0.2 mm 45° flared lead-in** at the mouth (official cap spec); optional **split-post** for FDM so the cross flexes instead of cracking.
 - The STEP model is a **rough visual reference only** for the Silent — geometry authority is this table.
 
 ## Keycap strategy (this project)
 
 **Decided: stem-mounted cap** — printed cap with a cross socket on the MX stem, plus a plate guide rib for anti-rotation; the floating-cap route was considered and dropped ([0002-key-design.md](../../explorations/0002-key-design.md)).
 
-Socket geometry and print-calibrated clearances: [`hardware/3d/octaves-plan.md`](../../../hardware/3d/octaves-plan.md) §7.
+Socket geometry and print-calibrated clearances: [`hardware/3d/keyboard/octaves-plan.md`](../../../hardware/3d/keyboard/octaves-plan.md) §7.
 
 ## Wiring (to the keyboard I2C expanders)
 

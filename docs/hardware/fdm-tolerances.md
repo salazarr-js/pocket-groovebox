@@ -1,6 +1,6 @@
 # FDM fits & tolerances — project reference
 
-Working reference for every printed part in this project. The **calibrated, print-validated values live in [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §2 — never re-derive those**; this doc covers the general rules for the fits we haven't calibrated yet (enclosure, inserts, snap-fits). Deep theory lives in the external cad-lab repo (not part of this repo).
+Working reference for every printed part in this project. The **calibrated, print-validated values live in [`hardware/3d/keyboard/octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md) §2 — never re-derive those**; this doc covers the general rules for the fits we haven't calibrated yet (enclosure, inserts, snap-fits). Deep theory lives in the external cad-lab repo (not part of this repo).
 
 ## Validated on this project (source: octaves-plan §2)
 

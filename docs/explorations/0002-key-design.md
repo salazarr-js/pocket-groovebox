@@ -10,14 +10,14 @@
 > outsourced to a print service). The note layout stays a **flattened 2-octave piano** (naturals
 > row + sharps offset in a back row) so it still plays like an instrument. The lever design is
 > **kept open below as a candidate for a later iteration** — not rejected, just parked to keep V1
-> simple. Switch choice and the 2-octave range are unchanged. *(Pitch has since moved to parametric — cap 18 mm + gap 0.5 mm = 18.5 mm; see `hardware/3d/octaves-plan.md` §7.)*
+> simple. Switch choice and the 2-octave range are unchanged. *(Pitch has since moved to parametric — cap 18 mm + gap 0.5 mm = 18.5 mm; see `hardware/3d/keyboard/octaves-plan.md` §7.)*
 
 Decisions taken:
 - ✅ Switch: **Gateron KS-33 Low Profile 2.0 Silent Brown** — full specs + mechanical drawing in [`../hardware/modules/gateron-ks-33.md`](../hardware/modules/gateron-ks-33.md)
 - ✅ Mechanism (**V1**): **flat rectangular cap directly on the switch** (OP-1 style; no lever, no spring, no pivot rod). Lever bridge deferred to a later iteration — see bottom.
 - ✅ Cap mounting: **thin low-profile cap with a guide rib that inserts into a plate slot** (G915-style — the guide lives in the cap, not the plate walls). The rib reuses the plate's **stabilizer cutout** as its guide slot, so **no MX stabilizer hardware** is needed. Stem socket = MX cross (4.00 / 1.10 / 1.23). *(The "skirt wrapping the switch body" variant and the plate-well "floating cap" were considered and dropped.)*
-- ✅ Layout: **flattened 2-octave piano** = **24 keys** — 14 naturals (C3–B4, 1u × 2u tall) + 10 sharps (back row: C#/D#/F#/A# = 1.5u wide, G# = 1u). From the user's KLE; encoded in `hardware/3d/octave-layout.scad` *(deleted with v0 — the layout now lives inside `plate.scad` per [`octaves-plan.md`](../../hardware/3d/octaves-plan.md))*. *(No top C5.)*
-- ✅ Pitch: **parametric** — `pitch = cap + gap`; cap fixed at 1u = 18 mm, gap currently 0.5 mm → **18.5 mm pitch** (24-key front row ≈ 259 mm; values per [`octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7 — see also [0003-design-system.md](0003-design-system.md))
+- ✅ Layout: **flattened 2-octave piano** = **24 keys** — 14 naturals (C3–B4, 1u × 2u tall) + 10 sharps (back row: C#/D#/F#/A# = 1.5u wide, G# = 1u). From the user's KLE; encoded in `hardware/3d/octave-layout.scad` *(deleted with v0 — the layout now lives inside `plate.scad` per [`octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md))*. *(No top C5.)*
+- ✅ Pitch: **parametric** — `pitch = cap + gap`; cap fixed at 1u = 18 mm, gap currently 0.5 mm → **18.5 mm pitch** (24-key front row ≈ 259 mm; values per [`octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md) §7 — see also [0003-design-system.md](0003-design-system.md))
 - ✅ Plate: **3D-printed**, 1.2 mm low-profile cutout (14 mm), outsourced to a print service
 - ✅ Look & feel: **OP-1 × HiChord** (primary aesthetic references) — refined minimalism, flat rounded-rectangle caps, muted base palette + per-key RGB color accents; premium tactile, not toy-like
 - ✅ Cutout confirmed by **vernier**: switch housing 13.8 mm / relaxed clips 14.5 mm → plate cutout **14.0 mm** (housing passes, clips grip). Two tilt axes to guide: naturals (2u tall) tilt fore-aft; wide sharps (1.5u) tilt sideways.
@@ -70,7 +70,7 @@ C D E F G A B C D E F G A B
 
 ### Switch grid (mm, from the left-most natural center = x 0)
 
-> **Superseded** — this grid assumed 25 keys at a fixed 18 mm pitch. Current geometry (24 keys, parametric pitch 18.5 mm, unit-based layout) lives in [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7. Kept for the reasoning.
+> **Superseded** — this grid assumed 25 keys at a fixed 18 mm pitch. Current geometry (24 keys, parametric pitch 18.5 mm, unit-based layout) lives in [`hardware/3d/keyboard/octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md) §7. Kept for the reasoning.
 
 **Naturals (front row, y = 0):** 15 switches at `x = n × 18`, n = 0…14
 → 0, 18, 36, 54, 72, 90, 108, 126, 144, 162, 180, 198, 216, 234, 252
@@ -91,7 +91,7 @@ naturals they sit between → `x = (i + 0.5) × 18`:
 
 ### Cap & row dimensions (starting points — tunable)
 
-> **Superseded** — current cap geometry (1u = 18 mm units, print-validated values) lives in [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7. Kept for the reasoning.
+> **Superseded** — current cap geometry (1u = 18 mm units, print-validated values) lives in [`hardware/3d/keyboard/octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md) §7. Kept for the reasoning.
 
 | Dimension | Value | Notes |
 |---|---|---|
@@ -142,7 +142,7 @@ Note: HiChord is a *chord* instrument — we borrow its **look and feel**, not i
 
 ## CAD — plate & keycap (first pass, 2026-07)
 
-> **Superseded** — the v0 sources described here were print-validated and then deleted on purpose; current geometry lives in [`hardware/3d/octaves-plan.md`](../../hardware/3d/octaves-plan.md) §7. Kept for the reasoning.
+> **Superseded** — the v0 sources described here were print-validated and then deleted on purpose; current geometry lives in [`hardware/3d/keyboard/octaves-plan.md`](../../hardware/3d/keyboard/octaves-plan.md) §7. Kept for the reasoning.
 
 First OpenSCAD pass — files + full parametric detail in [`hardware/3d/README.md`](../../hardware/3d/README.md):
 

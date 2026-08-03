@@ -8,7 +8,7 @@
   at shell-relative (46.6,56.85), 4 mm margins to interior right + bottom walls.
   Edit module positions via each group's coordinates; restyle via the <style> block;
   key caps are reusable <use> of 3 shape defs. Dashed = hidden layers (see NOTES).
-  Spec source: hardware/3d/octaves-plan.md §8. Editable in Boxy SVG.
+  Spec source: hardware/3d/keyboard/octaves-plan.md §8. Editable in Boxy SVG.
 -->
   <style>
     text       { font-family: 'Helvetica Neue', Arial, sans-serif; }
@@ -261,7 +261,7 @@
   <rect x="24" y="175" width="204" height="24" rx="2" fill="#fdf6bd" stroke="#d9c64a" stroke-width=".5"/>
   <text x="29" y="181" font-size="3.4" font-weight="700" fill="#6b5d00" letter-spacing=".3">NOTES — v1.0 · ONE-OCTAVE DEVICE</text>
   <text x="29" y="186.5" font-size="3.1" fill="#5c5208">12 KEYS C–B · UNIT 18 · PITCH 18.5 (CAP 18 + GAP 0.5) · PLATE 131 × 56.75 · SHELL 184 × 120 (WALLS 2.4 · 4 mm GRID)</text>
-  <text x="29" y="191.5" font-size="3.1" fill="#5c5208">NO LEDs — DEFERRED TO PCB VERSION · 2-OCTAVE 24-KEY = FUTURE VERSION · SPEC: hardware/3d/octaves-plan.md §8</text>
+  <text x="29" y="191.5" font-size="3.1" fill="#5c5208">NO LEDs — DEFERRED TO PCB VERSION · 2-OCTAVE 24-KEY = FUTURE VERSION · SPEC: hardware/3d/keyboard/octaves-plan.md §8</text>
   <text x="29" y="196.5" font-size="3.1" fill="#5c5208">1 unit = 1 mm · grid 1 cm · pitch 18.5 off-grid · solid = top shell · orange dash = under plate · gray dash = bottom shell · "verify" = placeholder</text>
 
 </svg>

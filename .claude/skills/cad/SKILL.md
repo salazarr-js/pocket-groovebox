@@ -9,7 +9,7 @@ Design 3D-printable parts in OpenSCAD **with the user in the loop** — Claude e
 
 ## Where dimensions come from
 
-**Never from this skill and never from memory.** Read the project's spec doc for the part before modeling — in this repo that is `hardware/3d/octaves-plan.md` (calibrated, print-validated values; do **not** re-derive them). If a value is missing there, ask the user or measure the physical part — don't invent it.
+**Never from this skill and never from memory.** Read the project's spec doc for the part before modeling — in this repo that is `hardware/3d/keyboard/octaves-plan.md` (calibrated, print-validated values; do **not** re-derive them). If a value is missing there, ask the user or measure the physical part — don't invent it.
 
 ## Tools & locations
 

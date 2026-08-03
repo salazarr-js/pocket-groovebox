@@ -7,7 +7,7 @@
 
 ## Status
 
-Hardware checkpoint: peripherals verified on the ESP32-S3 (Phase 2 sketches done); keyboard CAD rebuild in progress ([hardware/3d/octaves-plan.md](hardware/3d/octaves-plan.md)). Next milestone: **build 1.0** — a one-octave (12-key) hand-wired keyboard integration build with printed caps + plate, no LEDs.
+Hardware checkpoint: peripherals verified on the ESP32-S3 (Phase 2 sketches done); keyboard CAD rebuild in progress ([hardware/3d/keyboard/octaves-plan.md](hardware/3d/keyboard/octaves-plan.md)). Next milestone: **build 1.0** — a one-octave (12-key) hand-wired keyboard integration build with printed caps + plate, no LEDs.
 
 ## Docs
 
