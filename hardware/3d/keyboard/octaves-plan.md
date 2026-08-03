@@ -1,0 +1,130 @@
+# Octaves plan — handoff from the cad-lab FreeCAD exercise (2026-07-31)
+
+The FreeCAD parametric replica of `plate-octave.scad` (cad-lab, `projects/groovebox-octave-plate/`) got paused — the tool fought back more than it taught. This doc carries over everything the exercise produced that this repo doesn't have yet, so the plate work finishes here in OpenSCAD.
+
+## 1. The `octaves` parameter (the main deliverable)
+
+Generalize the plate to N side-by-side octaves. The insight: with the plate, screws and caps all **derived from the key list bounding box** (which `plate-octave.scad` already does), the only real change is generating a multi-octave key list — everything else scales for free.
+
+**`octave-layout.scad`** — add octave-aware helpers, keep the old names working (defaults preserve the existing caller: `assembly-octave.scad`):
+
+```scad
+function shift_key(k, o) = [k[0] + o*7, k[1], k[2], k[3]];
+function layout_keys(octaves = 1)     = [ for (o = [0:octaves-1], k = oct_keys)     shift_key(k, o) ];
+function layout_naturals(octaves = 1) = [ for (o = [0:octaves-1], k = oct_naturals) shift_key(k, o) ];
+function layout_sharps(octaves = 1)   = [ for (o = [0:octaves-1], k = oct_sharps)   shift_key(k, o) ];
+
+// centre the WHOLE keyboard on x=0: 3.5 key-units per octave
+function key_x(k, pitch, octaves = 1) = (k[0] - 3.5 * octaves) * pitch;
+```
+
+**`plate-octave.scad`** — add `octaves = 1;` to the Customizer params, then swap `oct_keys` → `layout_keys(octaves)` (same for naturals/sharps in the cap preview) and pass `octaves` to every `key_x` call. The bbox loops (`cxmin`…`cymax`), plate size and corner screws need **no changes** — they derive from the key list.
+
+**Centre screw** becomes one per octave (at each octave's centre, in the inter-row gap):
+
+```scad
+centre = screw_center ? [ for (o = [0:octaves-1]) [ (o*7 + 3.5 - 3.5*octaves) * pitch, screw_cy ] ] : [];
+```
+
+At `octaves = 1` this evaluates to the current single `[0, screw_cy]` — no behavior change.
+
+**Sanity check** after wiring it: `octaves = 2` → echo should report 24 keys and 6 screws; `octaves = 1` → 12 keys (= build 1.0, see §8). Plate size: derive from the cap bbox, don't hand-check a number — the old ≈268.5 × 57.5 mm figure was computed at v0's pitch 19 and is stale since the pitch moved to 18.8 (§7). The old "byte-identical to v0's STL" check no longer applies for the same reason (and no STL is committed anymore).
+
+## 2. Known-good values — calibrated, don't re-derive
+
+All already in `plate-octave.scad` / `switch-cutout.scad`; listed so nobody "improves" them:
+
+| Param | Value | Why |
+|---|---|---|
+| `hole_t` | 14.0 | KS-33 standard plate cutout |
+| `hole_b` | 15.2 | clears the 15 mm switch body — **independent value**, never derive it as `hole_t + shelf` (numeric coincidence today; deriving would silently move the pocket if `shelf` changes) |
+| `shelf` | 1.2 | KS-33 clip geometry (plate-thickness spec) |
+| `kerf` | 0.0 | print-validated (PLA/PETG, 0.2 & 0.4 mm nozzles, 3 print services); + looser / − tighter |
+| `thick` | 2.4 | = shelf 1.2 + pocket 1.2 |
+| `screw_d` / `cs_d` | 2.2 / 4.0 | M2 clearance + flat-head countersink, 90° cone |
+
+## 3. Lessons worth keeping (from the FreeCAD detour)
+
+- **Derive, don't hand-formula.** The FreeCAD model hand-computed plate depth and shipped a 0.5 mm bug (57.0 vs 57.5). The SCAD's bbox-from-caps approach never had it. Keep deriving.
+- **Print orientation**: model keyboard-up (as this repo does), flip 180° about Y in the slicer — each cutout step rests on solid material (no bridging), the cosmetic keyboard face gets the textured build plate, and the 90° countersink prints as a clean 45° overhang.
+- **Sharps structure** (info, list-driven here anyway): the "irregular" row is two regular groups — C#–D# spaced 1.5·pitch, F#–G#–A# spaced 1.25·pitch.
+
+## 4. Architecture decision (2026-07-31): NO custom PCB
+
+V1 keyboard = **plate + switches hand-wired to the PCF8575 module**. No KiCad keyboard PCB. Consequences for the plate design:
+
+- **PCF8575 mounts INTO the plate** (no separate carrier backplate). ✅ **Measured (2026-08-01)**: board 32.1 × 21.3 × 1.6 (vernier) — hole/header positions from the [GrabCAD STEP](https://grabcad.com/library/module-pcf8575-16bit-io-expander-1), cross-checked against vernier + listing photo; full dims in [`pcf8575.md` § Mechanical](../../../docs/hardware/modules/pcf8575.md#mechanical--v10-module-measured-2026-08-01): **4× ø2.0 holes, long-axis hole pitch 28.30**, pair spans 17.0 (corner/header pair) / 6.5 (mid pair), tallest component 2.1. Pending: verify hole ø accepts M2 at dry-fit. ✅ **Placement SETTLED (2026-08-02, in `plate.scad`)**: module **VERTICAL in the D#↔F# bay** (cx = bay centre, cy 24.4 — moved +0.4 north the same day so the boss root coves 0.4 clear the pockets and the trunk channel; header end north) — the **pillar-free spot**: the board clears every KS-33 under-plate pillar, and **D#/F# rotate ±90° so their pins point away** (rule in `gateron-ks-33.md`). South pair in the naturals↔sharps web; north (header) pair on a **derived back tab** (24.6 wide, +3.15 past the back edge). Bosses ø4.4 (0.4 grid), pilot ø1.8×3.8, **standoff 2.8** (floor = right-angle I2C header body 2.5 + 0.3), **screws M2×5**; component side + 90° header face the plate, solder face out. Under-plate stack 4.4. The original horizontal both-bay spanning is superseded (ø6 boss ring vs SSOP corner).
+- **Wire channels in the plate underside** for the 1.4 mm copper bus wire: slot width `1.4 + kerf` (start 1.6), depth ~1.6–1.8. For snap-in retention: neck the opening to ~1.2 and widen inside — mini snap-fit, same kerf-calibration logic as the switch cutouts. Routes: switch pins → PCF. ✅ **Routed for real (2026-08-03)**: the generic trunk+spurs were replaced by the actual electrical routing designed in [`wiring-plan.svg`](wiring-plan.svg) (soldering view — from below, C right; solid = channel, dashed = wire in air) and carried into `plate.scad` as per-octave route data with generic clearance asserts. ✅ **SVG polished with the user + FROZEN (2026-08-03)** — final routing: web lanes at the **exact PCF pin heights** (Δ2.54 · model y 18.01/15.47/12.93/10.39, straight entry into every pin), pin map **C→P04 D→P05 E→P06 F→P07 C#→P02 D#→P01 / A→P10 B→P11 A#→P12 G#→P13 F#→P15 G→P17** (free P00·P03·P14·P16), **A#/G# switch pins inverted** (signal = left, GND = right in the soldering view) so the left GND chain (GND→F#→G#→A#→side drop→B→gutter) runs flat at pin height with an S centered in the F#–G# web; right GND chain crosses high at D#-pin height over C# and Z-descends inside the C#–C web onto C's pin line; front gutter centered (ends x ±63, 1mm inside the outer pocket corners); two under-board routes (G→P17 **between the south bosses** — 2.1 gap vs 1.6 channel — and F→P07 over the E pocket at the pillar limit); C#→P02 flat at its pin height. ✅ **Re-translated into `plate.scad` + iterated live with the user (2026-08-03)** — routes are polylines with **swept 90° bends** (`chan_bend 1.2`), pin-height lanes **derived** from `pcf8575.md` (rows 1.86 in from the long edges, GND 7.2 from the 5-pin edge, Δ2.54). Deltas vs the frozen SVG (the scad route data is now the **routing source of truth**; SVG re-sync pending): naturals GND runs in channels — the gutter's ends curl 90° into the C/B GND pins and **double-width spur tees** (2.8 = 2 cables in+out, each with its own 90° sweep) reach D–A; **F→P07 got a real under-board climb** at the P0x row x; G's F-crossing lowered to **y 5.2**; slot slimmed to **1.4 × 1.2** (wire 0.2 proud, snug not covered) with **0.3 mouth chamfer (`chan_rim`) + rounded half-revolved end caps**, the ø2 pocket mouths deleted; **`hole_rim 0.3`** 45° break on the pocket rims of the channel face; **C#|D# back foot dropped** (the GND high passage owns that web — 6 feet remain) and the back foot moved **G#|A# → F#|G#** (`gnd_sdrop_drop 1.2`: the S-drop's top leg ducks below F#'s pin height to clear the foot); header tails **trimmed after soldering** (1.0) → **feet 6.0**, and every foot carries an **M2 pilot (ø1.8×5.2 — M2×6 on a 2.4 deck / M2×8 on 3.2–4.0)** — the feet double as **deck-mount bosses** for the pre-enclosure integration deck (a future `deck.scad` derives the pattern from the `plate_feet()`/`plate_bbox()` accessors). `plate.stl` exported for the batch-2 print. ✅ **Cleanup session (2026-08-03)**: `hardware/3d/` restructured by module family (`keyboard/` + `vendor/` — third-party meshes KEPT + committed, provenance in `vendor/README.md`); ghost composition moved to `assembly.scad` (parametric default + vendor meshes opt-in), `plate-pcf-fit.scad` deleted; settled params frozen under `/* [Hidden] */` (Customizer = real knobs only: plate `octaves`/`kerf`/`feet` — the section cutaways were dropped as not useful · cap `part`/`split_post`/`section` · assembly view flags), geometry verified unchanged vs the in-print STL; `wiring-plan.svg` re-synced to the as-built routing (gutter end-curls + D–A double tees, F climb, G at y 5.2, slot 1.4×1.2+rim) — cleanup session COMPLETE, ready to commit.
+- **Plate ↔ enclosure**: the M2 screws are the sandwich (plate + enclosure, heat-set inserts in the enclosure) — plate outline/screws must stay compatible with the future enclosure interface.
+- ✅ **Resolved (2026-07-31)**: the per-key SK6812 LED plan assumed a PCB — **LEDs are deferred to a future PCB version**. Build 1.0 (§8) has no LEDs; the plate needs no LED provisions for now.
+
+## 5. Target file structure — clean rebuild (decided 2026-07-31)
+
+The v0 sources were **deleted on purpose** (print-validated; everything needed to rebuild is in this doc + [README](README.md)). The rebuild is exactly **three files** — layout data and the cutout module live *inside* `plate.scad` (no separate shared files: with no PCB, only the plate and the assembly consume positions):
+
+```
+hardware/3d/
+  key_cap.scad   — PRINTABLE: the keycap family cap(w_u, d_u) — WITH the asymmetric cross-bore fix
+  plate.scad     — PRINTABLE: N-octave plate (octaves param) = key layout + stepped cutouts + M2
+                   + PCF8575 bosses + wire channels + bottom chamfers
+  assembly.scad  — VISUAL fit-check: includes both + PCF dummy (collisions, clearances)
+```
+
+**Pre-flight fixes baked into the rebuild** (details in [README](README.md) Open): per-arm cross bore (official stem 1.23/1.10 + clearances 0.05/0.18 → both slots 1.28 = the print-validated fit, orientation stays free), bottom-edge chamfers vs elephant foot, pitch set to 18.5 (§7 — parametric, revisit after build 1.0).
+
+## 6. Enclosure vision (context the plate must fit into)
+
+Two shells, M2 sandwich:
+
+- **Top shell** — eventually *absorbs the plate* (the plate is the keyboard region of the top shell) + openings/mounts for: **display (screwed — ST7789 170×320)**, speaker, 2× EC11 encoders, joystick.
+- **Bottom shell** — carries the main board: **perfboard (placa perforada) screwed to the enclosure**. No custom PCB this iteration; keyboard = switches hand-wired to the PCF8575, the plate routes the wires (channels).
+
+**Iteration path: start with `plate.scad` + `key_cap.scad` alone, integrate the rest incrementally** (PCF mount → wire channels → display/speaker/encoders/joystick → shell merge).
+
+## 7. Source snapshots (drained from the deleted v0 .scad — verbatim, print-validated)
+
+**Key layout** (from `octave-layout.scad` — each entry `[x_u, y_u, w_u, h_u]`, centres; naturals 1u×2u front row, sharps behind):
+
+```scad
+oct_naturals = [ [0.5,2,1,2],[1.5,2,1,2],[2.5,2,1,2],[3.5,2,1,2],[4.5,2,1,2],[5.5,2,1,2],[6.5,2,1,2] ];
+oct_sharps   = [ [0.75,0.5,1.5,1],[2.25,0.5,1.5,1],[3.75,0.5,1.5,1],[5.0,0.5,1.0,1],[6.25,0.5,1.5,1] ];
+oct_keys     = concat(oct_naturals, oct_sharps);
+function key_x(k, pitch) = (k[0] - 3.5) * pitch;  // → octaves form: (k[0] - 3.5*octaves) * pitch
+function key_y(k, pitch) = (2 - k[1]) * pitch;    // naturals at y=0, sharps behind (+y)
+function key_w(k, unit)  = k[2] * unit;
+function key_d(k, unit)  = k[3] * unit;
+```
+
+**Stepped cutout** (from `switch-cutout.scad` — clip shelf on top, widened pocket below so the plate bottom sits flush with the switch base):
+
+```scad
+module ks33_cutout(thick, shelf = 1.2, hole_t = 14.0, hole_b = 15.2, hole_r = 0.5, kerf = 0) {
+  module rsq(sz) offset(r = hole_r) square(sz - 2 * hole_r, center = true);
+  translate([0, 0, -0.1]) linear_extrude(thick - shelf + 0.1) rsq(hole_b + kerf);          // pocket (bottom)
+  translate([0, 0, thick - shelf - 0.2]) linear_extrude(shelf + 0.4) rsq(hole_t + kerf);   // clip shelf (top)
+}
+```
+
+**Plate params** (from `plate-octave.scad`): `cap_1u 18` (fixed) · `cap_gap` → **pitch is parametric = cap_1u + cap_gap**; v0 shipped `cap_gap 1.0` (pitch 19, print-validated), 2026-07-31 set 0.5 (never printed side-by-side), **decided 2026-08-01: `cap_gap 0.8` → pitch 18.8** (= 2×0.4 grid, backed by v0's validated 1.0) · `margin 1.6` (= 2× gap) · corner `prad 3.2` (= cap corner 1.6 + margin 1.6 → plate edge concentric with the corner cap) · `thick 2.4` · plate = cap bounding box + margins (derive, don't hand-formula). Screws: M2 flat-head countersunk (DIN 7991) — shaft `2.2`, countersink `Ø4.0` 90° (depth = `(4.0−2.2)/2`), 4 corners inset `4` + 1 per octave centre at `y 14`; positions derive from the bbox.
+
+**Cap params** (from `cap.scad` — the tuned look-and-feel values):
+
+| Group | Values |
+|---|---|
+| Size | `unit_mm 18` · `cap_height 5.6` — **design values snapped to a 0.4 mm grid (2026-08-01 polish)**; FIT values (mount/bore) stay off-grid |
+| Bevel/look | **directional profile (decided 2026-08-01)**: `bevel_main 2.4` on the touch side per key (naturals **S**/front · C#/F# **W** · D#/A# **E**) / `bevel_rest 1.2` on the others · **G# (1u×1u) = 1.2 all around, no deep side** · `base_rim_height 1.2` · `top_edge_round 1.2` (all four edges) · `base_corner_r 1.6` · `top_corner_r 3.2` (= 2× base) · flat top, no dish |
+| Shell (hollow) | `wall_thickness 1.2` · `top_thickness 1.6` (must exceed `top_edge_round` — the cavity ceiling has to sit below where the roundover starts) · `cavity_corner_r 1.6` (rounded cavity corners, = outer look) · open bottom · `bottom_chamfer 0.4` — 45° on skirt bottom edges (outer + inner) AND post foot (anti elephant-foot + lead-in) |
+| Mount | `post_diameter 5.5` · stem cross `4.0` span, arms **1.23 horizontal / 1.10 vertical** (official drawing, vernier-confirmed 2026-08-01 — the earlier 1.28 was a misread) · bore length **4.1** (span + 0.1, official cap spec) · **R0.3** inner-corner fillets · `socket_depth 2.8` (KS-33 tower 2.95) |
+| Print | per-arm clearances: thin `stem_clearance 0.18` FDM (resin 0.05) / wide `stem_clearance_wide 0.05` → **both slots 1.28 = print-validated fit**, orientation free · `mouth_flare 0.2` (45° lead-in, official cap spec — was 0.5 in v0) · optional `split_post` |
+| Assembly | caps float `2.0` above the plate (switch stem height, from `assembly-octave.scad`) |
+
+Fits & tolerances reference (in-repo): [`docs/hardware/fdm-tolerances.md`](../../../docs/hardware/fdm-tolerances.md) — validated values + rules for the uncalibrated fits (inserts, snap-fits, module pockets). Deep theory lives in **cad-lab (external repo, not part of this repo)**.
+
+## 8. v1.0 — one-octave device (decided 2026-07-31; scope expanded 2026-08-01)
+
+The first integrated build after the first 3D prints is a **complete working one-octave device**, not a bare keyboard module. Named **v1.0** (a *build* milestone — not to be confused with the V1/V2 *design-iteration* labels: V1 = flat caps, V2 = lever bridge / sampler). The 2-octave 24-key keybed stays the target for a later version.
+
+- **Keyboard:** ONE octave, **C to B — 12 keys** (`octaves = 1`), a strict subset of the final 24-key C3–B4 keybed, so everything validated here transfers 1:1. `plate.scad` at `octaves = 1` + 12 printed caps (7× 1u×2u naturals, 4× 1.5u×1u sharps, 1× 1u×1u G#) + PCF8575 bosses + wire channels. *Status: `plate.scad` batch-2 complete 2026-08-02 — cutouts (with elephant-foot rim relief 0.15×0.4, capped by the Silent 14.5 flange seat), PCF bosses (root coves 0.4, tip chamfers) + filleted back tab, wire channels, 7 feet (dev aid, `feet` flag), parametric ghosts (KS-33/PCF/header). Plate↔shell M2 screws (§7 spec) still land at shell-merge time.*
+- **Electronics:** 1× PCF8575 (0x20) hand-wired to the switches — 12 of 16 pins used, 4 spare. **No LEDs** (they need the PCB version, deferred) and **no custom PCB** — main board = perfboard in the bottom shell. **Power (simplified 2026-08-01): no battery in v1.0** — the device runs off the **ESP32-S3's native USB, exposed through a shell opening**; 18650 + charging deferred to a later version.
+- **Enclosure:** the §6 two-shell vision scaled to one octave — top shell absorbs the plate + openings for the ST7789 display, 40 mm speaker, 2× EC11 encoders, joystick; bottom shell carries the perfboard. **Layout decided 2026-08-01: shell 184 × 120 mm ext. (4 mm grid, 2.4 mm walls)** — bottom band: joystick zone left + keyboard right; single top band: display landscape left + 2 encoders centre + speaker ø40 right. Full dimensions: `docs/hardware/enclosure-layout.svg` (v1.0).
+- **Space note:** front row ≈ 130.8 mm at pitch 18.8 (plate **134 × 58.4** at margin 1.6 / prad 3.2) — C-to-B chosen over C-to-C (13 keys, ≈150 mm) to keep symmetry with the final keybed and leave horizontal room for the 40 mm speaker. *(`enclosure-layout.svg` still drawn at pitch 18.5 / plate 131 × 56.75 — pending update.)*

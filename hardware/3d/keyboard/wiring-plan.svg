@@ -1,0 +1,310 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="136mm" viewBox="0 0 210 136">
+  <!-- wiring-plan.svg — mapa de cableado teclado 1 octava (build 1.0)
+       ⚠ VISTA DE SOLDADURA (placa vista DESDE ABAJO, espejo izq-der de la vista CAD;
+       el tab/header sigue al norte). C–C# a la DERECHA · fila P00–P07 a la DERECHA.
+       Coordenadas: 1 unidad = 1 mm. Modelo→SVG: X_svg = 75 − x_model · Y_svg = 60 − y_model.
+       Convención: línea LLENA = canaleta (ranura en la placa) · PUNTEADA = cable al aire
+       (dentro de pockets y sobre el board).
+       ⚠ FUENTE DE VERDAD = plate.scad (route data); este SVG lo REFLEJA.
+       Re-sincronizado 2026-08-03 al ruteo as-built: GND de naturales en canaleta
+       (gutter con extremos curvados a C/B + tees dobles D–A), subida de F→P07 bajo
+       el board, cruce de G a y 5.2, canal 1.4 × 1.2 con rim 0.3.
+       Referencias: octaves-plan.md §7-§8 / pcf8575.md. -->
+  <style>
+    .plate  { fill: #f4f1ea; stroke: #444; stroke-width: 0.3; }
+    .pocket { fill: #ffffff; stroke: #999; stroke-width: 0.25; }
+    .pillar { fill: #e9e9e9; stroke: #bbb; stroke-width: 0.2; }
+    .board  { fill: #dbe7f5; stroke: #3b6ea5; stroke-width: 0.3; fill-opacity: 0.9; }
+    .boss   { fill: #cccccc; stroke: #888; stroke-width: 0.2; fill-opacity: 0.8; }
+    .hole   { stroke: #555; stroke-width: 0.2; }
+    .chan   { fill: none; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+    .chan2  { fill: none; stroke-width: 2.2; stroke-linecap: butt; }
+    .air    { fill: none; stroke-width: 0.55; stroke-dasharray: 1.4 1; stroke-linecap: round; stroke-linejoin: round; }
+    .guide  { stroke: #bbbbbb; stroke-width: 0.15; stroke-dasharray: 1 1; }
+    .key    { font: 3.5px sans-serif; fill: #333; text-anchor: middle; }
+    .pinlbl { font: 1.5px sans-serif; fill: #333; }
+    .siglbl { font: 600 1.6px sans-serif; }
+    .note   { font: 2.2px sans-serif; fill: #333; }
+    .noteh  { font: 600 2.4px sans-serif; fill: #333; }
+    .title  { font: 600 4px sans-serif; fill: #222; }
+    .sub    { font: 2.4px sans-serif; fill: #777; }
+    .glbl   { font: 1.4px sans-serif; fill: #999; }
+  </style>
+
+  <text class="title" x="8" y="9">Mapa de cableado — teclado 1 octava (VISTA DE SOLDADURA, placa desde abajo)</text>
+  <text class="sub" x="8" y="13.5">Espejo de la vista CAD (tab al norte, C a la DERECHA, P00–P07 fila derecha). Línea LLENA = canaleta · PUNTEADA = cable al aire. Negro = GND · un color por señal.</text>
+
+  <g id="plate">
+    <rect class="plate" x="72.1" y="17.65" width="24.6" height="6" rx="2"/>
+    <rect class="plate" x="8" y="21.2" width="134" height="58.4" rx="3.2"/>
+  </g>
+
+  <!-- carriles de señal en el web (y modelo 9.2 / 11.6 / 14.0 / 16.4 / 18.8) -->
+  <g id="guides">
+    <!-- carriles = altura exacta de pin PCF (Δ2.54), ambos lados -->
+    <line class="guide" x1="9" y1="49.61" x2="141" y2="49.61"/>
+    <line class="guide" x1="9" y1="47.07" x2="141" y2="47.07"/>
+    <line class="guide" x1="9" y1="44.53" x2="141" y2="44.53"/>
+    <line class="guide" x1="9" y1="41.99" x2="141" y2="41.99"/>
+    <text class="glbl" x="143" y="50.11">y 10.39 · P07 | P10 — der: solo llegada de F</text>
+    <text class="glbl" x="143" y="47.57">y 12.93 · P06 | P11</text>
+    <text class="glbl" x="143" y="45.03">y 15.47 · P05 | P12</text>
+    <text class="glbl" x="143" y="42.49">y 18.01 · P04 | P13</text>
+  </g>
+
+  <!-- pockets 15.2 + pilar ø4.9 (espejados: B…C de izq a der) — formas
+       repetidas como defs + use (convención del repo, cf. enclosure-layout.svg) -->
+  <defs>
+    <rect id="pocket" class="pocket" width="15.2" height="15.2" rx="0.5"/>
+    <circle id="pillar" class="pillar" r="2.45"/>
+  </defs>
+  <g id="pockets">
+    <use href="#pocket" x="11.0"  y="52.4"/>
+    <use href="#pocket" x="29.8"  y="52.4"/>
+    <use href="#pocket" x="48.6"  y="52.4"/>
+    <use href="#pocket" x="67.4"  y="52.4"/>
+    <use href="#pocket" x="86.2"  y="52.4"/>
+    <use href="#pocket" x="105.0" y="52.4"/>
+    <use href="#pocket" x="123.8" y="52.4"/>
+    <use href="#pocket" x="15.7"  y="24.2"/>
+    <use href="#pocket" x="39.2"  y="24.2"/>
+    <use href="#pocket" x="62.7"  y="24.2"/>
+    <use href="#pocket" x="90.9"  y="24.2"/>
+    <use href="#pocket" x="119.1" y="24.2"/>
+    <use href="#pillar" x="18.6"  y="60"/>
+    <use href="#pillar" x="37.4"  y="60"/>
+    <use href="#pillar" x="56.2"  y="60"/>
+    <use href="#pillar" x="75"    y="60"/>
+    <use href="#pillar" x="93.8"  y="60"/>
+    <use href="#pillar" x="112.6" y="60"/>
+    <use href="#pillar" x="131.4" y="60"/>
+    <use href="#pillar" x="23.3"  y="31.8"/>
+    <use href="#pillar" x="46.8"  y="31.8"/>
+    <use href="#pillar" x="70.3"  y="31.8"/>
+    <use href="#pillar" x="98.5"  y="31.8"/>
+    <use href="#pillar" x="126.7" y="31.8"/>
+  </g>
+
+  <!-- PCF8575 vertical (header al norte) — fila P0x a la DERECHA en esta vista -->
+  <g id="pcf">
+    <circle class="boss" cx="92.9"  cy="21.45" r="2.2"/>
+    <circle class="boss" cx="75.9"  cy="21.45" r="2.2"/>
+    <circle class="boss" cx="87.65" cy="49.75" r="2.2"/>
+    <circle class="boss" cx="81.15" cy="49.75" r="2.2"/>
+    <rect class="board" x="73.75" y="19.55" width="21.3" height="32.1" rx="0.8"/>
+    <g id="i2c">
+      <circle class="hole" fill="#fff" cx="89.48" cy="20.75" r="0.55"/>
+      <circle class="hole" fill="#fff" cx="86.94" cy="20.75" r="0.55"/>
+      <circle class="hole" fill="#fff" cx="84.40" cy="20.75" r="0.55"/>
+      <circle class="hole" fill="#fff" cx="81.86" cy="20.75" r="0.55"/>
+      <circle class="hole" fill="#fff" cx="79.32" cy="20.75" r="0.55"/>
+      <text class="pinlbl" x="84.4" y="19.3" text-anchor="middle">I2C ×5 → ESP32</text>
+    </g>
+    <!-- fila P0x (DERECHA): N→S GND VDD P00…P07 -->
+    <g id="row-p0">
+      <circle class="hole" fill="#111"    cx="93.19" cy="26.75" r="0.7"/>
+      <circle class="hole" fill="#fff"    cx="93.19" cy="29.29" r="0.55"/>
+      <circle class="hole" fill="#fff"    cx="93.19" cy="31.83" r="0.55"/>
+      <circle class="hole" fill="#2ca02c" cx="93.19" cy="34.37" r="0.7"/>
+      <circle class="hole" fill="#ff7f0e" cx="93.19" cy="36.91" r="0.7"/>
+      <circle class="hole" fill="#fff"    cx="93.19" cy="39.45" r="0.55"/>
+      <circle class="hole" fill="#d62728" cx="93.19" cy="41.99" r="0.7"/>
+      <circle class="hole" fill="#b8860b" cx="93.19" cy="44.53" r="0.7"/>
+      <circle class="hole" fill="#17becf" cx="93.19" cy="47.07" r="0.7"/>
+      <circle class="hole" fill="#1f77b4" cx="93.19" cy="49.61" r="0.7"/>
+      <text class="pinlbl" x="91.8" y="27.25" text-anchor="end">GND</text>
+      <text class="pinlbl" x="91.8" y="29.79" text-anchor="end">VDD</text>
+      <text class="pinlbl" x="91.8" y="32.33" text-anchor="end">P00</text>
+      <text class="pinlbl" x="91.8" y="34.87" text-anchor="end">P01</text>
+      <text class="pinlbl" x="91.8" y="37.41" text-anchor="end">P02</text>
+      <text class="pinlbl" x="91.8" y="39.95" text-anchor="end">P03</text>
+      <text class="pinlbl" x="91.8" y="42.49" text-anchor="end">P04</text>
+      <text class="pinlbl" x="91.8" y="45.03" text-anchor="end">P05</text>
+      <text class="pinlbl" x="91.8" y="47.57" text-anchor="end">P06</text>
+      <text class="pinlbl" x="91.8" y="50.11" text-anchor="end">P07</text>
+    </g>
+    <!-- fila P1x (IZQUIERDA): N→S GND VDD P17…P10 -->
+    <g id="row-p1">
+      <circle class="hole" fill="#111"    cx="75.61" cy="26.75" r="0.7"/>
+      <circle class="hole" fill="#fff"    cx="75.61" cy="29.29" r="0.55"/>
+      <circle class="hole" fill="#e377c2" cx="75.61" cy="31.83" r="0.7"/>
+      <circle class="hole" fill="#fff"    cx="75.61" cy="34.37" r="0.55"/>
+      <circle class="hole" fill="#9467bd" cx="75.61" cy="36.91" r="0.7"/>
+      <circle class="hole" fill="#fff"    cx="75.61" cy="39.45" r="0.55"/>
+      <circle class="hole" fill="#8c564b" cx="75.61" cy="41.99" r="0.7"/>
+      <circle class="hole" fill="#c2185b" cx="75.61" cy="44.53" r="0.7"/>
+      <circle class="hole" fill="#52796f" cx="75.61" cy="47.07" r="0.7"/>
+      <circle class="hole" fill="#3d5a80" cx="75.61" cy="49.61" r="0.7"/>
+      <text class="pinlbl" x="77.0" y="27.25">GND</text>
+      <text class="pinlbl" x="77.0" y="29.79">VDD</text>
+      <text class="pinlbl" x="77.0" y="32.33">P17</text>
+      <text class="pinlbl" x="77.0" y="34.87">P16</text>
+      <text class="pinlbl" x="77.0" y="37.41">P15</text>
+      <text class="pinlbl" x="77.0" y="39.95">P14</text>
+      <text class="pinlbl" x="77.0" y="42.49">P13</text>
+      <text class="pinlbl" x="77.0" y="45.03">P12</text>
+      <text class="pinlbl" x="77.0" y="47.57">P11</text>
+      <text class="pinlbl" x="77.0" y="50.11">P10</text>
+    </g>
+  </g>
+
+  <!-- ================= RED GND (negro): canaletas llenas + cable punteado =================
+       Cadena P0x: GND fila der → D# → pasaje alto C#–D# → C# → Z en el web C#–C → C → gutter
+       Cadena P1x: GND fila izq → F# → S-drop (pata alta 1.2 bajo el pin: esquiva el pie F#|G#)
+       → G# → A# → bajada lateral → B → gutter (A#/G# invertidas: GND = pin DER) -->
+  <g id="gnd">
+    <!-- canaletas -->
+    <path class="chan" stroke="#111" d="M106.1,27.4 L119.1,27.4"/>
+    <path class="chan" stroke="#111" d="M131.1,39.4 L131.1,44.3 Q131.1,45.9 132.7,45.9 L134.2,45.9 Q135.8,45.9 135.8,47.5 L135.8,52.4"/>
+    <!-- gutter frontal (y −10.3): los extremos curvan 90° al norte hacia los pines GND de C y B -->
+    <path class="chan" stroke="#111" d="M135.8,67.6 L135.8,69.1 Q135.8,70.3 134.6,70.3 L17.2,70.3 Q16,70.3 16,69.1 L16,67.6"/>
+    <!-- tees dobles (ranura 2.8) al pin GND de D–A: el cable ENTRA y SALE, dos cables lado a lado -->
+    <path class="chan2" stroke="#111" d="M110,67.6 L110,70.3"/>
+    <path class="chan2" stroke="#111" d="M91.2,67.6 L91.2,70.3"/>
+    <path class="chan2" stroke="#111" d="M72.4,67.6 L72.4,70.3"/>
+    <path class="chan2" stroke="#111" d="M53.6,67.6 L53.6,70.3"/>
+    <path class="chan2" stroke="#111" d="M34.8,67.6 L34.8,70.3"/>
+    <path class="chan" stroke="#111" d="M62.7,30.4 L59.75,30.4 Q58.55,30.4 58.55,31.6 L58.55,35.3 Q58.55,36.5 57.35,36.5 L54.4,36.5"/>
+    <path class="chan" stroke="#111" d="M30.9,36.5 L39.2,36.5"/>
+    <path class="chan" stroke="#111" d="M15.7,36.5 Q14,36.5 14,38.5 L14,52.4"/>
+    <!-- cable al aire -->
+    <path class="air" stroke="#111" d="M93.19,26.75 L103.2,27.4 L106.1,27.4"/>
+    <path class="air" stroke="#111" d="M119.1,27.4 L127,27.4 Q131.1,27.9 131.1,31.4 L131.1,39.4"/>
+    <path class="air" stroke="#111" d="M135.8,52.4 L135.8,64.7 L135.8,67.6"/>
+    <path class="air" stroke="#111" d="M110,65.75 L110,67.6"/>
+    <path class="air" stroke="#111" d="M91.2,65.75 L91.2,67.6"/>
+    <path class="air" stroke="#111" d="M72.4,65.75 L72.4,67.6"/>
+    <path class="air" stroke="#111" d="M53.6,65.75 L53.6,67.6"/>
+    <path class="air" stroke="#111" d="M34.8,65.75 L34.8,67.6"/>
+    <path class="air" stroke="#111" d="M14,52.4 L16,65.75 L16,67.6"/>
+    <path class="air" stroke="#111" d="M75.61,26.75 L64.55,29.2 L62.7,30.4"/>
+    <path class="air" stroke="#111" d="M54.4,36.5 L51.2,36.5 L39.2,36.5"/>
+    <path class="air" stroke="#111" d="M30.9,36.5 L27.7,36.5 L15.7,36.5"/>
+  </g>
+
+  <!-- ================= SEÑALES: canaleta llena (spur+carril con curva) + cable punteado ================= -->
+  <g id="signals">
+    <!-- lado P0x (derecha): C D E carriles · C# plano → P02 · D# directo · F bajo el board → P07 -->
+    <path class="air"  stroke="#d62728" d="M128.8,65.75 L128.8,52.4"/>
+    <path class="chan" stroke="#d62728" d="M128.8,52.4 L128.8,43.99 Q128.8,41.99 126.8,41.99 L94.05,41.99"/>
+    <path class="air"  stroke="#d62728" d="M94.05,41.99 L93.19,41.99"/>
+    <path class="air"  stroke="#b8860b" d="M117,64.7 L117,52.4"/>
+    <path class="chan" stroke="#b8860b" d="M117,52.4 L117,46.53 Q117,44.53 115,44.53 L94.05,44.53"/>
+    <path class="air"  stroke="#b8860b" d="M94.05,44.53 L93.19,44.53"/>
+    <path class="air"  stroke="#17becf" d="M98.2,64.7 L98.2,52.4"/>
+    <path class="chan" stroke="#17becf" d="M98.2,52.4 L98.2,49.07 Q98.2,47.07 96.2,47.07 L94.05,47.07"/>
+    <path class="air"  stroke="#17becf" d="M94.05,47.07 L93.19,47.07"/>
+    <path class="air"  stroke="#ff7f0e" d="M124.1,37.55 L119.1,37.55"/>
+    <path class="chan" stroke="#ff7f0e" d="M106.1,37.55 L119.1,37.55"/>
+    <path class="air"  stroke="#ff7f0e" d="M106.1,37.55 L93.19,36.91"/>
+    <path class="air"  stroke="#2ca02c" d="M104.25,34.4 L93.19,34.37"/>
+    <path class="air"  stroke="#1f77b4" d="M79.4,64.7 L79.4,57 L82.6,57"/>
+    <path class="chan" stroke="#1f77b4" d="M82.6,57 L86.2,57"/>
+    <path class="air"  stroke="#1f77b4" d="M86.2,57 L91,57 Q93.19,57 93.19,54.6 L93.19,52.4"/>
+    <!-- subida bajo el board: canaleta en la columna P0x, entra recta al pin -->
+    <path class="chan" stroke="#1f77b4" d="M93.19,52.4 L93.19,49.61"/>
+    <!-- lado P1x (izquierda): A B A# G# carriles · F# directo → P15 · G bajo el board → P17 -->
+    <path class="air"  stroke="#e377c2" d="M60.6,64.7 L60.6,54.8 L63.8,54.8"/>
+    <path class="chan" stroke="#e377c2" d="M63.8,54.8 L67.4,54.8"/>
+    <path class="air"  stroke="#e377c2" d="M67.4,54.8 L82.6,54.8"/>
+    <!-- subida bajo el board entre los bosses sur (gap 2.1 vs canal 1.6, paredes 0.25);
+         la canaleta termina en el borde del pocket de F# — el último tramo al pin es aire -->
+    <path class="chan" stroke="#e377c2" d="M82.6,54.8 L83.2,54.8 Q84.4,54.8 84.4,53.6 L84.4,33.03 Q84.4,31.83 83.2,31.83 L77.9,31.83"/>
+    <path class="air"  stroke="#e377c2" d="M77.9,31.83 L75.61,31.83"/>
+    <path class="air"  stroke="#3d5a80" d="M41.8,64.7 L41.8,52.4"/>
+    <path class="chan" stroke="#3d5a80" d="M41.8,52.4 L41.8,51.61 Q41.8,49.61 43.8,49.61 L74.75,49.61"/>
+    <path class="air"  stroke="#3d5a80" d="M74.75,49.61 L75.61,49.61"/>
+    <path class="air"  stroke="#52796f" d="M23,64.7 L23,52.4"/>
+    <path class="chan" stroke="#52796f" d="M23,52.4 L23,49.07 Q23,47.07 25,47.07 L74.75,47.07"/>
+    <path class="air"  stroke="#52796f" d="M74.75,47.07 L75.61,47.07"/>
+    <path class="air"  stroke="#c2185b" d="M20.7,37.55 L20.7,39.4"/>
+    <path class="chan" stroke="#c2185b" d="M20.7,39.4 L20.7,42.53 Q20.7,44.53 22.7,44.53 L74.75,44.53"/>
+    <path class="air"  stroke="#c2185b" d="M74.75,44.53 L75.61,44.53"/>
+    <path class="air"  stroke="#8c564b" d="M44.2,37.55 L44.2,39.4"/>
+    <path class="chan" stroke="#8c564b" d="M44.2,39.4 L44.2,39.99 Q44.2,41.99 46.2,41.99 L74.75,41.99"/>
+    <path class="air"  stroke="#8c564b" d="M74.75,41.99 L75.61,41.99"/>
+    <path class="air"  stroke="#9467bd" d="M65.6,36.2 L75.61,36.91"/>
+  </g>
+
+  <!-- pines de switch (negro = GND, color = señal) -->
+  <g id="pins">
+    <circle fill="#111"    cx="135.8" cy="64.7"  r="0.7"/> <circle fill="#d62728" cx="128.8" cy="65.75" r="0.7"/>
+    <circle fill="#111"    cx="110.0" cy="65.75" r="0.7"/> <circle fill="#b8860b" cx="117.0" cy="64.7"  r="0.7"/>
+    <circle fill="#111"    cx="91.2"  cy="65.75" r="0.7"/> <circle fill="#17becf" cx="98.2"  cy="64.7"  r="0.7"/>
+    <circle fill="#111"    cx="72.4"  cy="65.75" r="0.7"/> <circle fill="#1f77b4" cx="79.4"  cy="64.7"  r="0.7"/>
+    <circle fill="#111"    cx="53.6"  cy="65.75" r="0.7"/> <circle fill="#e377c2" cx="60.6"  cy="64.7"  r="0.7"/>
+    <circle fill="#111"    cx="34.8"  cy="65.75" r="0.7"/> <circle fill="#3d5a80" cx="41.8"  cy="64.7"  r="0.7"/>
+    <circle fill="#111"    cx="16.0"  cy="65.75" r="0.7"/> <circle fill="#52796f" cx="23.0"  cy="64.7"  r="0.7"/>
+    <circle fill="#111"    cx="131.1" cy="36.5"  r="0.7"/> <circle fill="#ff7f0e" cx="124.1" cy="37.55" r="0.7"/>
+    <circle fill="#111"    cx="103.2" cy="27.4"  r="0.7"/> <circle fill="#2ca02c" cx="104.25" cy="34.4" r="0.7"/>
+    <circle fill="#111"    cx="64.55" cy="29.2"  r="0.7"/> <circle fill="#9467bd" cx="65.6"  cy="36.2"  r="0.7"/>
+    <circle fill="#8c564b" cx="44.2"  cy="37.55" r="0.7"/> <circle fill="#111"    cx="51.2"  cy="36.5"  r="0.7"/>
+    <circle fill="#c2185b" cx="20.7"  cy="37.55" r="0.7"/> <circle fill="#111"    cx="27.7"  cy="36.5"  r="0.7"/>
+  </g>
+
+  <g id="labels">
+    <text class="key" x="131.4" y="74.5">C</text>
+    <text class="key" x="112.6" y="74.5">D</text>
+    <text class="key" x="93.8"  y="74.5">E</text>
+    <text class="key" x="75"    y="74.5">F</text>
+    <text class="key" x="56.2"  y="74.5">G</text>
+    <text class="key" x="37.4"  y="74.5">A</text>
+    <text class="key" x="18.6"  y="74.5">B</text>
+    <text class="key" x="126.7" y="26.5">C#</text>
+    <text class="key" x="98.5"  y="26.5">D#</text>
+    <text class="key" x="70.3"  y="26.5">F#</text>
+    <text class="key" x="46.8"  y="27.5">G#</text>
+    <text class="key" x="23.3"  y="27.5">A#</text>
+    <text class="siglbl" fill="#d62728" x="129.8" y="63.4">P04</text>
+    <text class="siglbl" fill="#b8860b" x="118.0" y="63.4">P05</text>
+    <text class="siglbl" fill="#17becf" x="99.2"  y="63.4">P06</text>
+    <text class="siglbl" fill="#1f77b4" x="80.4"  y="63.4">P07</text>
+    <text class="siglbl" fill="#e377c2" x="61.6"  y="63.4">P17</text>
+    <text class="siglbl" fill="#3d5a80" x="42.8"  y="63.4">P10</text>
+    <text class="siglbl" fill="#52796f" x="24.0"  y="63.4">P11</text>
+    <text class="siglbl" fill="#ff7f0e" x="125.1" y="36.2">P02</text>
+    <text class="siglbl" fill="#2ca02c" x="105.2" y="33.6">P01</text>
+    <text class="siglbl" fill="#9467bd" x="66.4"  y="35.4">P15</text>
+    <text class="siglbl" fill="#8c564b" x="45.2"  y="35.4">P13</text>
+    <text class="siglbl" fill="#c2185b" x="21.7"  y="35.4">P12</text>
+  </g>
+
+  <g id="notes">
+    <rect x="8" y="84.5" width="197" height="48" fill="#fffbe6" stroke="#d4b106" stroke-width="0.3"/>
+    <text class="noteh" x="11" y="89.5">RED GND — dos cadenas (negro)</text>
+    <text class="note" x="11" y="93.5">GND es red común: NO hace falta cerrar el anillo.</text>
+    <text class="note" x="11" y="97.9">P0x: GND → D# → pasaje alto → C# →</text>
+    <text class="note" x="11" y="101.1">Z en el web C#–C → C → gutter</text>
+    <text class="note" x="11" y="104.3">P1x: GND → F# → S-drop → G# → A# →</text>
+    <text class="note" x="11" y="107.5">bajada lateral → B → gutter</text>
+    <text class="note" x="11" y="111.9">Gutter frontal (y −10.3, pared 2.0): extremos</text>
+    <text class="note" x="11" y="115.1">curvan 90° a los pines GND de C y B.</text>
+    <text class="note" x="11" y="118.3">D–A: tee DOBLE (2.8) — el cable entra Y sale.</text>
+    <text class="note" x="11" y="122.7">Pin GND intermedio = 2 tramos (entra + sigue).</text>
+    <text class="note" x="11" y="127.1">S-drop: pata alta 1.2 bajo el pin de F# (pie F#|G#).</text>
+
+    <text class="noteh" x="78" y="89.5">SEÑALES → PCF</text>
+    <text class="note" x="78" y="93.5">P0x: F→P07 · E→P06 · D→P05 · C→P04 · C#→P02 · D#→P01</text>
+    <text class="note" x="78" y="96.7">P1x: A→P10 · B→P11 · A#→P12 · G#→P13 · F#→P15 · G→P17</text>
+    <text class="note" x="78" y="99.9">A# y G# invertidas: señal = pin IZQ · GND = pin DER</text>
+    <text class="note" x="78" y="104.3">Libres: P00 · P03 · P14 · P16 — VDD sin uso</text>
+    <text class="note" x="78" y="108.7">Carriles = altura exacta de pin PCF (Δ2.54), ambos lados</text>
+    <text class="note" x="78" y="111.9">Canal 1.4 × 1.2 prof, cuello 1.2 + rim 0.3 — cable 24AWG</text>
+    <text class="note" x="78" y="115.1">(OD≈1.4) queda 0.2 fuera; extremos con tapa redondeada.</text>
+    <text class="note" x="78" y="119.5">Curva barrida (r 1.2) en cada cambio de dirección.</text>
+    <text class="note" x="78" y="123.9">Mapeo tecla→bit remapeable en firmware: la geometría manda.</text>
+
+    <text class="noteh" x="148" y="89.5">REGLAS</text>
+    <text class="note" x="148" y="93.5">Esta vista = como SOLDÁS (desde abajo,</text>
+    <text class="note" x="148" y="96.7">tab al norte). La vista CAD es su espejo.</text>
+    <text class="note" x="148" y="101.1">Canaleta solo en placa sólida; en pockets =</text>
+    <text class="note" x="148" y="104.3">aire. Sobre el board el cable vuela (gap 2.8);</text>
+    <text class="note" x="148" y="107.5">2 subidas en canaleta BAJO el board:</text>
+    <text class="note" x="148" y="110.7">G entre los bosses sur · F a la columna P0x.</text>
+    <text class="note" x="148" y="115.1">Naturales (en esta vista): señal = pin DER,</text>
+    <text class="note" x="148" y="118.3">GND = pin IZQ (excepción C: invertido).</text>
+    <text class="note" x="148" y="121.5">D#/F# rotados ±90°: sueldan directo.</text>
+    <text class="note" x="148" y="124.7">P0x DERECHA · P1x IZQUIERDA; GND/VDD al norte.</text>
+    <text class="note" x="148" y="127.9">Confirmar silkscreen al montar.</text>
+  </g>
+</svg>
