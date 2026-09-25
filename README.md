@@ -45,3 +45,7 @@ Inspirations behind the design are in the [brief](docs/brief.md#inspirations).
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+
+## To process
+- https://learn.adafruit.com/midi-keyset
